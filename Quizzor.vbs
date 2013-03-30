@@ -15,7 +15,7 @@ Sub NewQuiz(Item)
   End If
 
   ' Replace playing queue with current tracks from main window 
-  Call SDB.Player.PlaylistCear()
+  Call SDB.Player.PlaylistClear()
 
   ' Randomize playing queue
   ' Create new empty playlist, for played tracks
