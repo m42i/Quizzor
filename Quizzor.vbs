@@ -8,6 +8,19 @@
 
 Dim Quiz_Played_Playlist
 
+Function GetFormattedDate()
+    Dim Today : Today = Date
+    Dim This_Year : This_Year = Year(Today)
+    Dim This_Month : This_Month = Month(Today)
+    If This_Month < 10 Then This_Month = "0" + CStr(This_Month) End If
+    Dim This_Day : This_Day = Day(Today)
+    If This_Day < 10 Then This_Day = "0" + CStr(This_Day) End If
+
+    GetFormattedDate = CStr(This_Year) + "-" + CStr(This_Month) + "-" + CStr(This_Day)
+End Function
+
+
+
 Sub DebugOutput(msg)
     SDB.MessageBox msg, mtInformation, Array(mbOk)
 End Sub
@@ -38,7 +51,6 @@ Sub Shuffle(n)
     Next
 End Sub
 
-
 Sub NewQuiz(Item)
 ' Ask if a new quiz should really be started
 '  createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks in the current queue. This cannot be undone. Do you want to create a new quiz and lose the old quiz?"), mtWarning, Array(mbNo, mbYes))
@@ -53,6 +65,8 @@ Sub NewQuiz(Item)
     Call RandomizePlaylist
     
     ' Create new empty playlist, for played tracks
+    Set Playlist_Root = SDB.PlaylistByTitle("")
+    Set Quiz_Played_Playlist = Playlist_Root.CreateChildPlaylist(SDB.Localize("Quiz of " + GetFormattedDate()))
     
     ' Select newly created playlist
 End Sub
