@@ -8,7 +8,7 @@
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
 
-Dim QuizzorMainPanel
+Dim QuizzorMainPanel, NowPlayingLabel
 
 Function GetFormattedDate()
     Dim Today : Today = Date
@@ -87,6 +87,20 @@ Sub CreateMainPanel()
         QuizzorMainPanel.DockedTo = 4 
         QuizzorMainPanel.ShowCaption = True
         QuizzorMainPanel.Common.Visible = False
+
+        ' Play Button
+        Set PlayBtn = UI.NewButton(QuizzorMainPanel)
+        PlayBtn.Caption = "Play"
+        PlayBtn.Common.Anchors = akLeft + akTop
+        Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
+
+        ' Play Button
+        Set NextBtn = UI.NewButton(QuizzorMainPanel)
+        NextBtn.Caption = "Next"
+        NextBtn.Common.Anchors = akLeft + akTop
+        NextBtn.Common.Top = 100
+        Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
+
     ' End If
 End Sub
 
@@ -119,6 +133,21 @@ End Sub
 
 Sub StopQuiz(Item)
     QuizzorMainPanel.Common.Visible = False
+End Sub
+
+Sub StartPlaying
+    ' Disable playing text title
+    SDB.Player.Play
+    SDB.Player.StopAfterCurrent = True
+End Sub
+
+Sub PlayNext
+    Quiz_Playlist.addTrack SDB.Player.CurrentSong
+    SDB.Player.PlaylistDelete 0
+
+    ' Disable playing text title
+    SDB.Player.Next
+    SDB.Player.StopAfterCurrent = True
 End Sub
 
 Sub OnStartup
@@ -158,6 +187,7 @@ Sub OnStartup
 
     Call CreateMainPanel
 End Sub
+
 
 Sub Uninstall 
     Set QuizBar = SDB.Objects("QuizBar")
