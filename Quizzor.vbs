@@ -8,6 +8,8 @@
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
 
+Dim QuizzorMainPanel
+
 Function GetFormattedDate()
     Dim Today : Today = Date
     Dim This_Year : This_Year = Year(Today)
@@ -68,9 +70,25 @@ Sub Shuffle(n)
 End Sub
 
 
-Function CreateMainPanel()
-    Set CreateMainPanel = Nothing
-End Function
+Sub CreateMainPanel()
+    ' Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
+    ' If QuizzorMainPanel Is Nothing Then
+        Set UI = SDB.UI
+
+        ' DEBUG: destroy panel if it exists
+        Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
+        If Not (QuizzorMainPanel Is Nothing) Then
+            QuizzorMainPanel.Common.Visible = False
+            Set SDB.Objects("QuizzorMainPanel") = Nothing
+            QuizzorMainPanel = Nothing
+        End If
+
+        Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
+        QuizzorMainPanel.DockedTo = 4 
+        QuizzorMainPanel.ShowCaption = True
+        QuizzorMainPanel.Common.Visible = False
+    ' End If
+End Sub
 
 Sub NewQuiz(Item)
 ' Ask if a new quiz should really be started
@@ -93,16 +111,14 @@ Sub NewQuiz(Item)
     ' SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
         ' + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
         ' mtInformation, Array(mbOk)
-
-    ' Create new control and information panel and dock it to the top
 End Sub
 
 Sub StartQuiz(Item)
-    ' Turn off shuffle
-    ' Hide play controls
+    QuizzorMainPanel.Common.Visible = True
 End Sub
 
 Sub StopQuiz(Item)
+    QuizzorMainPanel.Common.Visible = False
 End Sub
 
 Sub OnStartup
@@ -139,6 +155,8 @@ Sub OnStartup
     Script.RegisterEvent NewQuizBtn, "OnClick", "NewQuiz"
     Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
+
+    Call CreateMainPanel
 End Sub
 
 Sub Uninstall 
