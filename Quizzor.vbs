@@ -19,8 +19,6 @@ Function GetFormattedDate()
     GetFormattedDate = CStr(This_Year) + "-" + CStr(This_Month) + "-" + CStr(This_Day)
 End Function
 
-
-
 Sub DebugOutput(msg)
     SDB.MessageBox msg, mtInformation, Array(mbOk)
 End Sub
@@ -67,8 +65,13 @@ Sub NewQuiz(Item)
     ' Create new empty playlist, for played tracks
     Set Playlist_Root = SDB.PlaylistByTitle("")
     Set Quiz_Played_Playlist = Playlist_Root.CreateChildPlaylist(SDB.Localize("Quiz of " + GetFormattedDate()))
+    Quiz_Played_Playlist.Selected = True
+    ' TODO: Automatic playlist selection
+    DebugOutput SDB.Localize("Select the newly created playlist."), mtInformation, Array(mbOk)
+
+    ' TODO: Automaticly hide Now Playing List
+    DebugOutput SDB.Localize("Please hide the Now Playing playlist"), mtInformation, Array(mbOk) 
     
-    ' Select newly created playlist
 End Sub
 
 Sub StartQuiz(Item)
