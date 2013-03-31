@@ -1,7 +1,6 @@
 ' Monkey Media Quizzor plugin
 ' Features:
 ' O Only show track info if space bar is pressed
-' O Only show tracknumber and length in playlist
 ' O Stop after current track
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
@@ -68,6 +67,11 @@ Sub Shuffle(n)
     Next
 End Sub
 
+
+Function CreateMainPanel()
+    Set CreateMainPanel = Nothing
+End Function
+
 Sub NewQuiz(Item)
 ' Ask if a new quiz should really be started
 '  createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks in the current queue. This cannot be undone. Do you want to create a new quiz and lose the old quiz?"), mtWarning, Array(mbNo, mbYes))
@@ -89,6 +93,8 @@ Sub NewQuiz(Item)
     ' SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
         ' + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
         ' mtInformation, Array(mbOk)
+
+    ' Create new control and information panel and dock it to the top
 End Sub
 
 Sub StartQuiz(Item)
@@ -103,24 +109,32 @@ Sub OnStartup
     Set UI = SDB.UI
     
     Set QuizBar = SDB.Objects("QuizBar")
-    If Not QuizBar Is Nothing then
-        SDB.Objects("QuizBar").Visible = False
-        Set QuizBar = Nothing
-        Set SDB.Objects("QuizBar") = Nothing
+    If QuizBar Is Nothing then
+        ' Register new menu item in tools menu
+        Set QuizBar = UI.AddToolbar("QuizBar")
+        Set SDB.Objects("QuizBar") = QuizBar
     End If
-    
-    ' Register new menu item in tools menu
-    Set QuizBar = UI.AddToolbar("QuizBar")
-    Set SDB.Objects("QuizBar") = QuizBar
-    
-    Set NewQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-    NewQuizBtn.Caption = "New Quiz"
-    
-    Set StartQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-    StartQuizBtn.Caption = "Start Quiz"
-    
-    Set StopQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-    StopQuizBtn.Caption = "Stop Quiz"
+       
+    Set NewQuizBtn = SDB.Objects("NewQuizBtn")
+    If NewQuizBtn Is Nothing Then
+        Set NewQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
+        NewQuizBtn.Caption = "New Quiz"
+        Set SDB.Objects("NewQuizBtn") = NewQuizBtn  
+    End If
+       
+    Set StartQuizBtn = SDB.Objects("StartQuizBtn")
+    If StartQuizBtn Is Nothing Then
+        Set StartQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
+        StartQuizBtn.Caption = "Start Quiz"
+        Set SDB.Objects("StartQuizBtn") = StartQuizBtn  
+    End If
+       
+    Set StopQuizBtn = SDB.Objects("StopQuizBtn")
+    If StopQuizBtn Is Nothing Then
+        Set StopQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
+        StopQuizBtn.Caption = "Stop Quiz"
+        Set SDB.Objects("StopQuizBtn") = StopQuizBtn  
+    End If
     
     Script.RegisterEvent NewQuizBtn, "OnClick", "NewQuiz"
     Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
