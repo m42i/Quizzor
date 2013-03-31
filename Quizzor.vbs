@@ -6,15 +6,16 @@
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
 
-Dim Quiz_Played_Playlist
+' Keep track of current quiz playlist
+Dim Quiz_Playlist
 
 Function GetFormattedDate()
     Dim Today : Today = Date
     Dim This_Year : This_Year = Year(Today)
     Dim This_Month : This_Month = Month(Today)
-    If This_Month < 10 Then This_Month = "0" + CStr(This_Month) End If
+    If This_Month < 10 Then This_Month = "0" + CStr(This_Month) 
     Dim This_Day : This_Day = Day(Today)
-    If This_Day < 10 Then This_Day = "0" + CStr(This_Day) End If
+    If This_Day < 10 Then This_Day = "0" + CStr(This_Day) 
 
     GetFormattedDate = CStr(This_Year) + "-" + CStr(This_Month) + "-" + CStr(This_Day)
 End Function
@@ -38,6 +39,24 @@ Sub RandomizePlaylist
         Shuffle song_count : SDB.Player.CurrentSongIndex=0
     End If
 End Sub
+
+' Create a new playlist and prevent duplicates
+Function CreateNewPlaylist()
+    Dim NewBaseTitle : NewBaseTitle = SDB.Localize("Quiz of " + GetFormattedDate())
+    
+    ' If a playlist with that name doesn't exist, root is returned
+    Set Playlist_Root = SDB.PlaylistByTitle(NewBaseTitle)
+
+    Dim i : i = 1
+    Dim NewTitle : NewTitle = NewBaseTitle
+    While Not Playlist_Root.Title = ""
+        NewTitle = NewBaseTitle + " (" + CStr(i) + ")"
+        Set Playlist_Root = SDB.PlaylistByTitle(NewTitle)
+        i = i + 1
+    WEnd
+
+    Set CreateNewPlaylist = Playlist_Root.CreateChildPlaylist(NewTitle)
+End Function
 
 Sub Shuffle(n)
     Randomize
@@ -63,15 +82,13 @@ Sub NewQuiz(Item)
     Call RandomizePlaylist
     
     ' Create new empty playlist, for played tracks
-    Set Playlist_Root = SDB.PlaylistByTitle("")
-    Set Quiz_Played_Playlist = Playlist_Root.CreateChildPlaylist(SDB.Localize("Quiz of " + GetFormattedDate()))
-    Quiz_Played_Playlist.Selected = True
-    ' TODO: Automatic playlist selection
-    DebugOutput SDB.Localize("Select the newly created playlist."), mtInformation, Array(mbOk)
-
-    ' TODO: Automaticly hide Now Playing List
-    DebugOutput SDB.Localize("Please hide the Now Playing playlist"), mtInformation, Array(mbOk) 
+    Set Quiz_Playlist = CreateNewPlaylist()
     
+    ' TODO: Automatic playlist selection
+    ' TODO: Automaticly hide Now Playing List
+    ' SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
+        ' + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
+        ' mtInformation, Array(mbOk)
 End Sub
 
 Sub StartQuiz(Item)
@@ -108,7 +125,6 @@ Sub OnStartup
     Script.RegisterEvent NewQuizBtn, "OnClick", "NewQuiz"
     Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
-    
 End Sub
 
 Sub Uninstall 
