@@ -72,6 +72,16 @@ Sub Shuffle(n)
     Next
 End Sub
 
+' Check whether a quiz can be started and show a message box if not
+Function IsQuizReady()
+    Dim IsReady 
+    IsReady = IsObject(Quiz_Playlist)
+    If Not IsReady Then
+        SDB.MessageBox SDB.Localize("Please create a new quiz first."), mtInformation, Array(mbOk)
+    End If
+
+    IsQuizReady = IsReady
+End Function
 
 Sub CreateMainPanel()
     ' Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
@@ -186,12 +196,16 @@ Sub StopQuiz(Item)
 End Sub
 
 Sub StartPlaying
+    If Not IsQuizReady() Then Exit Sub
+
     ' Disable playing next title
     SDB.Player.Play
     SDB.Player.StopAfterCurrent = True
 End Sub
 
 Sub PlayNext
+    If Not IsQuizReady() Then Exit Sub
+
     Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
     SongInfoLabel.Caption = ""
 
