@@ -144,7 +144,7 @@ Sub CreateMainPanel()
         Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
         ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
         ShowInfoBtn.Caption = SDB.Localize("Show Information")
-        ShowInfoBtn.Common.Anchors = akTop + akLeft
+        ShowInfoBtn.Common.Anchors = akLeft + akTop
         ShowInfoBtn.Common.Top = PlayBtn.Common.Height + BTN_MARGIN
         ShowInfoBtn.Common.Width = ShowInfoBtn.Common.Width * 2 + BTN_MARGIN
         Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
@@ -163,11 +163,14 @@ End Sub
 
 Sub NewQuiz(Item)
     ' Ask if a new quiz should really be started
-    '  createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks in the current queue. This cannot be undone. Do you want to create a new quiz and lose the old quiz?"), mtWarning, Array(mbNo, mbYes))
+    createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
+        + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
+        + SDB.Localize("Do you want to create a new quiz and lose the old quiz?"), _
+        mtWarning, Array(mbNo, mbYes))
     '
-    '  If createNew = mrNo then 
-    '    Exit Sub 
-    '  End If
+    If createNew = mrNo then 
+       Exit Sub 
+    End If
 
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
@@ -177,11 +180,11 @@ Sub NewQuiz(Item)
     ' Create new empty playlist, for played tracks
     Set Quiz_Playlist = CreateNewPlaylist()
 
-    ' TODO: Automaticallz select newly created playlist 
+    ' TODO: Automatically select newly created playlist 
     ' TODO: Automatically hide Now Playing List
-    ' SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
-        ' + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
-        ' mtInformation, Array(mbOk)
+    SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
+        + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
+        mtInformation, Array(mbOk)
 End Sub
 
 Sub StartQuiz(Item)
@@ -224,8 +227,10 @@ Sub PlayNext
 End Sub
 
 Sub ShowSongInfo
-    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
     Set CurrentSong = SDB.Player.CurrentSong
+    If Not IsObject(CurrentSong) Then Exit Sub
+
+    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
     SongInfoLabel.Caption = SDB.Localize("Album") + vbTab + CurrentSong.AlbumName + vbCrLf _
         + SDB.Localize("Title") + vbTab + CurrentSong.Title + vbCrLf _
         + SDB.Localize("Artist") + vbTab + CurrentSong.ArtistName + vbCrLf _
