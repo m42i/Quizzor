@@ -1,7 +1,7 @@
 ' Monkey Media Quizzor plugin
 ' Features:
 ' O Only show track info if space bar is pressed
-' O Stop after current track
+' X Stop after current track
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
 
@@ -83,20 +83,33 @@ Sub CreateMainPanel()
         If DEBUG_ON And (Not (QuizzorMainPanel Is Nothing)) Then
             DebugOutput "Remove old stuff."
             QuizzorMainPanel.Common.Visible = False
-            Set SDB.Objects("QuizzorMainPanel") = Nothing
+
+            Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+            If DEBUG_ON And (Not (PlayBtn Is Nothing)) Then
+                PlayBtn.Common.Visible = False
+                PlayBtn = Nothing
+            End If
+
+            Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
+            If DEBUG_ON And (Not (NextBtn Is Nothing)) Then
+                NextBtn.Common.Visible = False
+                NextBtn = Nothing
+            End If
+
+            Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
+            If DEBUG_ON And (Not (SongInfoLabel Is Nothing)) Then
+                SongInfoLabel.Common.Visible = False
+                SongInfoLabel = Nothing
+            End If
+
+            Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+            If DEBUG_ON And (Not (ShowInfoBtn Is Nothing)) Then
+                ShowInfoBtn.Common.Visible = False
+                ShowInfoBtn = Nothing
+            End If
+
             QuizzorMainPanel = Nothing
-        End If
-
-        Set PlayBtn = SDB.Objects("PlayBtn") 
-        If DEBUG_ON And (Not (PlayBtn Is Nothing)) Then
-            PlayBtn.Common.Visible = False
-            Set SDB.Objects("PlayBtn") = Nothing
-        End If
-
-        Set NextBtn = SDB.Objects("NextBtn") 
-        If DEBUG_ON And (Not (NextBtn Is Nothing)) Then
-            NextBtn.Common.Visible = False
-            Set SDB.Objects("NextBtn") = Nothing
+            Set SDB.Objects("QuizzorMainPanel") = Nothing
         End If
 
 
@@ -104,40 +117,56 @@ Sub CreateMainPanel()
         QuizzorMainPanel.DockedTo = 4 
         QuizzorMainPanel.ShowCaption = True
         QuizzorMainPanel.Common.Visible = False
-        Script.RegisterEvent QuizzorMainPanel, "OnResize", "ResizeMainPanel"
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
-        PlayBtn.Caption = "Play"
+        PlayBtn.Common.ControlName = "PlayBtn"
+        PlayBtn.Caption = SDB.Localize("Play")
         PlayBtn.Common.Anchors = akLeft + akTop
         Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
-        Set SDB.Objects("PlayBtn") = PlayBtn
 
         Set NextBtn = UI.NewButton(QuizzorMainPanel)
-        NextBtn.Caption = "Next"
+        NextBtn.Common.ControlName = "NextBtn"
+        NextBtn.Caption = SDB.Localize("Next")
         NextBtn.Common.Anchors = akTop
         NextBtn.Common.Left = PlayBtn.Common.Width + BTN_MARGIN
         Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
-        Set SDB.Objects("NextBtn") = NextBtn
+
+        Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
+        ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
+        ShowInfoBtn.Caption = SDB.Localize("Show Information")
+        ShowInfoBtn.Common.Anchors = akTop + akLeft
+        ShowInfoBtn.Common.Top = PlayBtn.Common.Height + BTN_MARGIN
+        ShowInfoBtn.Common.Width = ShowInfoBtn.Common.Width * 2 + BTN_MARGIN
+        Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
+
+        Set SongInfoLabel = UI.NewLabel(QuizzorMainPanel)
+        SongInfoLabel.Common.ControlName = "SongInfoLabel"
+        SongInfoLabel.Alignment = 0
+        SongInfoLabel.Autosize = True
+        SongInfoLabel.Common.Anchors = akLeft + akTop
+        SongInfoLabel.Common.Top = PlayBtn.Common.Height + ShowInfoBtn.Common.Height + 2*BTN_MARGIN
+        SongInfoLabel.Common.FontSize = SongInfoLabel.Common.FontSize * 3
+        SongInfoLabel.Caption = ""
 
     ' End If
 End Sub
 
 Sub NewQuiz(Item)
-' Ask if a new quiz should really be started
-'  createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks in the current queue. This cannot be undone. Do you want to create a new quiz and lose the old quiz?"), mtWarning, Array(mbNo, mbYes))
-'
-'  If createNew = mrNo then 
-'    Exit Sub 
-'  End If
-    
+    ' Ask if a new quiz should really be started
+    '  createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks in the current queue. This cannot be undone. Do you want to create a new quiz and lose the old quiz?"), mtWarning, Array(mbNo, mbYes))
+    '
+    '  If createNew = mrNo then 
+    '    Exit Sub 
+    '  End If
+
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
     SDB.Player.PlaylistAddTracks SDB.AllVisibleSongList
     Call RandomizePlaylist
-    
+
     ' Create new empty playlist, for played tracks
     Set Quiz_Playlist = CreateNewPlaylist()
-    
+
     ' TODO: Automaticallz select newly created playlist 
     ' TODO: Automatically hide Now Playing List
     ' SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
@@ -163,6 +192,9 @@ Sub StartPlaying
 End Sub
 
 Sub PlayNext
+    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
+    SongInfoLabel.Caption = ""
+
     If SDB.Player.CurrentPlaylist.Count = 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
             mtInformation, Array(mbOk)
@@ -175,6 +207,17 @@ Sub PlayNext
     ' Disable playing next title
     SDB.Player.Play
     SDB.Player.StopAfterCurrent = True
+End Sub
+
+Sub ShowSongInfo
+    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
+    Set CurrentSong = SDB.Player.CurrentSong
+    SongInfoLabel.Caption = SDB.Localize("Album") + vbTab + CurrentSong.AlbumName + vbCrLf _
+        + SDB.Localize("Title") + vbTab + CurrentSong.Title + vbCrLf _
+        + SDB.Localize("Artist") + vbTab + CurrentSong.ArtistName + vbCrLf _
+        + SDB.Localize("Comment") + vbTab + CurrentSong.Comment + vbCrLf 
+
+    SongInfoLabel.Common.Visible = True
 End Sub
 
 Sub OnStartup
