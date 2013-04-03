@@ -100,42 +100,50 @@ Function IsQuizReady()
 End Function
 
 Sub DetroyAllObjects
-    QuizzorMainPanel.Common.Visible = False
-    Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
-    If QuizzorMainPanel Is Nothing Then Exit Sub
+    Script.UnRegisterEvents SDB
 
-    DebugOutput "Remove old stuff."
-    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    If Not (PlayBtn Is Nothing) Then
-        PlayBtn.Common.Visible = False
-        PlayBtn = Nothing
+    If IsObject(QuizzorMainPanel) Then
+        QuizzorMainPanel.Common.Visible = False
+        Set SDB.Objects("QuizzorMainPanel") = Nothing
     End If
 
-    Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
-    If Not (NextBtn Is Nothing) Then
-        NextBtn.Common.Visible = False
-        NextBtn = Nothing
-    End If
 
-    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
-    If Not (SongInfoLabel Is Nothing) Then
-        SongInfoLabel.Common.Visible = False
-        SongInfoLabel = Nothing
-    End If
-
-    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-    If Not (ShowInfoBtn Is Nothing) Then
-        ShowInfoBtn.Common.Visible = False
-        ShowInfoBtn = Nothing
-    End If
-
-    QuizzorMainPanel = Nothing
-    Set SDB.Objects("QuizzorMainPanel") = Nothing
-    
-    Set SDB.Objects("QuizBar") = Nothing
-    Set SDB.Objects("NewQuizBtn") = Nothing
-    Set SDB.Objects("StartQuizBtn") = Nothing
-    Set SDB.Objects("StopQuizBtn") = Nothing
+'    QuizzorMainPanel.Common.Visible = False
+'    Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
+'    If QuizzorMainPanel Is Nothing Then Exit Sub
+'
+'    DebugOutput "Remove old stuff."
+'    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+'    If Not (PlayBtn Is Nothing) Then
+'        PlayBtn.Common.Visible = False
+'        PlayBtn = Nothing
+'    End If
+'
+'    Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
+'    If Not (NextBtn Is Nothing) Then
+'        NextBtn.Common.Visible = False
+'        NextBtn = Nothing
+'    End If
+'
+'    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
+'    If Not (SongInfoLabel Is Nothing) Then
+'        SongInfoLabel.Common.Visible = False
+'        SongInfoLabel = Nothing
+'    End If
+'
+'    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+'    If Not (ShowInfoBtn Is Nothing) Then
+'        ShowInfoBtn.Common.Visible = False
+'        ShowInfoBtn = Nothing
+'    End If
+'
+'    QuizzorMainPanel = Nothing
+'    Set SDB.Objects("QuizzorMainPanel") = Nothing
+'    
+'    Set SDB.Objects("QuizBar") = Nothing
+'    Set SDB.Objects("NewQuizBtn") = Nothing
+'    Set SDB.Objects("StartQuizBtn") = Nothing
+'    Set SDB.Objects("StopQuizBtn") = Nothing
 
 End Sub
 
@@ -145,20 +153,21 @@ Sub CreateMainPanel()
     ' DEBUG: destroy panel and all buttons if it exists
         Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
         If DEBUG_ON And (Not (QuizzorMainPanel Is Nothing)) Then
-            Call DetroyAllObjects()
+            DebugOutput "Destroy Everything!"
+            Call DetroyAllObjects
         End If
 
         Set UI = SDB.UI
 
         Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
         QuizzorMainPanel.DockedTo = 4 
-        QuizzorMainPanel.ShowCaption = True
+        QuizzorMainPanel.ShowCaption = False
         QuizzorMainPanel.Common.Visible = False
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
         PlayBtn.Common.ControlName = "PlayBtn"
-        PlayBtn.Caption = SDB.Localize("Play")
-        PlayBtn.Common.Anchors = akLeft + akTop
+        PlayBtn.Caption = SDB.Localize("New BTN")
+        PlayBtn.Common.Anchors = akRight + akBottom
         Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
         Set NextBtn = UI.NewButton(QuizzorMainPanel)
@@ -277,6 +286,9 @@ Sub ShowSongInfo
 End Sub
 
 Sub OnStartup
+    Script.UnregisterEvents SDB
+    Call DetroyAllObjects
+
     Set UI = SDB.UI
     
     ' Register new or get existing toolbar 
@@ -313,6 +325,6 @@ End Sub
 
 
 Sub Uninstall 
-    Call DetroyAllObjects()
+    Call DetroyAllObjects
 End Sub
 
