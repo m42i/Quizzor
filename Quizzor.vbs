@@ -23,6 +23,8 @@
 
 Const DEBUG_ON = True
 Const BTN_MARGIN = 5 ' Defines the standard margin between buttons
+Const BTN_HEIGHT = 25 ' Defines standard height of a button
+Const BTN_WIDTH = 80 ' Defines standard width of a button
 
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
@@ -100,84 +102,73 @@ Function IsQuizReady()
 End Function
 
 Sub DetroyAllObjects
-    Script.UnRegisterEvents SDB
+    Set PlayBtn = SDB.Objects("PlayBtn")
+    If Not (PlayBtn Is Nothing) Then
+        PlayBtn.Common.Visible = False
+        PlayBtn = Nothing
+    End If
 
-    If IsObject(QuizzorMainPanel) Then
+    Set NextBtn = SDB.Objects("NextBtn")
+    If Not (NextBtn Is Nothing) Then
+        NextBtn.Common.Visible = False
+        NextBtn = Nothing
+    End If
+
+    Set SongInfoLabel = SDB.Objects("SongInfoLabel")
+    If Not (SongInfoLabel Is Nothing) Then
+        SongInfoLabel.Common.Visible = False
+        SongInfoLabel = Nothing
+    End If
+
+    Set ShowInfoBtn = SDB.Objects("ShowInfoBtn")
+    If Not (ShowInfoBtn Is Nothing) Then
+        ShowInfoBtn.Common.Visible = False
+        ShowInfoBtn = Nothing
+    End If
+
+    Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
+    If IsObject(QuizzorMainPanel) And Not (QuizzorMainPanel Is Nothing) Then
         QuizzorMainPanel.Common.Visible = False
         Set SDB.Objects("QuizzorMainPanel") = Nothing
     End If
+    
+    Set SDB.Objects("QuizBar") = Nothing
+    Set SDB.Objects("NewQuizBtn") = Nothing
+    Set SDB.Objects("StartQuizBtn") = Nothing
+    Set SDB.Objects("StopQuizBtn") = Nothing
 
-
-'    QuizzorMainPanel.Common.Visible = False
-'    Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
-'    If QuizzorMainPanel Is Nothing Then Exit Sub
-'
-'    DebugOutput "Remove old stuff."
-'    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-'    If Not (PlayBtn Is Nothing) Then
-'        PlayBtn.Common.Visible = False
-'        PlayBtn = Nothing
-'    End If
-'
-'    Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
-'    If Not (NextBtn Is Nothing) Then
-'        NextBtn.Common.Visible = False
-'        NextBtn = Nothing
-'    End If
-'
-'    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
-'    If Not (SongInfoLabel Is Nothing) Then
-'        SongInfoLabel.Common.Visible = False
-'        SongInfoLabel = Nothing
-'    End If
-'
-'    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-'    If Not (ShowInfoBtn Is Nothing) Then
-'        ShowInfoBtn.Common.Visible = False
-'        ShowInfoBtn = Nothing
-'    End If
-'
-'    QuizzorMainPanel = Nothing
-'    Set SDB.Objects("QuizzorMainPanel") = Nothing
-'    
-'    Set SDB.Objects("QuizBar") = Nothing
-'    Set SDB.Objects("NewQuizBtn") = Nothing
-'    Set SDB.Objects("StartQuizBtn") = Nothing
-'    Set SDB.Objects("StopQuizBtn") = Nothing
-
+    Script.UnRegisterEvents SDB
 End Sub
 
 Sub CreateMainPanel()
     ' Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
     ' If QuizzorMainPanel Is Nothing Then
     ' DEBUG: destroy panel and all buttons if it exists
-        Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
-        If DEBUG_ON And (Not (QuizzorMainPanel Is Nothing)) Then
-            DebugOutput "Destroy Everything!"
-            Call DetroyAllObjects
-        End If
-
         Set UI = SDB.UI
 
         Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
-        QuizzorMainPanel.DockedTo = 4 
-        QuizzorMainPanel.ShowCaption = False
-        QuizzorMainPanel.Common.Visible = False
+        If QuizzorMainPanel.IsNew Then
+            QuizzorMainPanel.DockedTo = 4 
+            QuizzorMainPanel.Common.Visible = False
+            QuizzorMainPanel.ShowCaption = False
+        End If
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
-        PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, 100, 40
+        PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
         PlayBtn.Common.ControlName = "PlayBtn"
         PlayBtn.Caption = SDB.Localize("Play")
         Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
         Set NextBtn = UI.NewButton(QuizzorMainPanel)
-        NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, 100, 40
+        NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, _
+            BTN_WIDTH, BTN_HEIGHT
         NextBtn.Common.ControlName = "NextBtn"
         NextBtn.Caption = SDB.Localize("Next")
         Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
         Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
-        ShowInfoBtn.Common.SetRect BTN_MARGIN, 2*BTN_MARGIN + PlayBtn.Common.Height, 200+BTN_MARGIN, 40
+        ShowInfoBtn.Common.SetRect BTN_MARGIN, 2*BTN_MARGIN + PlayBtn.Common.Height, _
+            2*BTN_WIDTH+BTN_MARGIN, BTN_HEIGHT
         ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
         ShowInfoBtn.Caption = SDB.Localize("Show Information")
         Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
@@ -194,6 +185,7 @@ Sub CreateMainPanel()
         Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
         QuizTrackBar.Common.SetRect BTN_MARGIN, QuizzorMainPanel.Common.Height - 40 - BTN_MARGIN,_
             QuizzorMainPanel.Common.Width - 2*BTN_MARGIN, 40
+        QuizTrackBar.Common.Anchors = akBottom + akLeft
         QuizTrackBar.Common.ControlName = "QuizTrackBar"
         QuizTrackBar.Horizontal = True
 
@@ -282,14 +274,14 @@ Sub ShowSongInfo
 End Sub
 
 Sub OnStartup
-    Script.UnregisterEvents SDB
-    Call DetroyAllObjects
-
     Set UI = SDB.UI
     
     ' Register new or get existing toolbar 
-    Set QuizBar = UI.AddToolbar("QuizBar")
-    Set SDB.Objects("QuizBar") = QuizBar
+    Set QuizBar = SDB.Objects("QuizBar") 
+    If QuizBar Is Nothing Then
+        Set QuizBar = UI.AddToolbar("QuizBar")
+        Set SDB.Objects("QuizBar") = QuizBar
+    End If
        
     Set NewQuizBtn = SDB.Objects("NewQuizBtn")
     If NewQuizBtn Is Nothing Then
