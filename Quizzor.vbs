@@ -140,6 +140,37 @@ Sub DetroyAllObjects
     Script.UnRegisterEvents SDB
 End Sub
 
+Function getSongInfoHTML(SongData)
+    getSongInfoHTML = "<html><body>" & vbCrLf & _
+        "<table border='1' cellspacing='0' cellpaddin='2' rules='rows'" & _
+        " frame='void' width='100%' height='100%'>" & vbCrLf & _
+        "<colgroup>" & vbCrLf & _
+            "<col width='20%'>" & vbCrLf & _
+            "<col width='80%'>" & vbCrLf & _
+        "</colgroup>" & vbCrLf & _
+        "<tr>" & vbCrLf & _
+            "<td align='right'>" & SDB.Localize("Album") & "</td>" & vbCrLf & _
+            "<td>&nbsp;" & SongData.AlbumName & "</td>" & vbCrLf & _
+        "</tr>" & vbCrLf & _
+        "<tr>" & vbCrLf & _
+            "<td align='right'>" & SDB.Localize("Title") & "</td>" & vbCrLf & _
+            "<td>&nbsp;" & SongData.Title & "</td>" & vbCrLf & _
+        "</tr>" & vbCrLf & _
+        "<tr>" & vbCrLf & _
+            "<td align='right'>" & SDB.Localize("Artist") & "</td>" & vbCrLf & _
+            "<td>&nbsp;" & SongData.ArtistName & "</td>" & vbCrLf & _
+        "</tr>" & vbCrLf & _
+        "<tr>" & vbCrLf & _
+            "<td align='right'>" & SDB.Localize("Comment") & "</td>" & vbCrLf & _
+            "<td>&nbsp;" & SongData.Comment & "</td>" & vbCrLf & _
+        "</tr>" & vbCrLf & _
+        "<tr>" & vbCrLf & _
+            "<td align='right'>" & SDB.Localize("File") & "</td>" & vbCrLf & _
+            "<td>&nbsp;" & SongData.Path & "</td>" & vbCrLf & _
+        "</tr>" & vbCrLf & _
+        "</body></html>"
+End Function
+
 Sub CreateMainPanel()
     ' Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
     ' If QuizzorMainPanel Is Nothing Then
@@ -150,8 +181,8 @@ Sub CreateMainPanel()
         If QuizzorMainPanel.IsNew Then
             QuizzorMainPanel.DockedTo = 4 
             QuizzorMainPanel.Common.Visible = False
-            QuizzorMainPanel.ShowCaption = False
         End If
+        QuizzorMainPanel.ShowCaption = False
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
         PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
@@ -167,26 +198,27 @@ Sub CreateMainPanel()
         Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
         Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
-        ShowInfoBtn.Common.SetRect BTN_MARGIN, 2*BTN_MARGIN + PlayBtn.Common.Height, _
-            2*BTN_WIDTH+BTN_MARGIN, BTN_HEIGHT
+        ShowInfoBtn.Common.SetRect 3*BTN_MARGIN+2*BTN_WIDTH, BTN_MARGIN, _
+            2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
         ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
         ShowInfoBtn.Caption = SDB.Localize("Show Information")
         Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
-        Set SongInfoLabel = UI.NewLabel(QuizzorMainPanel)
-        SongInfoLabel.Common.ControlName = "SongInfoLabel"
-        SongInfoLabel.Alignment = 0
-        SongInfoLabel.Autosize = True
-        SongInfoLabel.Common.Anchors = akLeft + akTop
-        SongInfoLabel.Common.Top = PlayBtn.Common.Height + ShowInfoBtn.Common.Height + 2*BTN_MARGIN
-        SongInfoLabel.Common.FontSize = SongInfoLabel.Common.FontSize * 3
-        SongInfoLabel.Caption = ""
+        ' TODO: Hide vertical scrollbar and/or only show when needed
+        Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
+        SongInfoHTML.Common.ControlName = "SongInfoHTML"
+        SongInfoHTML.Common.Align = 0
+        SongInfoHTML.Common.SetClientRect BTN_MARGIN, 2*BTN_MARGIN + BTN_HEIGHT, _
+            QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
+            QuizzorMainPanel.Common.Height - 4*BTN_MARGIN - 2*BTN_HEIGHT
+        SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
 
         Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
-        QuizTrackBar.Common.SetRect BTN_MARGIN, QuizzorMainPanel.Common.Height - 40 - BTN_MARGIN,_
-            QuizzorMainPanel.Common.Width - 2*BTN_MARGIN, 40
-        QuizTrackBar.Common.Anchors = akBottom + akLeft
         QuizTrackBar.Common.ControlName = "QuizTrackBar"
+        QuizTrackBar.Common.SetRect 0, _
+            QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
+            QuizzorMainPanel.Common.Width, BTN_HEIGHT
+        QuizTrackBar.Common.Anchors = akBottom + akLeft
         QuizTrackBar.Horizontal = True
 
     ' End If
@@ -243,8 +275,10 @@ End Sub
 Sub PlayNext
     If Not IsQuizReady() Then Exit Sub
 
-    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
-    SongInfoLabel.Caption = ""
+    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
+    Set HTMLDocument = SongInfoHTML.Interf.Document
+    HTMLDocument.Write ""
+    HTMLDocument.Close
 
     If SDB.Player.CurrentPlaylist.Count = 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
@@ -264,13 +298,10 @@ Sub ShowSongInfo
     Set CurrentSong = SDB.Player.CurrentSong
     If Not IsObject(CurrentSong) Then Exit Sub
 
-    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
-    SongInfoLabel.Caption = SDB.Localize("Album") + vbTab + CurrentSong.AlbumName + vbCrLf _
-        + SDB.Localize("Title") + vbTab + CurrentSong.Title + vbCrLf _
-        + SDB.Localize("Artist") + vbTab + CurrentSong.ArtistName + vbCrLf _
-        + SDB.Localize("Comment") + vbTab + CurrentSong.Comment + vbCrLf 
-
-    SongInfoLabel.Common.Visible = True
+    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
+    Set HTMLDocument = SongInfoHTML.Interf.Document
+    HTMLDocument.Write getSongInfoHTML(CurrentSong)
+    HTMLDocument.Close
 End Sub
 
 Sub OnStartup
