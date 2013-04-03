@@ -1,3 +1,19 @@
+' Quizzor - A MediaMonkey plugin for performing music quizzes
+' Copyright (C) 2013 "m42i" 
+' 
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 3 of the License, or
+' (at your option) any later version.
+' 
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+' 
+' You should have received a copy of the GNU General Public License
+' along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ' Monkey Media Quizzor plugin
 ' Features:
 ' O Only show track info if space bar is pressed
@@ -83,45 +99,56 @@ Function IsQuizReady()
     IsQuizReady = IsReady
 End Function
 
+Sub DetroyAllObjects
+    QuizzorMainPanel.Common.Visible = False
+    Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
+    If QuizzorMainPanel Is Nothing Then Exit Sub
+
+    DebugOutput "Remove old stuff."
+    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+    If Not (PlayBtn Is Nothing) Then
+        PlayBtn.Common.Visible = False
+        PlayBtn = Nothing
+    End If
+
+    Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
+    If Not (NextBtn Is Nothing) Then
+        NextBtn.Common.Visible = False
+        NextBtn = Nothing
+    End If
+
+    Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
+    If Not (SongInfoLabel Is Nothing) Then
+        SongInfoLabel.Common.Visible = False
+        SongInfoLabel = Nothing
+    End If
+
+    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+    If Not (ShowInfoBtn Is Nothing) Then
+        ShowInfoBtn.Common.Visible = False
+        ShowInfoBtn = Nothing
+    End If
+
+    QuizzorMainPanel = Nothing
+    Set SDB.Objects("QuizzorMainPanel") = Nothing
+    
+    Set SDB.Objects("QuizBar") = Nothing
+    Set SDB.Objects("NewQuizBtn") = Nothing
+    Set SDB.Objects("StartQuizBtn") = Nothing
+    Set SDB.Objects("StopQuizBtn") = Nothing
+
+End Sub
+
 Sub CreateMainPanel()
     ' Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
     ' If QuizzorMainPanel Is Nothing Then
-        Set UI = SDB.UI
-
-        ' DEBUG: destroy panel and all buttons if it exists
+    ' DEBUG: destroy panel and all buttons if it exists
         Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
         If DEBUG_ON And (Not (QuizzorMainPanel Is Nothing)) Then
-            DebugOutput "Remove old stuff."
-            QuizzorMainPanel.Common.Visible = False
-
-            Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-            If DEBUG_ON And (Not (PlayBtn Is Nothing)) Then
-                PlayBtn.Common.Visible = False
-                PlayBtn = Nothing
-            End If
-
-            Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
-            If DEBUG_ON And (Not (NextBtn Is Nothing)) Then
-                NextBtn.Common.Visible = False
-                NextBtn = Nothing
-            End If
-
-            Set SongInfoLabel = QuizzorMainPanel.Common.ChildControl("SongInfoLabel")
-            If DEBUG_ON And (Not (SongInfoLabel Is Nothing)) Then
-                SongInfoLabel.Common.Visible = False
-                SongInfoLabel = Nothing
-            End If
-
-            Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-            If DEBUG_ON And (Not (ShowInfoBtn Is Nothing)) Then
-                ShowInfoBtn.Common.Visible = False
-                ShowInfoBtn = Nothing
-            End If
-
-            QuizzorMainPanel = Nothing
-            Set SDB.Objects("QuizzorMainPanel") = Nothing
+            Call DetroyAllObjects()
         End If
 
+        Set UI = SDB.UI
 
         Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
         QuizzorMainPanel.DockedTo = 4 
@@ -157,6 +184,13 @@ Sub CreateMainPanel()
         SongInfoLabel.Common.Top = PlayBtn.Common.Height + ShowInfoBtn.Common.Height + 2*BTN_MARGIN
         SongInfoLabel.Common.FontSize = SongInfoLabel.Common.FontSize * 3
         SongInfoLabel.Caption = ""
+
+        Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
+        QuizTrackBar.Common.ControlName = "QuizTrackBar"
+        QuizTrackBar.Common.Anchors = akLeft + akBottom
+        QuizTrackBar.Common.Width = QuizzorMainPanel.Common.Width - 2*BTN_MARGIN
+        QuizTrackBar.Common.Height = 2*BTN_MARGIN
+        QuizTrackBar.Horizontal = True
 
     ' End If
 End Sub
@@ -200,6 +234,9 @@ End Sub
 
 Sub StartPlaying
     If Not IsQuizReady() Then Exit Sub
+
+    Set QuizTrackBar = QuizzorMainPanel.Common.ChildControl("QuizTrackBar")
+    QuizTrackBar.Value = SDB.Player.CurrentSong.ID
 
     ' Disable playing next title
     SDB.Player.Play
@@ -266,7 +303,7 @@ Sub OnStartup
         StopQuizBtn.Caption = "Stop Quiz"
         Set SDB.Objects("StopQuizBtn") = StopQuizBtn  
     End If
-    
+
     Script.RegisterEvent NewQuizBtn, "OnClick", "NewQuiz"
     Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
@@ -276,14 +313,6 @@ End Sub
 
 
 Sub Uninstall 
-    Set QuizBar = SDB.Objects("QuizBar")
-    If Not QuizBar Is Nothing then
-        SDB.Objects("QuizBar").Visible = False
-        Set QuizBar = Nothing
-        Set SDB.Objects("QuizBar") = Nothing
-    End If
+    Call DetroyAllObjects()
 End Sub
-
-
-
 
