@@ -165,24 +165,21 @@ Sub CreateMainPanel()
         QuizzorMainPanel.Common.Visible = False
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
+        PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, 100, 40
         PlayBtn.Common.ControlName = "PlayBtn"
-        PlayBtn.Caption = SDB.Localize("New BTN")
-        PlayBtn.Common.Anchors = akRight + akBottom
+        PlayBtn.Caption = SDB.Localize("Play")
         Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
         Set NextBtn = UI.NewButton(QuizzorMainPanel)
+        NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, 100, 40
         NextBtn.Common.ControlName = "NextBtn"
         NextBtn.Caption = SDB.Localize("Next")
-        NextBtn.Common.Anchors = akTop
-        NextBtn.Common.Left = PlayBtn.Common.Width + BTN_MARGIN
         Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
         Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
+        ShowInfoBtn.Common.SetRect BTN_MARGIN, 2*BTN_MARGIN + PlayBtn.Common.Height, 200+BTN_MARGIN, 40
         ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
         ShowInfoBtn.Caption = SDB.Localize("Show Information")
-        ShowInfoBtn.Common.Anchors = akLeft + akTop
-        ShowInfoBtn.Common.Top = PlayBtn.Common.Height + BTN_MARGIN
-        ShowInfoBtn.Common.Width = ShowInfoBtn.Common.Width * 2 + BTN_MARGIN
         Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
         Set SongInfoLabel = UI.NewLabel(QuizzorMainPanel)
@@ -195,10 +192,9 @@ Sub CreateMainPanel()
         SongInfoLabel.Caption = ""
 
         Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
+        QuizTrackBar.Common.SetRect BTN_MARGIN, QuizzorMainPanel.Common.Height - 40 - BTN_MARGIN,_
+            QuizzorMainPanel.Common.Width - 2*BTN_MARGIN, 40
         QuizTrackBar.Common.ControlName = "QuizTrackBar"
-        QuizTrackBar.Common.Anchors = akLeft + akBottom
-        QuizTrackBar.Common.Width = QuizzorMainPanel.Common.Width - 2*BTN_MARGIN
-        QuizTrackBar.Common.Height = 2*BTN_MARGIN
         QuizTrackBar.Horizontal = True
 
     ' End If
