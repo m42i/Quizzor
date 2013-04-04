@@ -234,6 +234,7 @@ Sub CreateMainPanel()
             TIME_WIDTH, BTN_HEIGHT
         SongTime.Caption = "00:00"
 
+        ' TODO: Change playback time, when TrackBar changes
         Set SongTrackBar = UI.NewTrackBar(QuizzorMainPanel)
         SongTrackBar.Common.ControlName = "SongTrackBar"
         SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
@@ -285,21 +286,21 @@ Sub StartQuiz(Item)
     
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
-    
-    Set SongTimer = SDB.CreateTimer(1000)
-    Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     SDB.Player.CurrentSongIndex = 0
 End Sub
 
 Sub StopQuiz(Item)
+    If SDB.Player.isPlaying And IsObject(SongTimer) Then
+        SongTimer.Enabled = False
+        Script.UnRegisterEvents SongTimer
+    End If
+
     QuizzorMainPanel.Common.Visible = False
     SDB.Player.Stop
     
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
-    
-    Script.UnRegisterEvents SongTimer
 End Sub
 
 Sub StartPlaying
@@ -313,7 +314,7 @@ Sub StartPlaying
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
     
-    Set SongTimer = SDB.CreateTimer(500)
+    Set SongTimer = SDB.CreateTimer(1000)
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     ' Disable playing next title
