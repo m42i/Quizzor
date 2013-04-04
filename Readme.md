@@ -11,10 +11,9 @@ Usage:
 - With \<Show Information\> the song's information is shown, specifically 'Album', 'Title', 'Artist', 'Comment' and 'file path\file name'
 - \<Next\> will move the current song into the quiz playlist, clear the informatin and play the next song
 
-Limitations:
-- The trackbar at the bottom of the quiz panel has no function
-
 TODO (from source):
-- Hide vertical scrollbar and/or only show when needed
+- Hide vertical scrollbar of ActiveX and/or only show when needed
 - Automatically select newly created playlist
 - Automatically hide Now Playing List, Player and Image and Detail Window
+- Resize ActiveX element and Trackbar with panel
+- Change playback time, when TrackBar changes
