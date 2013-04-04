@@ -205,6 +205,7 @@ Sub CreateMainPanel()
         Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
         ' TODO: Hide vertical scrollbar and/or only show when needed
+        ' TODO: Resize Web form and Trackbar with Panel
         Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
         SongInfoHTML.Common.ControlName = "SongInfoHTML"
         SongInfoHTML.Common.Align = 0
@@ -215,10 +216,10 @@ Sub CreateMainPanel()
 
         Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
         QuizTrackBar.Common.ControlName = "QuizTrackBar"
-        QuizTrackBar.Common.SetRect 0, _
+        QuizTrackBar.Common.SetRect BTN_MARGIN, _
             QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
-            QuizzorMainPanel.Common.Width, BTN_HEIGHT
-        QuizTrackBar.Common.Anchors = akBottom + akLeft
+            QuizzorMainPanel.Common.Width - 2*BTN_MARGIN, BTN_HEIGHT
+        QuizTrackBar.Common.Anchors = akBottom 
         QuizTrackBar.Horizontal = True
 
     ' End If
