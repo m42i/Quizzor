@@ -25,21 +25,34 @@ Const DEBUG_ON = True
 Const BTN_MARGIN = 5 ' Defines the standard margin between buttons
 Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
+Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
 
-Dim QuizzorMainPanel, NowPlayingLabel
+Dim QuizzorMainPanel, SongTrackBar, SongTimer
+Dim SongTime, SongTimeLeft ' Labels for current song time
+Dim CurrentSongLength
 
 Function GetFormattedDate()
-    Dim Today : Today = Date
-    Dim This_Year : This_Year = Year(Today)
-    Dim This_Month : This_Month = Month(Today)
+    Today = Date
+    This_Year = Year(Today)
+    This_Month = Month(Today)
     If This_Month < 10 Then This_Month = "0" + CStr(This_Month) 
     Dim This_Day : This_Day = Day(Today)
     If This_Day < 10 Then This_Day = "0" + CStr(This_Day) 
 
     GetFormattedDate = CStr(This_Year) + "-" + CStr(This_Month) + "-" + CStr(This_Day)
+End Function
+
+' Formats a given time in seconds int mm:ss
+Function GetFormattedTime(Time)
+    Minutes = Int(Time / 60)
+    If Minutes < 10 Then Minutes = "0" + CStr(Minutes)
+    Seconds = Int(Time Mod 60)
+    If Seconds < 10 Then Seconds = "0" + CStr(Seconds)
+
+    GetFormattedTime = CStr(Minutes) + ":" + CStr(Seconds)
 End Function
 
 Sub DebugOutput(msg)
@@ -214,13 +227,29 @@ Sub CreateMainPanel()
             QuizzorMainPanel.Common.Height - 4*BTN_MARGIN - 2*BTN_HEIGHT
         SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
 
-        Set QuizTrackBar = UI.NewTrackBar(QuizzorMainPanel)
-        QuizTrackBar.Common.ControlName = "QuizTrackBar"
-        QuizTrackBar.Common.SetRect BTN_MARGIN, _
+        Set SongTime = UI.NewLabel(QuizzorMainPanel)
+        SongTime.Common.ControlName = "SongTime"
+        SongTime.Common.SetRect 2*BTN_MARGIN, _
+            QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
+            TIME_WIDTH, BTN_HEIGHT
+        SongTime.Caption = "00:00"
+
+        Set SongTrackBar = UI.NewTrackBar(QuizzorMainPanel)
+        SongTrackBar.Common.ControlName = "SongTrackBar"
+        SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
             QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
-            QuizzorMainPanel.Common.Width - 2*BTN_MARGIN, BTN_HEIGHT
-        QuizTrackBar.Common.Anchors = akBottom 
-        QuizTrackBar.Horizontal = True
+            QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, BTN_HEIGHT
+        SongTrackBar.Common.Anchors = akBottom 
+        SongTrackBar.Value = 0
+        SongTrackBar.Horizontal = True
+
+        Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
+        SongTimeLeft.Common.ControlName = "SongTimeLeft"
+        SongTimeLeft.Common.SetRect BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
+            QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
+            TIME_WIDTH, BTN_HEIGHT
+        SongTimeLeft.Common.Align = alRight
+        SongTimeLeft.Caption = "00:00"
 
     ' End If
 End Sub
@@ -253,6 +282,12 @@ End Sub
 
 Sub StartQuiz(Item)
     QuizzorMainPanel.Common.Visible = True
+    
+    SongTime.Caption = GetFormattedTime(0)
+    SongTimeLeft.Caption = GetFormattedTime(0)
+    
+    Set SongTimer = SDB.CreateTimer(1000)
+    Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     SDB.Player.CurrentSongIndex = 0
 End Sub
@@ -260,13 +295,26 @@ End Sub
 Sub StopQuiz(Item)
     QuizzorMainPanel.Common.Visible = False
     SDB.Player.Stop
+    
+    SongTime.Caption = GetFormattedTime(0)
+    SongTimeLeft.Caption = GetFormattedTime(0)
+    
+    Script.UnRegisterEvents SongTimer
 End Sub
 
 Sub StartPlaying
     If Not IsQuizReady() Then Exit Sub
 
-    Set QuizTrackBar = QuizzorMainPanel.Common.ChildControl("QuizTrackBar")
-    QuizTrackBar.Value = SDB.Player.CurrentSong.ID
+    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
+    SongTrackBar.MinValue = 0
+    SongTrackBar.MaxValue = CurrentSongLength
+    SongTrackBar.Value = 0
+    
+    SongTime.Caption = GetFormattedTime(0)
+    SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
+    
+    Set SongTimer = SDB.CreateTimer(500)
+    Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     ' Disable playing next title
     SDB.Player.Play
@@ -284,15 +332,14 @@ Sub PlayNext
     If SDB.Player.CurrentPlaylist.Count = 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
             mtInformation, Array(mbOk)
+        Call StopQuiz(Nothing)
         Exit Sub
     End If
 
     Quiz_Playlist.addTrack SDB.Player.CurrentSong
     SDB.Player.PlaylistDelete 0
 
-    ' Disable playing next title
-    SDB.Player.Play
-    SDB.Player.StopAfterCurrent = True
+    Call StartPlaying
 End Sub
 
 Sub ShowSongInfo
@@ -303,6 +350,16 @@ Sub ShowSongInfo
     Set HTMLDocument = SongInfoHTML.Interf.Document
     HTMLDocument.Write getSongInfoHTML(CurrentSong)
     HTMLDocument.Close
+End Sub
+
+Sub UpdateSongTime(Timer)
+    PlaybackTime = SDB.Player.PlaybackTime / 1000
+    SongTrackBar.Value = PlaybackTime
+    SongTime.Caption = GetFormattedTime(PlaybackTime)
+    SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
+
+    ' Update again in one second
+    Set SongTimer = SDB.CreateTimer(500)
 End Sub
 
 Sub OnStartup
@@ -342,7 +399,6 @@ Sub OnStartup
 
     Call CreateMainPanel
 End Sub
-
 
 Sub Uninstall 
     Call DetroyAllObjects
