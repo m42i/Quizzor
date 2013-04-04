@@ -193,8 +193,9 @@ Sub CreateMainPanel()
         Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
         If QuizzorMainPanel.IsNew Then
             QuizzorMainPanel.DockedTo = 4 
-            QuizzorMainPanel.Common.Visible = False
         End If
+        ' Show panel to ensure the size and position of related elements
+        QuizzorMainPanel.Common.Visible = True
         QuizzorMainPanel.ShowCaption = False
 
         Set PlayBtn = UI.NewButton(QuizzorMainPanel)
@@ -252,6 +253,8 @@ Sub CreateMainPanel()
         SongTimeLeft.Common.Align = alRight
         SongTimeLeft.Caption = "00:00"
 
+        ' Always hide Main Panel if it is created
+        QuizzorMainPanel.Common.Visible = False
     ' End If
 End Sub
 
@@ -279,6 +282,8 @@ Sub NewQuiz(Item)
     SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
         + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
         mtInformation, Array(mbOk)
+
+    Call StartQuiz
 End Sub
 
 Sub StartQuiz(Item)
