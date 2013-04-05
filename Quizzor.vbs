@@ -30,6 +30,7 @@ Const TIME_WIDTH = 50 ' Defines standard width of a time label
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
 
+' Keep track of important control elements
 Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentSongLength
@@ -218,21 +219,16 @@ Sub CreateMainPanel()
     QuizzorMainPanel.ShowCaption = False
 
     Set PlayBtn = UI.NewButton(QuizzorMainPanel)
-    PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
     PlayBtn.Common.ControlName = "PlayBtn"
     PlayBtn.Caption = SDB.Localize("Play")
     Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
     Set NextBtn = UI.NewButton(QuizzorMainPanel)
-    NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, _
-        BTN_WIDTH, BTN_HEIGHT
     NextBtn.Common.ControlName = "NextBtn"
     NextBtn.Caption = SDB.Localize("Next")
     Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
     Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
-    ShowInfoBtn.Common.SetRect 3*BTN_MARGIN+2*BTN_WIDTH, BTN_MARGIN, _
-        2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
     ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
     ShowInfoBtn.Caption = SDB.Localize("Show Information")
     Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
@@ -242,38 +238,65 @@ Sub CreateMainPanel()
     Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
     SongInfoHTML.Common.ControlName = "SongInfoHTML"
     SongInfoHTML.Common.Align = 0
-    SongInfoHTML.Common.SetClientRect BTN_MARGIN, 2*BTN_MARGIN + BTN_HEIGHT, _
-        QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 4*BTN_MARGIN - 2*BTN_HEIGHT
     SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
 
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
-    SongTime.Common.SetRect 2*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
-        TIME_WIDTH, BTN_HEIGHT
     SongTime.Caption = "00:00"
 
     ' TODO: Change playback time, when TrackBar changes
     Set SongTrackBar = UI.NewTrackBar(QuizzorMainPanel)
     SongTrackBar.Common.ControlName = "SongTrackBar"
-    SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
-        QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, BTN_HEIGHT
     SongTrackBar.Common.Anchors = akBottom 
     SongTrackBar.Value = 0
     SongTrackBar.Horizontal = True
 
     Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
-    SongTimeLeft.Common.SetRect BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
-        TIME_WIDTH, BTN_HEIGHT
     SongTimeLeft.Common.Align = alRight
     SongTimeLeft.Caption = "00:00"
 
+    Call ResizeMainPanel
+
     ' Always hide Main Panel if it is created
     QuizzorMainPanel.Common.Visible = False
+End Sub
+
+Sub ResizeMainPanel
+    If Not IsObject(QuizzorMainPanel) Then
+        Call CreateMainPanel
+    End If
+
+    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+    PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
+
+    Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
+    NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, _
+        BTN_WIDTH, BTN_HEIGHT
+
+    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+    ShowInfoBtn.Common.SetRect 3*BTN_MARGIN+2*BTN_WIDTH, BTN_MARGIN, _
+        2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
+
+    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
+    SongInfoHTML.Common.SetClientRect BTN_MARGIN, 2*BTN_MARGIN + BTN_HEIGHT, _
+        QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
+        QuizzorMainPanel.Common.Height - 4*BTN_MARGIN - 2*BTN_HEIGHT
+
+    Set SongTime = QuizzorMainPanel.Common.ChildControl("SongTime")
+    SongTime.Common.SetRect 2*BTN_MARGIN, _
+        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
+        TIME_WIDTH, BTN_HEIGHT
+
+    Set SongTrackBar = QuizzorMainPanel.Common.ChildControl("SongTrackBar")
+    SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
+        QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
+        QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, BTN_HEIGHT
+
+    Set SongTimeLeft = QuizzorMainPanel.Common.ChildControl("SongTimeLeft")
+    SongTimeLeft.Common.SetRect BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
+        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
+        TIME_WIDTH, BTN_HEIGHT
 End Sub
 
 Sub NewQuiz(Item)
@@ -311,6 +334,8 @@ End Sub
 
 Sub StartQuiz(Item)
     QuizzorMainPanel.Common.Visible = True
+    ' Ensure that the elements are redrawn
+    Call ResizeMainPanel
     
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
@@ -432,6 +457,7 @@ Sub OnStartup
 End Sub
 
 Sub Uninstall 
+    OptionsFile.DeleteSection "Quizzor"
     Call DetroyAllObjects
 End Sub
 
