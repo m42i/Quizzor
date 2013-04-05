@@ -137,7 +137,7 @@ Function IsQuizReady()
     IsQuizReady = IsReady
 End Function
 
-Sub DetroyAllObjects
+Sub DestroyAllObjects
     Set PlayBtn = SDB.Objects("PlayBtn")
     If Not (PlayBtn Is Nothing) Then
         PlayBtn.Common.Visible = False
@@ -416,6 +416,29 @@ Sub UpdateSongTime(Timer)
     Set SongTimer = SDB.CreateTimer(500)
 End Sub
 
+' Try to restore the last session
+Sub RestoreLastSession
+    If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
+        DoRestore = SDB.MessageBox(SDB.Localize("Do you want to restore the last quiz session?") _
+            + vbCrLf + SDB.Localize("This will replace the current Now Playing list."), _
+            mtWarning, Array(mbNo, mbYes))
+        If DoRestore = mrYes Then 
+            Call SDB.Player.PlaylistClear()
+
+            LastPlaylistID = OptionsFile.IntValue("Quizzor", "LastPlaylistID")
+            Set Quiz_Playlist = SDB.PlaylistByID(LastPlaylistID)
+        
+            ' Fill Now Playing List
+            SongIDList = OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(LastPlaylistID))
+            Set SongIter = SDB.Database.QuerySongs("ID in (" + SongIDList + ")")
+            While Not SongIter.EOF
+                SDB.Player.PlaylistAddTrack(SongIter.Item)
+                Call SongIter.Next
+            WEnd
+        End If
+    End If
+End Sub
+
 Sub OnStartup
     Set UI = SDB.UI
     
@@ -454,10 +477,11 @@ Sub OnStartup
     Call CreateMainPanel
 
     Set OptionsFile = SDB.IniFile
+    Call RestoreLastSession
 End Sub
 
 Sub Uninstall 
     OptionsFile.DeleteSection "Quizzor"
-    Call DetroyAllObjects
+    Call DestroyAllObjects
 End Sub
 
