@@ -34,6 +34,16 @@ Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentSongLength
 
+' Keep track of playlists between sessions
+' [SectionName]
+' key = description
+' 
+' [Quizzor]
+' LastPlaylistID = Playlist.ID As Long
+' NowPlayingSongs_Playlist.ID = "SongData.ID,SongData.ID,..." As String
+'
+Dim OptionsFile
+
 Function GetFormattedDate()
     Today = Date
     This_Year = Year(Today)
@@ -75,7 +85,19 @@ Sub RandomizePlaylist
     End If
 End Sub
 
-' Create a new playlist and prevent duplicates
+' Get a comma seperated string list of all IDs in a given SongList
+Function GetSongIDList(SongList)
+    If SongList.Count = 0 Then GetSongIDList = ""
+
+    Dim Result : Result = CStr(SongList.Item(0).ID)
+    For i = 1 To SongList.Count - 1
+        Result = Result + "," + CStr(SongList.Item(i).ID)
+    Next
+
+    GetSongIDList = Result
+End Function
+
+' Create a new empty quiz playlist and prevent duplicates
 Function CreateNewPlaylist()
     Dim NewBaseTitle : NewBaseTitle = SDB.Localize("Quiz of " + GetFormattedDate())
     
@@ -273,13 +295,18 @@ Sub NewQuiz(Item)
     ' Create new empty playlist, for played tracks
     Set Quiz_Playlist = CreateNewPlaylist()
 
+    ' Save new playlist data to ini file
+    OptionsFile.IntValue("Quizzor", "LastPlaylistID") = Quiz_Playlist.ID
+    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
+        GetSongIDList(SDB.Player.CurrentSongList)
+
     ' TODO: Automatically select newly created playlist 
     ' TODO: Automatically hide Now Playing List
     SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
         + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
         mtInformation, Array(mbOk)
 
-    Call StartQuiz
+    Call StartQuiz(Item)
 End Sub
 
 Sub StartQuiz(Item)
@@ -400,6 +427,8 @@ Sub OnStartup
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
 
     Call CreateMainPanel
+
+    Set OptionsFile = SDB.IniFile
 End Sub
 
 Sub Uninstall 
