@@ -14,5 +14,4 @@ Usage:
 TODO (from source):
 - Automatically select newly created playlist
 - Automatically hide Now Playing List, Player and Image and Detail Window
-- Resize ActiveX element and Trackbar with panel
 - Change playback time, when TrackBar changes

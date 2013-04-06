@@ -29,6 +29,17 @@ Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
 Const HTML_Style = "<style type='text/css'>body { overflow: auto; } </style>"
 
+Const akLeft = 1
+Const akTop = 2
+Const akRight = 4
+Const akBottom = 8
+
+Const alNone = 0
+Const alTop = 1
+Const alBottom = 2
+Const alLeft = 3
+Const alRight = 4
+Const alClient = 5
 
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
@@ -244,15 +255,16 @@ Sub CreateMainPanel()
     ShowInfoBtn.Caption = SDB.Localize("Show Information")
     Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
-    ' TODO: Resize Web form and Trackbar with Panel
     Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
     SongInfoHTML.Common.ControlName = "SongInfoHTML"
     SongInfoHTML.Common.Align = 0
     SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
+    SongInfoHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
 
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
     SongTime.Caption = "00:00"
+    SongTime.Common.Anchors = akLeft + akBottom
 
     ' TODO: Change playback time, when TrackBar changes
     Set SongTrackBar = UI.NewTrackBar(QuizzorMainPanel)
@@ -260,10 +272,11 @@ Sub CreateMainPanel()
     SongTrackBar.Common.Anchors = akBottom 
     SongTrackBar.Value = 0
     SongTrackBar.Horizontal = True
+    SongTrackBar.Common.Anchors = akLeft + akBottom + akRight
 
     Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
-    SongTimeLeft.Common.Align = alRight
+    SongTimeLeft.Common.Anchors = akBottom + akRight
     SongTimeLeft.Caption = "00:00"
 
     Call ResizeMainPanel
@@ -291,7 +304,7 @@ Sub ResizeMainPanel
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     SongInfoHTML.Common.SetClientRect BTN_MARGIN, 2*BTN_MARGIN + BTN_HEIGHT, _
         QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 4*BTN_MARGIN - 2*BTN_HEIGHT
+        QuizzorMainPanel.Common.Height - 5*BTN_MARGIN - 2*BTN_HEIGHT
 
     Set SongTime = QuizzorMainPanel.Common.ChildControl("SongTime")
     SongTime.Common.SetRect 2*BTN_MARGIN, _
