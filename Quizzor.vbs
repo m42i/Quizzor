@@ -309,6 +309,13 @@ Sub ResizeMainPanel
         TIME_WIDTH, BTN_HEIGHT
 End Sub
 
+' Open the playlists node
+Sub SelectPlaylist(Playlist)
+    Set Root = SDB.MainTree
+    Set ParentPlaylistNode = Root.Node_Playlists
+    ParentPlaylistNode.Expanded = True
+End Sub
+
 Sub NewQuiz(Item)
     ' Ask if a new quiz should really be started
     createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
@@ -327,6 +334,7 @@ Sub NewQuiz(Item)
 
     ' Create new empty playlist, for played tracks
     Set Quiz_Playlist = CreateNewPlaylist()
+    Call SelectPlaylist(Quiz_Playlist)
 
     ' Save new playlist data to ini file
     OptionsFile.IntValue("Quizzor", "LastPlaylistID") = Quiz_Playlist.ID
