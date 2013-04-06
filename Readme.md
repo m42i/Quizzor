@@ -12,7 +12,6 @@ Usage:
 - \<Next\> will move the current song into the quiz playlist, clear the informatin and play the next song
 
 TODO (from source):
-- Hide vertical scrollbar of ActiveX and/or only show when needed
 - Automatically select newly created playlist
 - Automatically hide Now Playing List, Player and Image and Detail Window
 - Resize ActiveX element and Trackbar with panel

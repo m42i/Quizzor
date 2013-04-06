@@ -27,6 +27,9 @@ Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
+Const HTML_Style = "<style type='text/css'>body { overflow: auto; } </style>"
+
+
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
 
@@ -176,8 +179,16 @@ Sub DestroyAllObjects
     Script.UnRegisterEvents SDB
 End Sub
 
-Function getSongInfoHTML(SongData)
-    getSongInfoHTML = "<html><body>" & vbCrLf & _
+' Clears SongInfoHTML end ensures the style is preserved
+Sub ClearSongInfoHTML
+    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
+    Set HTMLDocument = SongInfoHTML.Interf.Document
+    HTMLDocument.Write "<html>" & vbCrLf & HTML_Style & vbCrLf & "<body>&nbsp;</body></html>"
+    HTMLDocument.Close
+End Sub
+
+Function GetSongInfoHTML(SongData)
+    GetSongInfoHTML = "<html>" & vbCrLf & HTML_Style & vbCrLf & _
         "<table border='1' cellspacing='0' cellpaddin='2' rules='rows'" & _
         " frame='void' width='100%' height='100%'>" & vbCrLf & _
         "<colgroup>" & vbCrLf & _
@@ -233,7 +244,6 @@ Sub CreateMainPanel()
     ShowInfoBtn.Caption = SDB.Localize("Show Information")
     Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
-    ' TODO: Hide vertical scrollbar and/or only show when needed
     ' TODO: Resize Web form and Trackbar with Panel
     Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
     SongInfoHTML.Common.ControlName = "SongInfoHTML"
@@ -378,10 +388,7 @@ End Sub
 Sub PlayNext
     If Not IsQuizReady() Then Exit Sub
 
-    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
-    Set HTMLDocument = SongInfoHTML.Interf.Document
-    HTMLDocument.Write ""
-    HTMLDocument.Close
+    Call ClearSongInfoHTML
 
     If SDB.Player.CurrentPlaylist.Count = 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
@@ -402,7 +409,7 @@ Sub ShowSongInfo
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
-    HTMLDocument.Write getSongInfoHTML(CurrentSong)
+    HTMLDocument.Write GetSongInfoHTML(CurrentSong)
     HTMLDocument.Close
 End Sub
 
@@ -478,6 +485,8 @@ Sub OnStartup
 
     Set OptionsFile = SDB.IniFile
     Call RestoreLastSession
+
+    Call ClearSongInfoHTML
 End Sub
 
 Sub Uninstall 
