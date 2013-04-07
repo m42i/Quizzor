@@ -245,6 +245,11 @@ Sub CreateMainPanel()
     PlayBtn.Caption = SDB.Localize("Play")
     Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
+    Set PauseBtn = UI.NewButton(QuizzorMainPanel)
+    PauseBtn.Common.ControlName = "PauseBtn"
+    PauseBtn.Caption = SDB.Localize("Pause")
+    Script.RegisterEvent PauseBtn, "OnClick", "PausePlayback"
+
     Set NextBtn = UI.NewButton(QuizzorMainPanel)
     NextBtn.Common.ControlName = "NextBtn"
     NextBtn.Caption = SDB.Localize("Next")
@@ -296,12 +301,16 @@ Sub ResizeMainPanel
     Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
     PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
 
+    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
+    PauseBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
+        BTN_WIDTH, BTN_HEIGHT
+
     Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
-    NextBtn.Common.SetRect 2*BTN_MARGIN + PlayBtn.Common.Width,BTN_MARGIN, _
+    NextBtn.Common.SetRect 3*BTN_MARGIN + 2*BTN_WIDTH, BTN_MARGIN, _
         BTN_WIDTH, BTN_HEIGHT
 
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-    ShowInfoBtn.Common.SetRect 3*BTN_MARGIN+2*BTN_WIDTH, BTN_MARGIN, _
+    ShowInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
@@ -418,6 +427,13 @@ End Sub
 
 Sub StartPlaying
     If Not IsQuizReady() Then Exit Sub
+    
+    ' If the player is paused, just continue playing.
+    If SDB.Player.isPaused Then
+        Call SDB.Player.Pause
+        Exit Sub
+    End If
+
     SDB.Player.CurrentSongIndex = 0
 
     CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
@@ -428,12 +444,19 @@ Sub StartPlaying
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
     
-    Set SongTimer = SDB.CreateTimer(1000)
+    Set SongTimer = SDB.CreateTimer(100)
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     ' Disable playing next title
+    ' Always play from the beginning
+    SDB.Player.PlaybackTime = 0
     SDB.Player.Play
     SDB.Player.StopAfterCurrent = True
+End Sub
+
+' Pause and unpause playback
+Sub PausePlayback
+    Call SDB.Player.Pause
 End Sub
 
 Sub PlayNext
@@ -470,8 +493,8 @@ Sub UpdateSongTime(Timer)
     SongTime.Caption = GetFormattedTime(PlaybackTime)
     SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
 
-    ' Update again in one second
-    Set SongTimer = SDB.CreateTimer(500)
+    ' Update again in 100 ms
+    Set SongTimer = SDB.CreateTimer(100)
 End Sub
 
 ' Restores the last session
