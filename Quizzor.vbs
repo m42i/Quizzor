@@ -270,6 +270,7 @@ Sub CreateMainPanel()
     SongTime.Common.ControlName = "SongTime"
     SongTime.Common.Anchors = akLeft + akBottom
     SongTime.Alignment = 2 ' Center
+    SongTime.Autosize = False
     SongTime.Caption = "00:00"
 
     ' TODO: Change playback time, when TrackBar changes
@@ -285,6 +286,7 @@ Sub CreateMainPanel()
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
     SongTimeLeft.Common.Anchors = akBottom + akRight
     SongTimeLeft.Alignment = 2 ' Center
+    SongTimeLeft.Autosize = False
     SongTimeLeft.Caption = "00:00"
 
     Call ResizeMainPanel
