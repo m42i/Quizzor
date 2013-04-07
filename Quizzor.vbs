@@ -348,8 +348,6 @@ End Sub
 ' If not, a new quiz is created.
 ' Cancelling the dialog will change nothing.
 Sub NewQuiz(Item)
-    Set OptionsFile = SDB.IniFile
-    
     Dim NewQuizDialogAnswer
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
         NewQuizDialogAnswer = SDB.MessageBox( _
@@ -558,6 +556,8 @@ Sub OnStartup
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
 
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
+    
+    Set OptionsFile = SDB.IniFile
 
     Call CreateMainPanel
 
