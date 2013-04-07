@@ -519,9 +519,16 @@ Sub OnStartup
     Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
 
+    Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
+
     Call CreateMainPanel
 
     Call ClearSongInfoHTML
+End Sub
+
+' Hide the main player panel
+Sub OnShutdownHandler
+    QuizzorMainPanel.Common.Visible = False 
 End Sub
 
 Sub Uninstall 
