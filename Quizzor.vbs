@@ -476,6 +476,9 @@ Sub PlayNext
     Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
     SDB.Player.PlaylistDelete 0
 
+    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
+        GetSongIDList(SDB.Player.CurrentSongList)
+
     Call StartPlaying
 End Sub
 
@@ -563,6 +566,7 @@ End Sub
 
 ' Hide the main player panel
 Sub OnShutdownHandler
+    OptionsFile.Flush
     QuizzorMainPanel.Common.Visible = False 
 End Sub
 
