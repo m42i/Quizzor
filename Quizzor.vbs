@@ -142,9 +142,16 @@ End Sub
 
 ' Check whether a quiz can be started and show a message box if not
 Function IsQuizReady()
-    Dim IsReady 
-    IsReady = IsObject(Quiz_Playlist)
-    If Not IsReady Then
+    Dim IsReady : IsReady = True
+    
+    If SDB.AllVisibleSongList.Count = 0 Then
+        IsReady = False
+
+        SDB.MessageBox SDB.Localize("No songs visible. Please fill the main window first."),_
+        mtInformation, Array(mbOk)
+    ElseIf IsObject(Quiz_Playlist) Then
+        IsReady = False
+
         SDB.MessageBox SDB.Localize("Please create a new quiz first."), mtInformation, Array(mbOk)
     End If
 
@@ -343,46 +350,92 @@ Sub SelectPlaylist(Playlist)
     ParentPlaylistNode.Expanded = True
 End Sub
 
+' Check whether the saved playlists already exist and delete if not
+' This should be called whenever a playlist value is read
+Sub UpdateOptionsFile
+    If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
+        Set Playlist = SDB.PlaylistByID(OptionsFile.IntValue("Quizzor", "LastPlaylistID")) 
+        ' If no playlist exists, root (ID=0) is returned
+        DebugOutput "Delete Playlist.ID = " + CStr(Playlist.ID)
+        If Playlist.ID = 0 Then
+            OptionsFile.DeleteKey "Quizzor", "LastPlaylistID"
+        End If
+    End If
+    
+    ' go through all saved playlists and check if they exist
+    Set KeyList = OptionsFile.Keys("Quizzor")
+    For i = 0 To KeyList.Count - 1
+        KeyValue = KeyList.Item(i)
+        ' Keys method returns each string as "key=value"
+        Key = Left(KeyValue, InStr(KeyValue, "=") - 1)
+        Value = Right(KeyValue, InStr(KeyValue, "=") + 1)
+        DebugOutput Value
+        IDPosition = InStrRev(Key, "_")
+        If IDPosition > 0 Then
+            ID = Mid(Key, IDPosition + 1)
+            If SDB.PlaylistByID(ID).ID = 0 Then
+                OptionsFile.DeleteKey "Quizzor", Key 
+            End If
+        End If
+    Next
+
+    OptionsFile.Flush
+End Sub
+
 ' Creates a new quiz. 
 ' If a last session exists, the user is asked to use that.
 ' If not, a new quiz is created.
 ' Cancelling the dialog will change nothing.
 Sub NewQuiz(Item)
+    Call UpdateOptionsFile
+    
     Dim NewQuizDialogAnswer
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
         NewQuizDialogAnswer = SDB.MessageBox( _
             SDB.Localize("Do you want to restore the last quiz session?") + vbCrLf + _
             SDB.Localize("Clicking No will create a new quiz. Click cancel to do nothing."), _ 
             mtWarning, Array(mbCancel, mbNo, mbYes))
+
+        If NewQuizDialogAnswer = mrCancel Then
+            Exit Sub
+        ElseIf NewQuizDialogAnswer = mrYes Then
+            Call RestoreLastSession
+        ElseIf NewQuizDialogAnswer = mrNo Then
+            Call CreateNewQuiz
+        End If
     Else
         NewQuizDialogAnswer = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
-            + vbCrLf + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
-            + SDB.Localize("Do you want to create a new quiz and lose the old quiz?"), _
-            mtWarning, Array(mbCancel, mbNo, mbYes))
+            + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
+            + SDB.Localize("Do you want to create a new quiz and lose the current queue?"), _
+            mtWarning, Array(mbNo, mbYes))
+
+        If NewQuizDialogAnswer = mrYes Then
+            Call CreateNewQuiz
+        ElseIf NewQuizDialogAnswer = mrNo Then
+            Exit Sub
+        End If
     End If
 
-    If NewQuizDialogAnswer = mrCancel Then
-        Exit Sub
-    ElseIf NewQuizDialogAnswer = mrYes Then
-        Call RestoreLastSession
-    ElseIf NewQuizDialogAnswer = mrNo Then
-        Call CreateNewQuiz
+    ' Check whether a quiz playlist was created
+    If IsObject(Quiz_Playlist) Then
+        SDB.Objects("StartQuizBtn").Enabled = True
+        SDB.Objects("StopQuizBtn").Enabled = True
+
+        ' TODO: Automatically select newly created playlist 
+        ' TODO: Automatically hide Now Playing List
+        SDB.MessageBox SDB.Localize("Your new quiz playlist is ") + _
+            Quiz_Playlist.Title + "." + vbCrLf _
+            + SDB.Localize("Select it to see already played tracks."), _
+            mtInformation, Array(mbOk)
+
+        Call StartQuiz(Item)
     End If
-
-    SDB.Objects("StartQuizBtn").Enabled = True
-    SDB.Objects("StopQuizBtn").Enabled = True
-
-    ' TODO: Automatically select newly created playlist 
-    ' TODO: Automatically hide Now Playing List
-    SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
-        + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
-        mtInformation, Array(mbOk)
-
-    Call StartQuiz(Item)
 End Sub
 
 ' Creates a new quiz without asking
 Sub CreateNewQuiz
+    If Not IsQuizReady Then Exit Sub
+
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
     SDB.Player.PlaylistAddTracks SDB.AllVisibleSongList
