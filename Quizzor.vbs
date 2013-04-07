@@ -263,6 +263,7 @@ Sub CreateMainPanel()
 
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
+    SongTime.Alignment = 2 ' Center
     SongTime.Caption = "00:00"
     SongTime.Common.Anchors = akLeft + akBottom
 
@@ -277,6 +278,7 @@ Sub CreateMainPanel()
     Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
     SongTimeLeft.Common.Anchors = akBottom + akRight
+    SongTimeLeft.Alignment = 2 ' Center
     SongTimeLeft.Caption = "00:00"
 
     Call ResizeMainPanel
@@ -329,17 +331,45 @@ Sub SelectPlaylist(Playlist)
     ParentPlaylistNode.Expanded = True
 End Sub
 
+' Creates a new quiz. 
+' If a last session exists, the user is asked to use that.
+' If not, a new quiz is created.
+' Cancelling the dialog will change nothing.
 Sub NewQuiz(Item)
-    ' Ask if a new quiz should really be started
-    createNew = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
-        + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
-        + SDB.Localize("Do you want to create a new quiz and lose the old quiz?"), _
-        mtWarning, Array(mbNo, mbYes))
+    Set OptionsFile = SDB.IniFile
     
-    If createNew = mrNo then 
-       Exit Sub 
+    Dim NewQuizDialogAnswer
+    If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
+        NewQuizDialogAnswer = SDB.MessageBox( _
+            SDB.Localize("Do you want to restore the last quiz session?") + vbCrLf + _
+            SDB.Localize("Clicking No will create a new quiz. Click cancel to do nothing."), _ 
+            mtWarning, Array(mbCancel, mbNo, mbYes))
+    Else
+        NewQuizDialogAnswer = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
+            + vbCrLf + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
+            + SDB.Localize("Do you want to create a new quiz and lose the old quiz?"), _
+            mtWarning, Array(mbCancel, mbNo, mbYes))
     End If
 
+    If NewQuizDialogAnswer = mrCancel Then
+        Exit Sub
+    ElseIf NewQuizDialogAnswer = mrYes Then
+        Call RestoreLastSession
+    ElseIf NewQuizDialogAnswer = mrNo Then
+        Call CreateNewQuiz
+    End If
+
+    ' TODO: Automatically select newly created playlist 
+    ' TODO: Automatically hide Now Playing List
+    SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
+        + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
+        mtInformation, Array(mbOk)
+
+    Call StartQuiz(Item)
+End Sub
+
+' Creates a new quiz without asking
+Sub CreateNewQuiz
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
     SDB.Player.PlaylistAddTracks SDB.AllVisibleSongList
@@ -353,14 +383,6 @@ Sub NewQuiz(Item)
     OptionsFile.IntValue("Quizzor", "LastPlaylistID") = Quiz_Playlist.ID
     OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
         GetSongIDList(SDB.Player.CurrentSongList)
-
-    ' TODO: Automatically select newly created playlist 
-    ' TODO: Automatically hide Now Playing List
-    SDB.MessageBox SDB.Localize("Please select the newly created playlist.") _
-        + vbCrLf + SDB.Localize("Please hide the Now Playing playlist"), _
-        mtInformation, Array(mbOk)
-
-    Call StartQuiz(Item)
 End Sub
 
 Sub StartQuiz(Item)
@@ -444,27 +466,22 @@ Sub UpdateSongTime(Timer)
     Set SongTimer = SDB.CreateTimer(500)
 End Sub
 
-' Try to restore the last session
+' Restores the last session
+' Doesn't check if one exists and will not ask for permission
 Sub RestoreLastSession
-    If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
-        DoRestore = SDB.MessageBox(SDB.Localize("Do you want to restore the last quiz session?") _
-            + vbCrLf + SDB.Localize("This will replace the current Now Playing list."), _
-            mtWarning, Array(mbNo, mbYes))
-        If DoRestore = mrYes Then 
-            Call SDB.Player.PlaylistClear()
+    Call SDB.Player.PlaylistClear()
 
-            LastPlaylistID = OptionsFile.IntValue("Quizzor", "LastPlaylistID")
-            Set Quiz_Playlist = SDB.PlaylistByID(LastPlaylistID)
-        
-            ' Fill Now Playing List
-            SongIDList = OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(LastPlaylistID))
-            Set SongIter = SDB.Database.QuerySongs("ID in (" + SongIDList + ")")
-            While Not SongIter.EOF
-                SDB.Player.PlaylistAddTrack(SongIter.Item)
-                Call SongIter.Next
-            WEnd
-        End If
-    End If
+    LastPlaylistID = OptionsFile.IntValue("Quizzor", "LastPlaylistID")
+    Set Quiz_Playlist = SDB.PlaylistByID(LastPlaylistID)
+
+    ' Fill Now Playing List
+    ' TODO: Restore playlist order
+    SongIDList = OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(LastPlaylistID))
+    Set SongIter = SDB.Database.QuerySongs("ID in (" + SongIDList + ")")
+    While Not SongIter.EOF
+        SDB.Player.PlaylistAddTrack(SongIter.Item)
+        Call SongIter.Next
+    WEnd
 End Sub
 
 Sub OnStartup
@@ -503,9 +520,6 @@ Sub OnStartup
     Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
 
     Call CreateMainPanel
-
-    Set OptionsFile = SDB.IniFile
-    Call RestoreLastSession
 
     Call ClearSongInfoHTML
 End Sub
