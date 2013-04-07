@@ -411,6 +411,7 @@ End Sub
 
 Sub StartPlaying
     If Not IsQuizReady() Then Exit Sub
+    SDB.Player.CurrentSongIndex = 0
 
     CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
     SongTrackBar.MinValue = 0
@@ -433,14 +434,14 @@ Sub PlayNext
 
     Call ClearSongInfoHTML
 
-    If SDB.Player.CurrentPlaylist.Count = 0 Then
+    If SDB.Player.CurrentPlaylist.Count <= 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
             mtInformation, Array(mbOk)
         Call StopQuiz(Nothing)
         Exit Sub
     End If
 
-    Quiz_Playlist.addTrack SDB.Player.CurrentSong
+    Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
     SDB.Player.PlaylistDelete 0
 
     Call StartPlaying
