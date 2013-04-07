@@ -356,7 +356,6 @@ Sub UpdateOptionsFile
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
         Set Playlist = SDB.PlaylistByID(OptionsFile.IntValue("Quizzor", "LastPlaylistID")) 
         ' If no playlist exists, root (ID=0) is returned
-        DebugOutput "Delete Playlist.ID = " + CStr(Playlist.ID)
         If Playlist.ID = 0 Then
             OptionsFile.DeleteKey "Quizzor", "LastPlaylistID"
         End If
@@ -368,8 +367,6 @@ Sub UpdateOptionsFile
         KeyValue = KeyList.Item(i)
         ' Keys method returns each string as "key=value"
         Key = Left(KeyValue, InStr(KeyValue, "=") - 1)
-        Value = Right(KeyValue, InStr(KeyValue, "=") + 1)
-        DebugOutput Value
         IDPosition = InStrRev(Key, "_")
         If IDPosition > 0 Then
             ID = Mid(Key, IDPosition + 1)
