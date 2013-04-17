@@ -121,7 +121,7 @@ Function CreateNewPlaylist()
 
     Dim i : i = 1
     Dim NewTitle : NewTitle = NewBaseTitle
-    While Not Playlist_Root.Title = ""
+    While Not Playlist_Root.Title = "" ' Checking for root
         NewTitle = NewBaseTitle + " (" + CStr(i) + ")"
         Set Playlist_Root = SDB.PlaylistByTitle(NewTitle)
         i = i + 1
@@ -140,22 +140,31 @@ Sub Shuffle(n)
     Next
 End Sub
 
-' Check whether a quiz can be started and show a message box if not
-Function IsQuizReady()
-    Dim IsReady : IsReady = True
-    
-    If SDB.AllVisibleSongList.Count = 0 Then
-        IsReady = False
+' Check whether a quiz exists, and displays a message if not
+Function QuizExists()
+    Dim QExists : QExists = True
 
-        SDB.MessageBox SDB.Localize("No songs visible. Please fill the main window first."),_
-        mtInformation, Array(mbOk)
-    ElseIf IsObject(Quiz_Playlist) Then
-        IsReady = False
+    If (Not IsObject(Quiz_Playlist)) Or (Quiz_Playlist Is Nothing) Then
+        QExists = False
 
         SDB.MessageBox SDB.Localize("Please create a new quiz first."), mtInformation, Array(mbOk)
     End If
+    
+    QuizExists = QExists
+End Function
+    
+' Check whether songs are visible, and display message if not
+Function SongsVisible()
+    Dim SVisible : SVisible = True
 
-    IsQuizReady = IsReady
+    If SDB.AllVisibleSongList.Count = 0 Then
+        SVisible = False
+
+        SDB.MessageBox SDB.Localize("No songs visible. Please fill the main window first."),_
+        mtInformation, Array(mbOk)
+    End If
+
+    SongsVisible = SVisible
 End Function
 
 Sub DestroyAllObjects
@@ -353,6 +362,7 @@ End Sub
 ' Check whether the saved playlists already exist and delete if not
 ' This should be called whenever a playlist value is read
 Sub UpdateOptionsFile
+    ' Check if the last QuizPlaylist still exists and delete the key if not
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
         Set Playlist = SDB.PlaylistByID(OptionsFile.IntValue("Quizzor", "LastPlaylistID")) 
         ' If no playlist exists, root (ID=0) is returned
@@ -361,7 +371,8 @@ Sub UpdateOptionsFile
         End If
     End If
     
-    ' go through all saved playlists and check if they exist
+    ' Go through all saved playlists and check if they exist
+    ' A playlist is saved with the key "Playlist_<Playlist.ID>"
     Set KeyList = OptionsFile.Keys("Quizzor")
     For i = 0 To KeyList.Count - 1
         KeyValue = KeyList.Item(i)
@@ -412,9 +423,9 @@ Sub NewQuiz(Item)
             Exit Sub
         End If
     End If
-
+    
     ' Check whether a quiz playlist was created
-    If IsObject(Quiz_Playlist) Then
+    If IsObject(Quiz_Playlist) And Not (Quiz_Playlist Is Nothing)Then
         SDB.Objects("StartQuizBtn").Enabled = True
         SDB.Objects("StopQuizBtn").Enabled = True
 
@@ -429,9 +440,12 @@ Sub NewQuiz(Item)
     End If
 End Sub
 
-' Creates a new quiz without asking
+' Creates a new quiz, resetting the current without asking
 Sub CreateNewQuiz
-    If Not IsQuizReady Then Exit Sub
+    ' The user decided to create a new playlist, so we clear the current
+    Call StopQuiz(Item)
+
+    If Not SongsVisible() Then Exit Sub
 
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
@@ -473,10 +487,12 @@ Sub StopQuiz(Item)
     
     SDB.Objects("StartQuizBtn").Enabled = False
     SDB.Objects("StopQuizBtn").Enabled = False
+
+    If IsObject(Quiz_Playlist) Then Set Quiz_Playlist = Nothing
 End Sub
 
 Sub StartPlaying
-    If Not IsQuizReady() Then Exit Sub
+    If Not QuizExists() Then Exit Sub 
     
     ' If the player is paused, just continue playing.
     If SDB.Player.isPaused Then
@@ -510,7 +526,7 @@ Sub PausePlayback
 End Sub
 
 Sub PlayNext
-    If Not IsQuizReady() Then Exit Sub
+    If Not QuizExists() Then Exit Sub
 
     Call ClearSongInfoHTML
 
