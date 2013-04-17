@@ -192,6 +192,12 @@ Sub DestroyAllObjects
         ShowInfoBtn = Nothing
     End If
 
+    Set HideInfoBtn = SDB.Objects("HideInfoBtn")
+    If Not (HideInfoBtn Is Nothing) Then
+        HideInfoBtn.Common.Visible = False
+        HideInfoBtn = Nothing
+    End If
+
     Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
     If IsObject(QuizzorMainPanel) And Not (QuizzorMainPanel Is Nothing) Then
         QuizzorMainPanel.Common.Visible = False
@@ -276,6 +282,12 @@ Sub CreateMainPanel()
     ShowInfoBtn.Caption = SDB.Localize("Show Information")
     Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
+    Set HideInfoBtn = UI.NewButton(QuizzorMainPanel)
+    HideInfoBtn.Common.ControlName = "HideInfoBtn"
+    HideInfoBtn.Common.Visible = False
+    HideInfoBtn.Caption = SDB.Localize("Hide Information")
+    Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
+
     Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
     SongInfoHTML.Common.ControlName = "SongInfoHTML"
     SongInfoHTML.Common.Align = 0
@@ -329,6 +341,10 @@ Sub ResizeMainPanel
 
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
     ShowInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
+        2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
+
+    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
+    HideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
@@ -424,8 +440,7 @@ Sub NewQuiz(Item)
         End If
     End If
     
-    ' Check whether a quiz playlist was created
-    If IsObject(Quiz_Playlist) And Not (Quiz_Playlist Is Nothing)Then
+    If IsObject(Quiz_Playlist) Then
         SDB.Objects("StartQuizBtn").Enabled = True
         SDB.Objects("StopQuizBtn").Enabled = True
 
@@ -528,7 +543,7 @@ End Sub
 Sub PlayNext
     If Not QuizExists() Then Exit Sub
 
-    Call ClearSongInfoHTML
+    Call HideSongInfo
 
     If SDB.Player.CurrentPlaylist.Count <= 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
@@ -546,9 +561,23 @@ Sub PlayNext
     Call StartPlaying
 End Sub
 
+Sub HideSongInfo
+    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+    ShowInfoBtn.Common.Visible = True
+    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
+    HideInfoBtn.Common.Visible = False
+    
+    Call ClearSongInfoHTML
+End Sub
+
 Sub ShowSongInfo
     Set CurrentSong = SDB.Player.CurrentSong
     If Not IsObject(CurrentSong) Then Exit Sub
+    
+    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
+    ShowInfoBtn.Common.Visible = False
+    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
+    HideInfoBtn.Common.Visible = True
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
