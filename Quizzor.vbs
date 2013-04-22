@@ -29,17 +29,25 @@ Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: 200%; font-family: Verdana, sans-serif; } </style>" 
 
+' Anchor constants, add them for multiple anchors
 Const akLeft = 1
 Const akTop = 2
 Const akRight = 4
 Const akBottom = 8
+Const akAll = 15 ' Sum of all above
 
+' Element alignment on panels/forms
 Const alNone = 0
 Const alTop = 1
 Const alBottom = 2
 Const alLeft = 3
 Const alRight = 4
 Const alClient = 5
+
+' Text alignment
+Const txtAlLeft = 0
+Const txtAlRight = 1
+Const txtAlCenter = 2
 
 ' Keep track of current quiz playlist
 Dim Quiz_Playlist
@@ -58,6 +66,45 @@ Dim CurrentSongLength
 ' NowPlayingSongs_Playlist.ID = "SongData.ID,SongData.ID,..." As String
 '
 Dim OptionsFile
+
+' Creates a modal message box window, with the "Text".
+' Buttons is an Array of Strings, arranged from right to left, aligned right
+' Return value is the String position in the array Buttons()
+' If a button is not pressed (e.g. window closed), the return value will negative 
+' and by 100 smaller than the default modal result
+Function FreeFormMessageBox(Text, Buttons())
+    ' Construct form
+    Set MsgWindow = SDB.UI.NewForm
+    MsgWindow.Common.ClientWidth = 300
+    MsgWindow.Common.ClientHeight = 150
+    MsgWindow.BorderStyle = 3 ' non-resizable dialog
+    MsgWindow.FormPosition = 4 ' screen center
+
+    Set MsgText = SDB.UI.NewLabel(MsgWindow)
+    MsgText.Common.Width = MsgWindow.Common.Width
+    MsgText.Alignment = 0 ' Left
+    MsgText.Caption = Text
+    MsgText.Common.SetClientRect BTN_HEIGHT + 2*BTN_MARGIN, BTN_HEIGHT, _
+      MsgWindow.Common.ClientWidth - 2*BTN_Margin, _
+      MsgWindow.Common.ClientHeight - BTN_HEIGHT - 2*BTN_MARGIN
+    MsgText.Multiline = True
+
+    ' create buttons, set ModalResult
+    For i = 0 To UBound(Buttons)
+        Set Button = SDB.UI.NewButton(MsgWindow)
+        Button.Common.SetClientRect _
+            MsgWindow.Common.ClientWidth - BTN_WIDTH*(i+1) - BTN_MARGIN*(i+1), _
+            MsgWindow.Common.ClientHeight - BTN_HEIGHT - BTN_MARGIN, _
+            BTN_WIDTH, BTN_HEIGHT
+        Button.Caption = Buttons(i)
+
+        ' We need to add 100, otherwise it would interfer with system defaults
+        Button.ModalResult = 100 + i
+    Next
+
+    ' Return button's modal result
+    FreeFormMessageBox = MsgWindow.ShowModal - 100
+End Function
 
 Function GetFormattedDate()
     Today = Date
