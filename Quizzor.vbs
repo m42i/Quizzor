@@ -15,7 +15,7 @@
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ' Monkey Media Quizzor plugin
-' Features:
+' "Big" Features:
 ' O Only show track info if space bar is pressed
 ' X Stop after current track
 ' O Play track again if length < 60s
@@ -27,7 +27,7 @@ Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
-Const HTML_Style = "<style type='text/css'>body { overflow: auto; } </style>"
+Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: 200%; font-family: Verdana, sans-serif; } </style>" 
 
 Const akLeft = 1
 Const akTop = 2
@@ -229,24 +229,24 @@ Function GetSongInfoHTML(SongData)
             "<col width='80%'>" & vbCrLf & _
         "</colgroup>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td align='right'>" & SDB.Localize("Album") & "</td>" & vbCrLf & _
-            "<td>&nbsp;" & SongData.AlbumName & "</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Album") & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.AlbumName & "&nbsp;</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td align='right'>" & SDB.Localize("Title") & "</td>" & vbCrLf & _
-            "<td>&nbsp;" & SongData.Title & "</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Title") & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Title & "&nbsp;</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td align='right'>" & SDB.Localize("Artist") & "</td>" & vbCrLf & _
-            "<td>&nbsp;" & SongData.ArtistName & "</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Artist") & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.ArtistName & "&nbsp;</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td align='right'>" & SDB.Localize("Comment") & "</td>" & vbCrLf & _
-            "<td>&nbsp;" & SongData.Comment & "</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Comment") & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Comment & "&nbsp;</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td align='right'>" & SDB.Localize("File") & "</td>" & vbCrLf & _
-            "<td>&nbsp;" & SongData.Path & "</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("File") & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Path & "&nbsp;</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "</body></html>"
 End Function
