@@ -229,24 +229,24 @@ Function GetSongInfoHTML(SongData)
             "<col width='80%'>" & vbCrLf & _
         "</colgroup>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td valign='top' align='left'>" & SDB.Localize("Album") & "&nbsp;</td>" & vbCrLf & _
-            "<td valign='top'>" & SongData.AlbumName & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Album") & "</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.AlbumName & "</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td valign='top' align='left'>" & SDB.Localize("Title") & "&nbsp;</td>" & vbCrLf & _
-            "<td valign='top'>" & SongData.Title & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Title") & "</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Title & "</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td valign='top' align='left'>" & SDB.Localize("Artist") & "&nbsp;</td>" & vbCrLf & _
-            "<td valign='top'>" & SongData.ArtistName & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Artist") & "</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.ArtistName & "</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td valign='top' align='left'>" & SDB.Localize("Comment") & "&nbsp;</td>" & vbCrLf & _
-            "<td valign='top'>" & SongData.Comment & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("Comment") & "</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Comment & "</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "<tr>" & vbCrLf & _
-            "<td valign='top' align='left'>" & SDB.Localize("File") & "&nbsp;</td>" & vbCrLf & _
-            "<td valign='top'>" & SongData.Path & "&nbsp;</td>" & vbCrLf & _
+            "<td valign='top' align='left'>" & SDB.Localize("File") & "</td>" & vbCrLf & _
+            "<td valign='top'>" & SongData.Path & "</td>" & vbCrLf & _
         "</tr>" & vbCrLf & _
         "</body></html>"
 End Function
@@ -372,7 +372,17 @@ End Sub
 Sub SelectPlaylist(Playlist)
     Set Root = SDB.MainTree
     Set ParentPlaylistNode = Root.Node_Playlists
-    ParentPlaylistNode.Expanded = True
+    
+    ' Iterate through all nodes until Playlist is found
+    Set PlaylistNode = Root.FirstChildNode(ParentPlaylistNode)
+    While Not (PlaylistNode Is Nothing) 
+        If PlaylistNode.RelatedObjectID = Playlist.ID Then
+            Set Root.CurrentNode = PlaylistNode
+            PlaylistNode.Expanded = True
+            Exit Sub
+        End If
+        Set PlaylistNode = Root.NextSiblingNode(PlaylistNode)
+    WEnd
 End Sub
 
 ' Check whether the saved playlists already exist and delete if not
@@ -444,12 +454,7 @@ Sub NewQuiz(Item)
         SDB.Objects("StartQuizBtn").Enabled = True
         SDB.Objects("StopQuizBtn").Enabled = True
 
-        ' TODO: Automatically select newly created playlist 
         ' TODO: Automatically hide Now Playing List
-        SDB.MessageBox SDB.Localize("Your new quiz playlist is ") + _
-            Quiz_Playlist.Title + "." + vbCrLf _
-            + SDB.Localize("Select it to see already played tracks."), _
-            mtInformation, Array(mbOk)
 
         Call StartQuiz(Item)
     End If
@@ -504,6 +509,7 @@ Sub StopQuiz(Item)
     SDB.Objects("StopQuizBtn").Enabled = False
 
     If IsObject(Quiz_Playlist) Then Set Quiz_Playlist = Nothing
+    SDB.ProcessMessages ' Ensure, that changes to Quiz_Playlist are applied
 End Sub
 
 Sub StartPlaying
@@ -611,6 +617,8 @@ Sub RestoreLastSession
         SDB.Player.PlaylistAddTrack(SongIter.Item)
         Call SongIter.Next
     WEnd
+
+    Call SelectPlaylist(Quiz_Playlist)
 End Sub
 
 Sub OnStartup
