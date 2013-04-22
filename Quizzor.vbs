@@ -69,6 +69,7 @@ Dim OptionsFile
 
 ' Creates a modal message box window, with the "Text".
 ' Buttons is an Array of Strings, arranged from right to left, aligned right
+' Empty strings will not create buttons, usefule to specify the return value
 ' Return value is the String position in the array Buttons()
 ' If a button is not pressed (e.g. window closed), the return value will negative 
 ' and by 100 smaller than the default modal result
@@ -91,15 +92,17 @@ Function FreeFormMessageBox(Text, Buttons())
 
     ' create buttons, set ModalResult
     For i = 0 To UBound(Buttons)
-        Set Button = SDB.UI.NewButton(MsgWindow)
-        Button.Common.SetClientRect _
-            MsgWindow.Common.ClientWidth - BTN_WIDTH*(i+1) - BTN_MARGIN*(i+1), _
-            MsgWindow.Common.ClientHeight - BTN_HEIGHT - BTN_MARGIN, _
-            BTN_WIDTH, BTN_HEIGHT
-        Button.Caption = Buttons(i)
+        If Buttons(i) <> "" Then 
+            Set Button = SDB.UI.NewButton(MsgWindow)
+            Button.Common.SetClientRect _
+                MsgWindow.Common.ClientWidth - BTN_WIDTH*(i+1) - BTN_MARGIN*(i+1), _
+                MsgWindow.Common.ClientHeight - BTN_HEIGHT - BTN_MARGIN, _
+                BTN_WIDTH, BTN_HEIGHT
+            Button.Caption = Buttons(i)
 
-        ' We need to add 100, otherwise it would interfer with system defaults
-        Button.ModalResult = 100 + i
+            ' We need to add 100, otherwise it would interfer with system defaults
+            Button.ModalResult = 100 + i
+        End If
     Next
 
     ' Return button's modal result
@@ -479,35 +482,39 @@ Sub NewQuiz(Item)
     Call UpdateOptionsFile
     
     Dim NewQuizDialogAnswer
+    Dim OptionsArray
+    Dim DialogText
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
-        NewQuizDialogAnswer = SDB.MessageBox( _
-            SDB.Localize("Do you want to restore the last quiz session?") + vbCrLf + _
-            SDB.Localize("Clicking No will create a new quiz. Click cancel to do nothing."), _ 
-            mtWarning, Array(mbCancel, mbNo, mbYes))
+        LastPlaylistID = OptionsFile.IntValue("Quizzor", "LastPlaylistID")
+        Set LastPlaylist = SDB.PlaylistByID(LastPlaylistID)
 
-        If NewQuizDialogAnswer = mrCancel Then
-            Exit Sub
-        ElseIf NewQuizDialogAnswer = mrYes Then
-            Call RestoreLastSession
-        ElseIf NewQuizDialogAnswer = mrNo Then
-            Call CreateNewQuiz
-        End If
+        DialogText = SDB.LocalizedFormat(_
+            "A previous quiz exists. Do you want to restore the last quiz" & _
+            " %s or create a new quiz?" & vbCrLf & _
+            "Either way the current queue will be lost.", _
+            LastPlaylist.Title,0,0)
+
+        OptionsArray = Array(SDB.Localize("New Quiz"), _
+            SDB.Localize("Restore Quiz"), SDB.Localize("Cancel"))
     Else
-        NewQuizDialogAnswer = SDB.MessageBox( SDB.Localize("Creating a new quiz replaces all  tracks") _
-            + SDB.Localize(" in the current queue. This cannot be undone.") + vbCrLF _
-            + SDB.Localize("Do you want to create a new quiz and lose the current queue?"), _
-            mtWarning, Array(mbNo, mbYes))
+        DialogText = _
+            SDB.Localize("Creating a new quiz means losing the current queue.")
 
-        If NewQuizDialogAnswer = mrYes Then
-            Call CreateNewQuiz
-        ElseIf NewQuizDialogAnswer = mrNo Then
-            Exit Sub
-        End If
+        OptionsArray = Array(SDB.Localize("New Quiz"), "", _
+            SDB.Localize("Cancel"))
+    End If
+
+    NewQuizDialogAnswer = FreeFormMessageBox(DialogText, OptionsArray)
+
+    If NewQuizDialogAnswer = 1 Then
+        Call RestoreLastSession
+    ElseIf NewQuizDialogAnswer = 0 And SongsVisible() Then
+        Call CreateNewQuiz
+    Else
+        Exit Sub
     End If
     
     If IsObject(Quiz_Playlist) Then
-        ' TODO: Automatically hide Now Playing List
-
         Call StartQuiz(Item)
     End If
 End Sub
@@ -516,8 +523,6 @@ End Sub
 Sub CreateNewQuiz
     ' The user decided to create a new playlist, so we clear the current
     Call StopQuiz(Item)
-
-    If Not SongsVisible() Then Exit Sub
 
     ' Replace playing queue with current tracks from main window 
     Call SDB.Player.PlaylistClear()
