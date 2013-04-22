@@ -82,26 +82,30 @@ Function FreeFormMessageBox(Text, Buttons())
     MsgWindow.FormPosition = 4 ' screen center
 
     Set MsgText = SDB.UI.NewLabel(MsgWindow)
-    MsgText.Common.Width = MsgWindow.Common.Width
-    MsgText.Alignment = 0 ' Left
+    MsgText.Alignment = txtAlLeft
     MsgText.Caption = Text
-    MsgText.Common.SetClientRect BTN_HEIGHT + 2*BTN_MARGIN, BTN_HEIGHT, _
-      MsgWindow.Common.ClientWidth - 2*BTN_Margin, _
-      MsgWindow.Common.ClientHeight - BTN_HEIGHT - 2*BTN_MARGIN
+    MsgText.Common.Left = 2*BTN_MARGIN
+    MsgText.Common.Top = 2*BTN_MARGIN
+    MsgText.Common.ClientWidth = MsgWindow.Common.ClientWidth - 2*BTN_MARGIN
+    MsgText.Common.ClientHeight = _
+        MsgWindow.Common.ClientHeight - BTN_HEIGHT - 2*BTN_MARGIN
     MsgText.Multiline = True
 
     ' create buttons, set ModalResult
+    ' Use extra variable to prevent big spaces between buttons
+    btnNr = 0 
     For i = 0 To UBound(Buttons)
         If Buttons(i) <> "" Then 
             Set Button = SDB.UI.NewButton(MsgWindow)
             Button.Common.SetClientRect _
-                MsgWindow.Common.ClientWidth - BTN_WIDTH*(i+1) - BTN_MARGIN*(i+1), _
+                MsgWindow.Common.ClientWidth - BTN_WIDTH*(btnNr+1) - BTN_MARGIN*(btnNr+1), _
                 MsgWindow.Common.ClientHeight - BTN_HEIGHT - BTN_MARGIN, _
                 BTN_WIDTH, BTN_HEIGHT
             Button.Caption = Buttons(i)
 
             ' We need to add 100, otherwise it would interfer with system defaults
             Button.ModalResult = 100 + i
+            btnNr = btnNr + 1
         End If
     Next
 
@@ -508,8 +512,10 @@ Sub NewQuiz(Item)
 
     If NewQuizDialogAnswer = 1 Then
         Call RestoreLastSession
-    ElseIf NewQuizDialogAnswer = 0 And SongsVisible() Then
-        Call CreateNewQuiz
+    ElseIf NewQuizDialogAnswer = 0 Then
+        If SongsVisible() Then
+            Call CreateNewQuiz
+        End If
     Else
         Exit Sub
     End If
@@ -683,14 +689,14 @@ End Sub
 
 Sub OnStartup
     Set UI = SDB.UI
-    
+
     ' Register new or get existing toolbar 
     Set QuizBar = SDB.Objects("QuizBar") 
     If QuizBar Is Nothing Then
         Set QuizBar = UI.AddToolbar("QuizBar")
         Set SDB.Objects("QuizBar") = QuizBar
     End If
-       
+
     Set BeginQuizBtn = SDB.Objects("NewQuizBtn")
     If BeginQuizBtn Is Nothing Then
         Set BeginQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
