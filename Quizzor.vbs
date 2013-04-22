@@ -256,8 +256,6 @@ Sub DestroyAllObjects
     
     Set SDB.Objects("QuizBar") = Nothing
     Set SDB.Objects("NewQuizBtn") = Nothing
-    Set SDB.Objects("StartQuizBtn") = Nothing
-    Set SDB.Objects("StopQuizBtn") = Nothing
 
     Script.UnRegisterEvents SDB
 End Sub
@@ -304,13 +302,10 @@ End Function
 Sub CreateMainPanel()
     Set UI = SDB.UI
     
-    Set QuizzorMainPanel = UI.NewDockablePersistentPanel("QuizzorMainPanel")
-    If QuizzorMainPanel.IsNew Then
-        QuizzorMainPanel.DockedTo = 4 
-    End If
-    ' Show panel to ensure the size and position of related elements
-    QuizzorMainPanel.Common.Visible = True
-    QuizzorMainPanel.ShowCaption = False
+    Set QuizzorMainPanel = UI.NewForm
+    QuizzorMainPanel.BorderStyle = 2
+    QuizzorMainPanel.Common.Visible = False
+    QuizzorMainPanel.Common.Align = alClient
 
     Set PlayBtn = UI.NewButton(QuizzorMainPanel)
     PlayBtn.Common.ControlName = "PlayBtn"
@@ -337,24 +332,23 @@ Sub CreateMainPanel()
     HideInfoBtn.Common.Visible = False
     HideInfoBtn.Caption = SDB.Localize("Hide Information")
     Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
-
-    Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
-    SongInfoHTML.Common.ControlName = "SongInfoHTML"
-    SongInfoHTML.Common.Align = 0
-    SongInfoHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
-    SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
+       
+    Set StopQuizBtn = UI.NewButton(QuizzorMainPanel)
+    StopQuizBtn.Common.ControlName = "StopQuizBtn"
+    StopQuizBtn.Caption = SDB.Localize("Stop Quiz")
+    Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
 
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
-    SongTime.Common.Anchors = akLeft + akBottom
-    SongTime.Alignment = 2 ' Center
+    SongTime.Common.Anchors = akLeft + akTop
+    SongTime.Alignment = txtAlCenter
     SongTime.Autosize = False
     SongTime.Caption = "00:00"
 
     ' TODO: Change playback time, when TrackBar changes
     Set SongTrackBar = UI.NewTrackBar(QuizzorMainPanel)
     SongTrackBar.Common.ControlName = "SongTrackBar"
-    SongTrackBar.Common.Anchors = akBottom 
+    SongTrackBar.Common.Anchors = akTop
     SongTrackBar.Common.Enabled = False
     SongTrackBar.Common.Anchors = akLeft + akBottom + akRight
     SongTrackBar.Value = 0
@@ -362,11 +356,16 @@ Sub CreateMainPanel()
 
     Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
-    SongTimeLeft.Common.Anchors = akBottom + akRight
-    SongTimeLeft.Alignment = 2 ' Center
+    SongTimeLeft.Common.Anchors = akTop + akRight
+    SongTimeLeft.Alignment = txtAlCenter
     SongTimeLeft.Autosize = False
     SongTimeLeft.Caption = "00:00"
 
+    Set SongInfoHTML = UI.NewActiveX(QuizzorMainPanel, "Shell.Explorer")
+    SongInfoHTML.Common.ControlName = "SongInfoHTML"
+    SongInfoHTML.Common.Align = alNone
+    SongInfoHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
+    SongInfoHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
     Call ResizeMainPanel
 
     ' Always hide Main Panel if it is created
@@ -397,25 +396,31 @@ Sub ResizeMainPanel
     HideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
 
-    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
-    SongInfoHTML.Common.SetClientRect BTN_MARGIN, 2*BTN_MARGIN + BTN_HEIGHT, _
-        QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 5*BTN_MARGIN - 2*BTN_HEIGHT
+    Set StopQuizBtn = QuizzorMainPanel.Common.ChildControl("StopQuizBtn")
+    StopQuizBtn.Common.SetRect _
+        QuizzorMainPanel.Common.ClientWidth - BTN_MARGIN - BTN_WIDTH, _
+        BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
 
     Set SongTime = QuizzorMainPanel.Common.ChildControl("SongTime")
-    SongTime.Common.SetRect 2*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
+    SongTime.Common.SetRect 2*BTN_MARGIN, BTN_HEIGHT + 3*BTN_MARGIN, _
         TIME_WIDTH, BTN_HEIGHT
 
     Set SongTrackBar = QuizzorMainPanel.Common.ChildControl("SongTrackBar")
     SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - 3*BTN_MARGIN,_
-        QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, BTN_HEIGHT
+        BTN_HEIGHT + 3*BTN_MARGIN,_
+        QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, _
+        BTN_HEIGHT
 
     Set SongTimeLeft = QuizzorMainPanel.Common.ChildControl("SongTimeLeft")
-    SongTimeLeft.Common.SetRect BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
-        QuizzorMainPanel.Common.Height - BTN_HEIGHT - BTN_MARGIN,_
-        TIME_WIDTH, BTN_HEIGHT
+    SongTimeLeft.Common.SetRect _
+        BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
+        BTN_HEIGHT + 3*BTN_MARGIN, TIME_WIDTH, BTN_HEIGHT
+
+    Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
+    SongInfoHTML.Common.SetClientRect BTN_MARGIN, _
+        3*BTN_MARGIN + 2*BTN_HEIGHT, _
+        QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
+        QuizzorMainPanel.Common.Height - 5*BTN_MARGIN - 2*BTN_HEIGHT
 End Sub
 
 ' Open the playlists node
@@ -501,9 +506,6 @@ Sub NewQuiz(Item)
     End If
     
     If IsObject(Quiz_Playlist) Then
-        SDB.Objects("StartQuizBtn").Enabled = True
-        SDB.Objects("StopQuizBtn").Enabled = True
-
         ' TODO: Automatically hide Now Playing List
 
         Call StartQuiz(Item)
@@ -554,9 +556,6 @@ Sub StopQuiz(Item)
     
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
-    
-    SDB.Objects("StartQuizBtn").Enabled = False
-    SDB.Objects("StopQuizBtn").Enabled = False
 
     If IsObject(Quiz_Playlist) Then Set Quiz_Playlist = Nothing
     SDB.ProcessMessages ' Ensure, that changes to Quiz_Playlist are applied
@@ -687,32 +686,14 @@ Sub OnStartup
         Set SDB.Objects("QuizBar") = QuizBar
     End If
        
-    Set NewQuizBtn = SDB.Objects("NewQuizBtn")
-    If NewQuizBtn Is Nothing Then
-        Set NewQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-        NewQuizBtn.Caption = "New Quiz"
-        Set SDB.Objects("NewQuizBtn") = NewQuizBtn  
+    Set BeginQuizBtn = SDB.Objects("NewQuizBtn")
+    If BeginQuizBtn Is Nothing Then
+        Set BeginQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
+        BeginQuizBtn.Caption = SDB.Localize("Begin Quiz")
+        Set SDB.Objects("BeginQuizBtn") = BeginQuizBtn  
     End If
-       
-    Set StartQuizBtn = SDB.Objects("StartQuizBtn")
-    If StartQuizBtn Is Nothing Then
-        Set StartQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-        StartQuizBtn.Caption = "Start Quiz"
-        Set SDB.Objects("StartQuizBtn") = StartQuizBtn  
-    End If
-    StartQuizBtn.Enabled = False
-       
-    Set StopQuizBtn = SDB.Objects("StopQuizBtn")
-    If StopQuizBtn Is Nothing Then
-        Set StopQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-        StopQuizBtn.Caption = "Stop Quiz"
-        Set SDB.Objects("StopQuizBtn") = StopQuizBtn  
-    End If
-    StopQuizBtn.Enabled = False
 
-    Script.RegisterEvent NewQuizBtn, "OnClick", "NewQuiz"
-    Script.RegisterEvent StartQuizBtn, "OnClick", "StartQuiz"
-    Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
+    Script.RegisterEvent BeginQuizBtn, "OnClick", "NewQuiz"
 
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
     
