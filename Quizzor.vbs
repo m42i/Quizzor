@@ -149,7 +149,10 @@ End Sub
 
 ' Get a comma seperated string list of all IDs in a given SongList
 Function GetSongIDList(SongList)
-    If SongList.Count = 0 Then GetSongIDList = ""
+    If SongList.Count = 0 Then 
+        GetSongIDList = ""
+        Exit Function
+    End If
 
     Dim Result : Result = CStr(SongList.Item(0).ID)
     For i = 1 To SongList.Count - 1
@@ -561,6 +564,13 @@ End Sub
 
 Sub StartPlaying
     If Not QuizExists() Then Exit Sub 
+
+    If SDB.Player.CurrentPlaylist.Count <= 0 Then
+        SDB.MessageBox SDB.Localize("Empty queue. Please create a new quiz."), _
+            mtInformation, Array(mbOk)
+        Call StopQuiz(Nothing)
+        Exit Sub
+    End If
     
     ' If the player is paused, just continue playing.
     If SDB.Player.isPaused Then
@@ -598,18 +608,17 @@ Sub PlayNext
 
     Call HideSongInfo
 
+    Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
+    SDB.Player.PlaylistDelete 0
+    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
+        GetSongIDList(SDB.Player.CurrentSongList)
+
     If SDB.Player.CurrentPlaylist.Count <= 0 Then
         SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
             mtInformation, Array(mbOk)
         Call StopQuiz(Nothing)
         Exit Sub
     End If
-
-    Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
-    SDB.Player.PlaylistDelete 0
-
-    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
-        GetSongIDList(SDB.Player.CurrentSongList)
 
     Call StartPlaying
 End Sub
