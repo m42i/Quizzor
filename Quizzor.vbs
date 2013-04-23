@@ -313,6 +313,7 @@ Sub CreateMainPanel()
     QuizzorMainPanel.BorderStyle = 2
     QuizzorMainPanel.Common.Visible = False
     QuizzorMainPanel.Common.Align = alClient
+    Script.RegisterEvent QuizzorMainPanel, "OnClose", "StopQuiz"
 
     Set PlayBtn = UI.NewButton(QuizzorMainPanel)
     PlayBtn.Common.ControlName = "PlayBtn"
@@ -340,10 +341,11 @@ Sub CreateMainPanel()
     HideInfoBtn.Caption = SDB.Localize("Hide Information")
     Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
        
-    Set StopQuizBtn = UI.NewButton(QuizzorMainPanel)
-    StopQuizBtn.Common.ControlName = "StopQuizBtn"
-    StopQuizBtn.Caption = SDB.Localize("Stop Quiz")
-    Script.RegisterEvent StopQuizBtn, "OnClick", "StopQuiz"
+    ' TODO: Implement a close button, testing with wine gives an OLE error
+    ' Set StopQuizBtn = UI.NewButton(QuizzorMainPanel)
+    ' StopQuizBtn.Common.ControlName = "StopQuizBtn"
+    ' StopQuizBtn.Caption = SDB.Localize("Stop Quiz")
+    ' Script.RegisterEvent StopQuizBtn, "OnClick", "StopBtnClicked"
 
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
@@ -403,10 +405,10 @@ Sub ResizeMainPanel
     HideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
 
-    Set StopQuizBtn = QuizzorMainPanel.Common.ChildControl("StopQuizBtn")
-    StopQuizBtn.Common.SetRect _
-        QuizzorMainPanel.Common.ClientWidth - BTN_MARGIN - BTN_WIDTH, _
-        BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
+    ' Set StopQuizBtn = QuizzorMainPanel.Common.ChildControl("StopQuizBtn")
+    ' StopQuizBtn.Common.SetRect _
+        ' QuizzorMainPanel.Common.ClientWidth - BTN_MARGIN - BTN_WIDTH, _
+        ' BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
 
     Set SongTime = QuizzorMainPanel.Common.ChildControl("SongTime")
     SongTime.Common.SetRect 2*BTN_MARGIN, BTN_HEIGHT + 3*BTN_MARGIN, _
@@ -556,13 +558,15 @@ Sub StartQuiz(Item)
     SDB.Player.CurrentSongIndex = 0
 End Sub
 
+Sub StopBtnClicked(Item)
+End Sub
+
 Sub StopQuiz(Item)
     If SDB.Player.isPlaying And IsObject(SongTimer) Then
         SongTimer.Enabled = False
         Script.UnRegisterEvents SongTimer
     End If
 
-    QuizzorMainPanel.Common.Visible = False
     SDB.Player.Stop
     
     SongTime.Caption = GetFormattedTime(0)
