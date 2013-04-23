@@ -27,7 +27,8 @@ Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
-Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: 200%; font-family: Verdana, sans-serif; } </style>" 
+' %font-size% should be replaced with the font size, e.g. 200%
+Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
 
 ' Anchor constants, add them for multiple anchors
 Const akLeft = 1
@@ -271,12 +272,21 @@ End Sub
 Sub ClearSongInfoHTML
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
-    HTMLDocument.Write "<html>" & vbCrLf & HTML_Style & vbCrLf & "<body>&nbsp;</body></html>"
+    HTMLDocument.Write "<html>" & vbCrLf & Replace(HTML_Style,"%font-size%","100%") & vbCrLf & "<body>&nbsp;</body></html>"
     HTMLDocument.Close
 End Sub
 
 Function GetSongInfoHTML(SongData)
-    GetSongInfoHTML = "<html>" & vbCrLf & HTML_Style & vbCrLf & _
+    ' Get window size, for reference to the font size
+    Dim WindowHeight
+    If IsObject(QuizzorMainPanel) Then
+        WindowHeight = QuizzorMainPanel.Common.ClientHeight
+    Else
+        WindowHeight = 800
+    End If 
+
+    GetSongInfoHTML = "<html>" & vbCrLf & _
+        Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 2) & "%") & vbCrLf & _
         "<table border='1' cellspacing='0' cellpaddin='2' rules='rows'" & _
         " frame='void' width='100%' height='100%'>" & vbCrLf & _
         "<colgroup>" & vbCrLf & _
@@ -429,7 +439,7 @@ Sub ResizeMainPanel
     SongInfoHTML.Common.SetClientRect BTN_MARGIN, _
         3*BTN_MARGIN + 2*BTN_HEIGHT, _
         QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 5*BTN_MARGIN - 2*BTN_HEIGHT
+        QuizzorMainPanel.Common.Height - 6*BTN_MARGIN - 2*BTN_HEIGHT
 End Sub
 
 ' Open the playlists node
