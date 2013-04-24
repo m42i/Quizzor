@@ -571,6 +571,13 @@ Sub StartQuiz(Item)
         Exit Sub
     End If
 
+    Set Quiz_Playlist = SDB.PlaylistByID(SelectedNode.RelatedObjectID)
+    Set SongList = Quiz_Playlist.Tracks
+    If SongList.Count <= 0 Then
+        DebugOutput SDB.Localize("Playlist is empty. Won't start quiz.")
+        Exit Sub
+    End If
+
     If Not IsObject(QuizzorMainPanel) Then
         Call CreateMainPanel
     End If
