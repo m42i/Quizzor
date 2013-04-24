@@ -1,8 +1,8 @@
 <SoftwareVersion>
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>0</VersionMinor>
+    <VersionMinor>1</VersionMinor>
     <VersionRelease>0</VersionRelease>
     <VersionBuild>0</VersionBuild>
-    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzor.mmip</UpdateURL>
-    <NewVersionDescription>Play a customized quiz based on your music.</NewVersionDescription>
+    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.1.mmip</UpdateURL>
+    <NewVersionDescription>New, more playlist centric workflow.</NewVersionDescription>
 </SoftwareVersion>
