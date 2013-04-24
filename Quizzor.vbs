@@ -27,6 +27,11 @@ Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
+' Node types, see http://www.mediamonkey.com/wiki/index.php/MediaMonkey_Tree_structure
+Const NODE_PLAYLIST_ROOT = 6
+Const NODE_PLAYLIST_AUTO = 71
+Const NODE_PLAYLIST_MANUAL = 61
+
 ' %font-size% should be replaced with the font size, e.g. 200%
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
 
@@ -558,6 +563,18 @@ Sub CreateNewQuiz
 End Sub
 
 Sub StartQuiz(Item)
+    ' Check if the selected item is a playlist
+    Set SelectedNode = SDB.MainTree.CurrentNode
+    If Not (SelectedNode.NodeType = NODE_PLAYLIST_AUTO) _
+            And Not (SelectedNode.NodeType = NODE_PLAYLIST_MANUAL) Then
+        DebugOutput SDB.Localize("Please select a playlist.")
+        Exit Sub
+    End If
+
+    If Not IsObject(QuizzorMainPanel) Then
+        Call CreateMainPanel
+    End If
+
     QuizzorMainPanel.Common.Visible = True
     ' Ensure that the elements are redrawn
     ResizeMainPanel
@@ -706,29 +723,12 @@ End Sub
 Sub OnStartup
     Set UI = SDB.UI
 
-    ' Register new or get existing toolbar 
-    Set QuizBar = SDB.Objects("QuizBar") 
-    If QuizBar Is Nothing Then
-        Set QuizBar = UI.AddToolbar("QuizBar")
-        Set SDB.Objects("QuizBar") = QuizBar
-    End If
+    ' Add right-click menu
+    Set QuizMenuSeperator = UI.AddMenuItemSep(UI.Menu_Pop_Tree, 0, 0)
+    Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
+    Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
 
-    Set BeginQuizBtn = SDB.Objects("NewQuizBtn")
-    If BeginQuizBtn Is Nothing Then
-        Set BeginQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-        BeginQuizBtn.Caption = SDB.Localize("Begin Quiz")
-        Set SDB.Objects("BeginQuizBtn") = BeginQuizBtn  
-    End If
-
-    Script.RegisterEvent BeginQuizBtn, "OnClick", "NewQuiz"
-
-    Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
-    
-    Set OptionsFile = SDB.IniFile
-
-    Call CreateMainPanel
-
-    Call ClearSongInfoHTML
 End Sub
 
 ' Hide the main player panel
