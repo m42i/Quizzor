@@ -588,7 +588,7 @@ Sub StartQuiz(Item)
     End If
 
     If Not IsObject(QuizzorMainPanel) Then
-        Call CreateMainPanel
+        CreateMainPanel
     End If
 
     QuizzorMainPanel.Common.Visible = True
