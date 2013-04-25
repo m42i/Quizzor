@@ -27,6 +27,11 @@ Const BTN_HEIGHT = 25 ' Defines standard height of a button
 Const BTN_WIDTH = 80 ' Defines standard width of a button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
+' Node types, see http://www.mediamonkey.com/wiki/index.php/MediaMonkey_Tree_structure
+Const NODE_PLAYLIST_ROOT = 6
+Const NODE_PLAYLIST_AUTO = 71
+Const NODE_PLAYLIST_MANUAL = 61
+
 ' %font-size% should be replaced with the font size, e.g. 200%
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
 
@@ -63,8 +68,7 @@ Dim CurrentSongLength
 ' key = description
 ' 
 ' [Quizzor]
-' LastPlaylistID = Playlist.ID As Long
-' NowPlayingSongs_Playlist.ID = "SongData.ID,SongData.ID,..." As String
+' LastSongIndexForPlaylist_<Playlist.ID> = <SDB.Player.CurrentSongIndex> As Long
 '
 Dim OptionsFile
 
@@ -139,19 +143,47 @@ Sub DebugOutput(msg)
     SDB.MessageBox msg, mtInformation, Array(mbOk)
 End Sub
 
+' Returns a new SDBSongList with all SongData in the current queue
+Function ClonePlaylist(ByVal SongList)
+    Set NewPlaylist = SDB.NewSongList
+
+    If SongList.Count > 0 Then 
+        For i = 0 To SongList.Count - 1
+            NewPlaylist.Add SongList.Item(i)
+        Next
+    End If
+
+    Set ClonePlaylist = NewPlaylist
+End Function
+
+Sub Shuffle(Playlist)
+    Randomize
+    Set Tracks = Playlist.Tracks
+    n = Tracks.Count
+    j = n - 1
+    For i = 0 To n - 1
+        Playlist.MoveTrack Tracks.Item(i), Tracks.Item(Int(n*Rnd))
+        Playlist.MoveTrack Tracks.Item(j), Tracks.Item(Int(n*Rnd))
+        j = j - 1
+    Next
+End Sub
+
 ' Thanks to Diddeleedoo from the MM forums
-Sub RandomizePlaylist
-    song_count = SDB.Player.CurrentPlaylist.Count
-    If song_count <2 Then Exit Sub : SDB.Player.isShuffle = False
-    If SDB.Player.isPlaying Or SDB.Player.isPaused Then
-        Shuffle song_count 
-        If Not SDB.Player.CurrentSongIndex = -1 Then
-            SDB.Player.PlaylistMoveTrack _
-            SDB.Player.CurrentSongIndex,0
-            SDB.Player.CurrentSongIndex = 0
-        End If
-    Else
-        Shuffle song_count : SDB.Player.CurrentSongIndex=0
+Sub RandomizePlaylist(Item)
+    If Not IsPlaylistNode() Then Exit Sub
+
+    DoShuffle = FreeFormMessageBox(SDB.Localize("Randomizing a playlist cannot be undone."), _
+        Array(SDB.Localize("Randomize"), SDB.Localize("Cancel")))
+    If DoShuffle <> 0 Then Exit Sub
+
+    ' Because of OLE error 80020006 with wine, the queue is used for shuffling
+    ' and restored afterwards
+    Set NodePlaylist = SDB.PlaylistByID( SDB.MainTree.CurrentNode.RelatedObjectID )
+
+    song_count = NodePlaylist.Tracks.Count
+    If song_count > 1 Then 
+        Shuffle NodePlaylist
+        SDB.MainTracksWindow.Refresh
     End If
 End Sub
 
@@ -187,16 +219,6 @@ Function CreateNewPlaylist()
 
     Set CreateNewPlaylist = Playlist_Root.CreateChildPlaylist(NewTitle)
 End Function
-
-Sub Shuffle(n)
-    Randomize
-    j = n - 1
-    For i = 0 To n - 1
-        SDB.Player.PlaylistMoveTrack i,Int(n*Rnd)
-        SDB.Player.PlaylistMoveTrack j,Int(n*Rnd)
-        j = j - 1
-    Next
-End Sub
 
 ' Check whether a quiz exists, and displays a message if not
 Function QuizExists()
@@ -472,7 +494,7 @@ Sub UpdateOptionsFile
     End If
     
     ' Go through all saved playlists and check if they exist
-    ' A playlist is saved with the key "Playlist_<Playlist.ID>"
+    ' A playlist is saved with the key "LastSongIndexForPlaylist_<Playlist.ID>"
     Set KeyList = OptionsFile.Keys("Quizzor")
     For i = 0 To KeyList.Count - 1
         KeyValue = KeyList.Item(i)
@@ -557,7 +579,43 @@ Sub CreateNewQuiz
         GetSongIDList(SDB.Player.CurrentSongList)
 End Sub
 
+' Check if the selected item is a playlist
+' show message if not
+Function IsPlaylistNode
+    Set SelectedNode = SDB.MainTree.CurrentNode
+    If (SelectedNode.NodeType = NODE_PLAYLIST_AUTO) _
+            Or (SelectedNode.NodeType = NODE_PLAYLIST_MANUAL) Then
+        IsPlaylistNode = True
+    Else
+        DebugOutput SDB.Localize("Please select a playlist.")
+        IsPlaylistNode = False
+    End If
+End Function
+
 Sub StartQuiz(Item)
+    If Not IsPlaylistNode() Then Exit Sub
+
+    Set SelectedNode = SDB.MainTree.CurrentNode
+    Set Quiz_Playlist = SDB.PlaylistByID(SelectedNode.RelatedObjectID)
+    Set SongList = Quiz_Playlist.Tracks
+    If SongList.Count <= 0 Then
+        DebugOutput SDB.Localize("Playlist is empty. Won't start quiz.")
+        Exit Sub
+    End If
+
+    ' TODO: Set the first track in main track window focused
+    ' This is a workaround, since the above TODO doesn't work
+    If SDB.Player.PlaylistCount > 0 Then
+        OverwriteQueue = FreeFormMessageBox( _
+            SDB.Localize("The current queue is not empty. Do you want to replace all tracks?"), _
+            Array(SDB.Localize("Replace queue"), SDB.Localize("Cancel")))
+        If OverwriteQueue <> 0 Then Exit Sub
+    End If
+
+    If Not IsObject(QuizzorMainPanel) Then
+        CreateMainPanel
+    End If
+
     QuizzorMainPanel.Common.Visible = True
     ' Ensure that the elements are redrawn
     ResizeMainPanel
@@ -565,13 +623,26 @@ Sub StartQuiz(Item)
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
-    SDB.Player.CurrentSongIndex = 0
+    SDB.Player.PlaylistClear
+    SDB.Player.PlaylistAddTracks SongList
+
+    ' Restore last index in playlist
+    ResumeIndex = 0
+    If OptionsFile.ValueExists("Quizzor", _ 
+        "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) Then
+        ResumeIndex = OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
+            CStr(Quiz_Playlist.ID))
+    End If
+
+    SDB.Player.CurrentSongIndex = ResumeIndex
 End Sub
 
 Sub StopBtnClicked(Item)
 End Sub
 
 Sub StopQuiz(Item)
+    UpdateOptionsFile
+
     If SDB.Player.isPlaying And IsObject(SongTimer) Then
         SongTimer.Enabled = False
         Script.UnRegisterEvents SongTimer
@@ -604,8 +675,6 @@ Sub StartPlaying
         Exit Sub
     End If
 
-    SDB.Player.CurrentSongIndex = 0
-
     CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
     SongTrackBar.MinValue = 0
     SongTrackBar.MaxValue = CurrentSongLength
@@ -634,18 +703,17 @@ Sub PlayNext
 
     HideSongInfo
 
-    Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
-    SDB.Player.PlaylistDelete 0
-    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
-        GetSongIDList(SDB.Player.CurrentSongList)
+    NewIndex = SDB.Player.CurrentSongIndex + 1
+    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = _
+        NewIndex
 
-    If SDB.Player.CurrentPlaylist.Count <= 0 Then
-        SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
+    If SDB.Player.CurrentSongIndex = SDB.Player.CurrentSongList.Count - 1 Then
+        SDB.MessageBox SDB.Localize("No more songs in queue.")
             mtInformation, Array(mbOk)
-        StopQuiz Nothing
         Exit Sub
     End If
 
+    SDB.Player.CurrentSongIndex = NewIndex
     StartPlaying
 End Sub
 
@@ -706,29 +774,19 @@ End Sub
 Sub OnStartup
     Set UI = SDB.UI
 
-    ' Register new or get existing toolbar 
-    Set QuizBar = SDB.Objects("QuizBar") 
-    If QuizBar Is Nothing Then
-        Set QuizBar = UI.AddToolbar("QuizBar")
-        Set SDB.Objects("QuizBar") = QuizBar
-    End If
-
-    Set BeginQuizBtn = SDB.Objects("NewQuizBtn")
-    If BeginQuizBtn Is Nothing Then
-        Set BeginQuizBtn = UI.AddMenuItem(QuizBar, 0, -1)
-        BeginQuizBtn.Caption = SDB.Localize("Begin Quiz")
-        Set SDB.Objects("BeginQuizBtn") = BeginQuizBtn  
-    End If
-
-    Script.RegisterEvent BeginQuizBtn, "OnClick", "NewQuiz"
-
-    Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
+    ' Add right-click menu
+    Set QuizMenuSeperator = UI.AddMenuItemSep(UI.Menu_Pop_Tree, 0, 0)
+    Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
+    Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
     
+    Set RandomizePlaylistMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
+    Script.RegisterEvent RandomizePlaylistMenuItem, "OnClick", "RandomizePlaylist"
+    
+    Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
+
     Set OptionsFile = SDB.IniFile
-
-    Call CreateMainPanel
-
-    Call ClearSongInfoHTML
 End Sub
 
 ' Hide the main player panel
