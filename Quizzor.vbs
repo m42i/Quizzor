@@ -143,19 +143,47 @@ Sub DebugOutput(msg)
     SDB.MessageBox msg, mtInformation, Array(mbOk)
 End Sub
 
+' Returns a new SDBSongList with all SongData in the current queue
+Function ClonePlaylist(ByVal SongList)
+    Set NewPlaylist = SDB.NewSongList
+
+    If SongList.Count > 0 Then 
+        For i = 0 To SongList.Count - 1
+            NewPlaylist.Add SongList.Item(i)
+        Next
+    End If
+
+    Set ClonePlaylist = NewPlaylist
+End Function
+
+Sub Shuffle(Playlist)
+    Randomize
+    Set Tracks = Playlist.Tracks
+    n = Tracks.Count
+    j = n - 1
+    For i = 0 To n - 1
+        Playlist.MoveTrack Tracks.Item(i), Tracks.Item(Int(n*Rnd))
+        Playlist.MoveTrack Tracks.Item(j), Tracks.Item(Int(n*Rnd))
+        j = j - 1
+    Next
+End Sub
+
 ' Thanks to Diddeleedoo from the MM forums
-Sub RandomizePlaylist
-    song_count = SDB.Player.CurrentPlaylist.Count
-    If song_count <2 Then Exit Sub : SDB.Player.isShuffle = False
-    If SDB.Player.isPlaying Or SDB.Player.isPaused Then
-        Shuffle song_count 
-        If Not SDB.Player.CurrentSongIndex = -1 Then
-            SDB.Player.PlaylistMoveTrack _
-            SDB.Player.CurrentSongIndex,0
-            SDB.Player.CurrentSongIndex = 0
-        End If
-    Else
-        Shuffle song_count : SDB.Player.CurrentSongIndex=0
+Sub RandomizePlaylist(Item)
+    If Not IsPlaylistNode() Then Exit Sub
+
+    DoShuffle = FreeFormMessageBox(SDB.Localize("Randomizing a playlist cannot be undone."), _
+        Array(SDB.Localize("Randomize"), SDB.Localize("Cancel")))
+    If DoShuffle <> 0 Then Exit Sub
+
+    ' Because of OLE error 80020006 with wine, the queue is used for shuffling
+    ' and restored afterwards
+    Set NodePlaylist = SDB.PlaylistByID( SDB.MainTree.CurrentNode.RelatedObjectID )
+
+    song_count = NodePlaylist.Tracks.Count
+    If song_count > 1 Then 
+        Shuffle NodePlaylist
+        SDB.MainTracksWindow.Refresh
     End If
 End Sub
 
@@ -191,16 +219,6 @@ Function CreateNewPlaylist()
 
     Set CreateNewPlaylist = Playlist_Root.CreateChildPlaylist(NewTitle)
 End Function
-
-Sub Shuffle(n)
-    Randomize
-    j = n - 1
-    For i = 0 To n - 1
-        SDB.Player.PlaylistMoveTrack i,Int(n*Rnd)
-        SDB.Player.PlaylistMoveTrack j,Int(n*Rnd)
-        j = j - 1
-    Next
-End Sub
 
 ' Check whether a quiz exists, and displays a message if not
 Function QuizExists()
@@ -561,15 +579,23 @@ Sub CreateNewQuiz
         GetSongIDList(SDB.Player.CurrentSongList)
 End Sub
 
-Sub StartQuiz(Item)
-    ' Check if the selected item is a playlist
+' Check if the selected item is a playlist
+' show message if not
+Function IsPlaylistNode
     Set SelectedNode = SDB.MainTree.CurrentNode
-    If Not (SelectedNode.NodeType = NODE_PLAYLIST_AUTO) _
-            And Not (SelectedNode.NodeType = NODE_PLAYLIST_MANUAL) Then
+    If (SelectedNode.NodeType = NODE_PLAYLIST_AUTO) _
+            Or (SelectedNode.NodeType = NODE_PLAYLIST_MANUAL) Then
+        IsPlaylistNode = True
+    Else
         DebugOutput SDB.Localize("Please select a playlist.")
-        Exit Sub
+        IsPlaylistNode = False
     End If
+End Function
 
+Sub StartQuiz(Item)
+    If Not IsPlaylistNode() Then Exit Sub
+
+    Set SelectedNode = SDB.MainTree.CurrentNode
     Set Quiz_Playlist = SDB.PlaylistByID(SelectedNode.RelatedObjectID)
     Set SongList = Quiz_Playlist.Tracks
     If SongList.Count <= 0 Then
@@ -753,6 +779,10 @@ Sub OnStartup
     Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
+    
+    Set RandomizePlaylistMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
+    Script.RegisterEvent RandomizePlaylistMenuItem, "OnClick", "RandomizePlaylist"
     
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
 
