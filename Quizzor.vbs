@@ -775,12 +775,25 @@ Sub OnStartup
     Set UI = SDB.UI
 
     ' Add right-click menu
-    Set QuizMenuSeperator = UI.AddMenuItemSep(UI.Menu_Pop_Tree, 0, 0)
-    Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    Set QuizMenuPopSeperator = SDB.Objects("QuizMenuPopSeperator") 
+    If QuizMenuPopSeperator Is Nothing Then
+        Set QuizMenuPopSeperator = UI.AddMenuItemSep(UI.Menu_Pop_Tree, 0, 0)
+        SDB.Objects("QuizMenuPopSeperator") = QuizMenuPopSeperator
+    End If
+
+    Set BeginQuizMenuItem = SDB.Objects("BeginQuizMenuItem") 
+    If BeginQuizMenuItem Is Nothing Then
+        Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+        SDB.Objects("BeginQuizMenuItem") = BeginQuizMenuItem 
+    End If
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
     
-    Set RandomizePlaylistMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+    Set RandomizePlaylistMenuItem = SDB.Objects("RandomizePlaylistMenuItem")
+    If RandomizePlaylistMenuItem Is Nothing Then
+        Set RandomizePlaylistMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+        SDB.Objects("RandomizePlaylistMenuItem") = RandomizePlaylistMenuItem  
+    End If
     RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
     Script.RegisterEvent RandomizePlaylistMenuItem, "OnClick", "RandomizePlaylist"
     
