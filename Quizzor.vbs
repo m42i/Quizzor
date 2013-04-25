@@ -733,8 +733,12 @@ End Sub
 
 ' Hide the main player panel
 Sub OnShutdownHandler
-    OptionsFile.Flush
-    QuizzorMainPanel.Common.Visible = False 
+    If IsObject(OptionsFile) Then
+        OptionsFile.Flush
+    End If
+    If IsObject(QuizzorMainPanel) Then
+        QuizzorMainPanel.Common.Visible = False 
+    End If
 End Sub
 
 Sub Uninstall 
