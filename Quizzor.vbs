@@ -578,6 +578,15 @@ Sub StartQuiz(Item)
         Exit Sub
     End If
 
+    ' TODO: Set the first track in main track window focused
+    ' This is a workaround, since the above TODO doesn't work
+    If SDB.Player.PlaylistCount > 0 Then
+        OverwriteQueue = FreeFormMessageBox( _
+            SDB.Localize("The current queue is not empty. Do you want to replace all tracks?"), _
+            Array(SDB.Localize("Replace queue"), SDB.Localize("Cancel")))
+        If OverwriteQueue <> 0 Then Exit Sub
+    End If
+
     If Not IsObject(QuizzorMainPanel) Then
         Call CreateMainPanel
     End If
@@ -589,6 +598,9 @@ Sub StartQuiz(Item)
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
+
+    SDB.Player.PlaylistClear
+    SDB.Player.PlaylistAddTracks SongList
     SDB.Player.CurrentSongIndex = 0
 End Sub
 
@@ -735,7 +747,6 @@ Sub OnStartup
     Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
-
 End Sub
 
 ' Hide the main player panel
