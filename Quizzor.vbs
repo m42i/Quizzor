@@ -584,6 +584,8 @@ Sub StopQuiz(Item)
 
     If IsObject(Quiz_Playlist) Then Set Quiz_Playlist = Nothing
     SDB.ProcessMessages ' Ensure, that changes to Quiz_Playlist are applied
+
+    HideSongInfo
 End Sub
 
 Sub StartPlaying
