@@ -68,8 +68,7 @@ Dim CurrentSongLength
 ' key = description
 ' 
 ' [Quizzor]
-' LastPlaylistID = Playlist.ID As Long
-' NowPlayingSongs_Playlist.ID = "SongData.ID,SongData.ID,..." As String
+' LastSongIndexForPlaylist_<Playlist.ID> = <SDB.Player.CurrentSongIndex> As Long
 '
 Dim OptionsFile
 
@@ -477,7 +476,7 @@ Sub UpdateOptionsFile
     End If
     
     ' Go through all saved playlists and check if they exist
-    ' A playlist is saved with the key "Playlist_<Playlist.ID>"
+    ' A playlist is saved with the key "LastSongIndexForPlaylist_<Playlist.ID>"
     Set KeyList = OptionsFile.Keys("Quizzor")
     For i = 0 To KeyList.Count - 1
         KeyValue = KeyList.Item(i)
@@ -598,16 +597,26 @@ Sub StartQuiz(Item)
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
-
     SDB.Player.PlaylistClear
     SDB.Player.PlaylistAddTracks SongList
-    SDB.Player.CurrentSongIndex = 0
+
+    ' Restore last index in playlist
+    ResumeIndex = 0
+    If OptionsFile.ValueExists("Quizzor", _ 
+        "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) Then
+        ResumeIndex = OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
+            CStr(Quiz_Playlist.ID))
+    End If
+
+    SDB.Player.CurrentSongIndex = ResumeIndex
 End Sub
 
 Sub StopBtnClicked(Item)
 End Sub
 
 Sub StopQuiz(Item)
+    UpdateOptionsFile
+
     If SDB.Player.isPlaying And IsObject(SongTimer) Then
         SongTimer.Enabled = False
         Script.UnRegisterEvents SongTimer
@@ -640,8 +649,6 @@ Sub StartPlaying
         Exit Sub
     End If
 
-    SDB.Player.CurrentSongIndex = 0
-
     CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
     SongTrackBar.MinValue = 0
     SongTrackBar.MaxValue = CurrentSongLength
@@ -670,18 +677,17 @@ Sub PlayNext
 
     HideSongInfo
 
-    Quiz_Playlist.addTrack SDB.Player.PlaylistItems(0)
-    SDB.Player.PlaylistDelete 0
-    OptionsFile.StringValue("Quizzor", "NowPlayingSongs_" + CStr(Quiz_Playlist.ID)) = _
-        GetSongIDList(SDB.Player.CurrentSongList)
+    NewIndex = SDB.Player.CurrentSongIndex + 1
+    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = _
+        NewIndex
 
-    If SDB.Player.CurrentPlaylist.Count <= 0 Then
-        SDB.MessageBox SDB.Localize("Quiz has ended. Please create a new one."), _
+    If SDB.Player.CurrentSongIndex = SDB.Player.CurrentSongList.Count - 1 Then
+        SDB.MessageBox SDB.Localize("No more songs in queue.")
             mtInformation, Array(mbOk)
-        StopQuiz Nothing
         Exit Sub
     End If
 
+    SDB.Player.CurrentSongIndex = NewIndex
     StartPlaying
 End Sub
 
@@ -747,11 +753,15 @@ Sub OnStartup
     Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
+    
+    Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
+
+    Set OptionsFile = SDB.IniFile
 End Sub
 
 ' Hide the main player panel
 Sub OnShutdownHandler
-    OptionsFile.Flush
+    UpdateOptionsFile
     QuizzorMainPanel.Common.Visible = False 
 End Sub
 
