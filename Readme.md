@@ -13,5 +13,11 @@ Usage:
 - The position in the playlist is retained until between restarts
 - If you want to start from the beginning, you need to create a new playlist
 
+Localization:
+Because MM doesn't support localization for scripts yet, seperate releases are
+packaged for different languages.
+Poedit and Grom for Windows are used to edit and generate the .po files.
+
 TODO (from source):
 - Change playback time, when TrackBar changes (might need buttons)
+
