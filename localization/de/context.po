@@ -1,0 +1,803 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MediaMonkey 2.4\n"
+"POT-Creation-Date: 2011-05-14 22:25\n"
+"PO-Revision-Date: 2011-05-18 13:09+0100\n"
+"Last-Translator: onkel_enno <onkelenno@freenet.de>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: HelpContext.pas:183
+msgid "This makes it easier to browse the device's database. Otherwise, multiple Artists/Composers would sync as a single string (e.g. 'U2;B.B. King')"
+msgstr "Erleichtert das Browsen auf dem Gerät. Ansonsten werden Mehrfachinterpreten/Komponisten als einzelne Zeichenkette übertragen (z.B. 'U2;B.B. King')"
+
+#: HelpContext.pas:184
+msgid "This makes it easier to browse the device's database. Otherwise, multiple Genres would sync as a single string (e.g. 'Rock;Pop;Accoustic')"
+msgstr "Erleichtert das Browsen auf dem Gerät. Ansonsten werden Mehrfachgenre als einzelne Zeichenkette übertragen (z.B. Rock;Pop;Accoustic')"
+
+#: HelpContext.pas:185
+msgid "Choose the Directory/Filename format to be used for files on the device."
+msgstr "Wählen Sie das Verzeichnis- und das Dateinamenformat für die Dateien auf dem tragbare Gerät"
+
+#: HelpContext.pas:186
+msgid "Syncs files on the Auto-sync List back to the Library, if the copy on the device is more recent than the copy in the Library."
+msgstr "Überträgt Dateien, die vom Archiv auf das Gerät synchronisiert wurden, zurück in Archiv, wenn die Kopie auf dem Gerät aktueller ist."
+
+#: HelpContext.pas:188
+msgid "Deletes files from the device if they're not on the Auto-Sync list. In general, this should be enabled, but be aware that it can delete files from the device if you've added them to the device via another computer or if you've modified file tags on the device but not in the Library."
+msgstr "Löscht Dateien vom Gerät wenn diese nicht in der Auto-Sync-Liste stehen. Sollte standardmäßig aktiviert sein, beachte aber dass es auch Titel auf dem Gerät löscht, die du mit einem anderen Rechner übertragen hast und in diesem Archiv nicht vorhanden sind oder du die Tags auf dem Gerät geändert hast, nicht aber im Archiv."
+
+#: HelpContext.pas:189
+msgid "Causes the device to automatically disconnect after auto-sync has completed."
+msgstr "Trennt automatisch die Verbindung zum Gerät wenn der Auto-Sync-Vorgang abgeschlossen ist."
+
+#: HelpContext.pas:190
+msgid "This initiates an auto-sync whenever the device is plugged into the PC"
+msgstr "Startet den Auto-Sync-Vorgang sowie das Gerät an den PC angeschlossen ist."
+
+#: HelpContext.pas:191
+msgid "This gives preference to tracks with higher ratings."
+msgstr "Gibt Songs mit höhere Bewertung Vorrang."
+
+#: HelpContext.pas:192
+msgid "Sync a random subset of the selected tracks, and fill up the device as much as possible. This is useful for synching random tracks to a device that cannot contain your entire library."
+msgstr "Synchronisiert eine zufällige Auswahl an Dateien bis das Gerät voll ist."
+
+#: HelpContext.pas:194
+msgid "Causes search for 'an' to not return files containing 'another'"
+msgstr "Bei der Suche nach z.B. 'an' wird 'another' nicht als Treffer zurückgeliefert"
+
+#: HelpContext.pas:195
+msgid "Limits the number of fields searched to reduce false positives and improve performance"
+msgstr "Beschränkt die Anzahl der Such-Felder um falsche Ergebnisse zu verhindern und die Leistung zu verbessern."
+
+#: HelpContext.pas:197
+msgid "Define subsets of your Library, with customized display settings for different collections."
+msgstr "Definiere eine Filtermenge deines Archivs mit jeweils individuellen Ansichten und Abspielregeln."
+
+#: HelpContext.pas:198
+msgid "Saves playback position (great for Audiobooks) for files of the selected type."
+msgstr "Speichert die Abspielposition für Dateien der angegebenen Typen (indeal für Hörbücher)."
+
+#: HelpContext.pas:199
+msgid "Causes files of the selected type to not be played when Shuffle is enabled."
+msgstr "Dateien die diesem Filter entsprechen werden im Zufalls-Modus nicht abgespielt."
+
+#: HelpContext.pas:200
+msgid "Disables crossfading for files of the selected type."
+msgstr "Deaktiviert Crossfading für Dateien die diesem Filter entsprechen"
+
+#: HelpContext.pas:202
+msgid "Displays file information that is obscured in a Tooltip."
+msgstr "Zeigt Datei Informationen in einem Tooltipp an"
+
+#: HelpContext.pas:203
+msgid "Displays all file properties in a single tooltip."
+msgstr "Zeigt alle Datei Informationen in einem Tooltipp an"
+
+#: HelpContext.pas:204
+msgid "If enabled, will display a subset of tracks on the Album so that more Albums can be seen"
+msgstr "Zeigt Songs zu dem Album gruppiert an, damit mehr Alben dargestellt werden können."
+
+#: HelpContext.pas:206
+msgid "Set the default directory / filename format for specified files."
+msgstr "Setzt das Standardverzeichnis / Dateiformat für diese Dateien"
+
+#: HelpContext.pas:207
+msgid "Do not apply to files in the specified folders (\"C:\\Directory\\\",\"C:\\directory 2\")"
+msgstr "Wird nicht für Dateien in den angegeben Ordnern angewendet ('C:\\Verzeichnis 1','C:\\Verzeichnis 2')"
+
+#: HelpContext.pas:208
+msgid "Organize library files based on the above rules whenever files are scanned or edited. To fully automate, enable File Monitoring to scan directories in the background."
+msgstr "Ordnet Dateien automatisch nach den oben definierten Regeln ein, sobald sie in das Archiv aufgenommen werden. Aktivieren Sie die Ordner-Überwachung zur vollständigen Automatisierung."
+
+#: HelpContext.pas:210
+#: HelpContext.pas:212
+msgid "Determines how often MediaMonkey checks for updates"
+msgstr "Definiert wie of MediaMonkey nach Updates sucht"
+
+#: HelpContext.pas:213
+msgid "Defines how many new episodes are downloaded if new episodes are detected"
+msgstr "Definiert wie viele neue Episoden herungergeladen werden, wenn neue vorhanden"
+
+#: HelpContext.pas:214
+msgid "Defines which episodes are to be deleted"
+msgstr "Definiert welche Episoden gelöscht werden"
+
+#: HelpContext.pas:215
+msgid "Prevents episodes that haven't been listened to from being deleted."
+msgstr "Schützt Episoden die noch nicht gehört wurde vor dem Löschen"
+
+#: HelpContext.pas:216
+msgid "Prevents episodes that have been highly rated from being deleted."
+msgstr "Schütz Episoden mit hoher Bewertung vor dem Löschen"
+
+#: HelpContext.pas:217
+msgid "Prevents recent episodes from being deleted."
+msgstr "Schützt die neuesten Episoden vor dem Löschen."
+
+#: HelpContext.pas:218
+msgid "Causes data from the feed to overwrite data embedded by the author within episode tags"
+msgstr "Überschreibt die vom Autor hinterlegten Informationen in den Tags mit den eigenen."
+
+#: HelpContext.pas:219
+msgid "Displays all episodes including those that have previously been deleted"
+msgstr "Zeigt alle Episoden an, auch die die kürzlich gelöscht wurden."
+
+#: HelpContext.pas:220
+msgid "Choose a directory and filename mask to which Podcasts should be saved. If a filename mask is not chosen, then the Podcast's original filename will be used"
+msgstr "Wählen Sie ein Dateinamen-Format, unter dem Podcasts gespeichert werden sollen. Wenn kein Format angegeben wird, wird der originale Dateiname verwendet."
+
+#: HelpContext.pas:221
+msgid "Choose the location to which downloaded content is stored by default"
+msgstr "Wählen Sie das Verzeichnis in dem standardmäßig heruntergeladener Inhalt gespeichert wird"
+
+#: HelpContext.pas:223
+msgid "If enabled will prompt for a password when attempting to exit Party Mode."
+msgstr "Wenn aktiviert, wird beim Zurückkehren aus dem Party-Modus ein Passwort verlangt."
+
+#: HelpContext.pas:224
+msgid "This option completely hides the menu bar (Gold only)."
+msgstr "Versteckt die komplette Menü-Leiste. (nur Gold)."
+
+#: HelpContext.pas:225
+msgid "This option causes MediaMonkey to take up the entire screen."
+msgstr "Diese Option sorgt dafür, dass höchstens ein MediaMonkey-Programmfenster geöffnet sein kann."
+
+#: HelpContext.pas:226
+msgid "This prevents users from exiting MediaMonkey by switching applications."
+msgstr "Verhindert das Umschalten zu anderen Anwendungen."
+
+#: HelpContext.pas:227
+msgid "This makes MediaMonkey function more like a jukebox, preventing users from stopping or switching tracks; changing volume, balance or equalizer settings; and re-ordering / removing files, or adding multiple files at once."
+msgstr "Verwandelt MediaMonkey in eine Jukebox. Unterbindet Benutzereingriffe wie Programmumschaltung, Lautstärkeänderung, Veränderung der Klangeigenschaften, Sortierung der Playliste, ..."
+
+#: HelpContext.pas:228
+msgid "This locks the current configuration of Party Mode."
+msgstr "Aktiviert die Einstellungen des Party-Modus!"
+
+#: HelpContext.pas:229
+msgid "Allows music to be lowered/paused for announcements during a party"
+msgstr "Erlaubt für Ansagen während Parties die Lautstärke der Musik zu senken/zu unterbrechen"
+
+#: HelpContext.pas:230
+msgid "Prevents users from making any changes"
+msgstr "Verhindert Änderungen durch den Benutzer"
+
+#: HelpContext.pas:232
+msgid "This turns on the Auto-DJ feature which causes tracks to automatically be added to the Now Playing list when it runs out.  It can also be activated via the Player menu."
+msgstr "Schaltet den Auto-DJ ein, welche automatisch Songs zur Wiedergabeliste hinzufügt wenn sie das Ende erreicht. Kann auch im Wiedergabe-Menü aktiviert werden."
+
+#: HelpContext.pas:233
+msgid "This determines how many tracks Auto-DJ will add to the Now Playing list when the list begins to empty."
+msgstr "Gibt an, wieviele Songs der Auto-DJ zur Wiedergabeliste hinzufügt wenn das Ende erreicht ist."
+
+#: HelpContext.pas:234
+msgid "Choose where Auto-DJ should add tracks from"
+msgstr "Wähle, von wo der Auto-DJ seine Songs hinzufügt"
+
+#: HelpContext.pas:235
+msgid "This determines how many previously played tracks will be displayed in the Now Playing list."
+msgstr "Gibt an, wieviele bereits gespielte Songs in der Wiedergabeliste angezeigt werden sollen."
+
+#: HelpContext.pas:237
+msgid "If enabled, MediaMonkey will check (over the internet) whether a newer version exists."
+msgstr "Wenn aktiviert prüft MediaMonkey (über das Internet), ob neue Versionen verfügbar sind."
+
+#: HelpContext.pas:238
+msgid "Allows you to choose MediaMonkey's language. You must close and restart MediaMonkey for the change to take effect."
+msgstr "Erlaubt Ihnen, die Programmsprache zu wählen. Sie müssen MediaMonkey schließen und neu starten, damit die Änderung in Kraft tritt."
+
+#: HelpContext.pas:239
+msgid "This option forces a maximum of one MediaMonkey window to be open at any time."
+msgstr "Diese Option sorgt dafür, dass zu jeder Zeit höchstens ein MediaMonkey-Programmfenster geöffnet sein kann."
+
+#: HelpContext.pas:240
+msgid "Causes the Pop-up to appear only if MediaMonkey is minimized or inactive"
+msgstr "Zeigt das Pop-up nur wenn MediaMonkey minimiert oder inaktiv ist"
+
+#: HelpContext.pas:241
+msgid "Shows the MediaMonkey icon in the system tray"
+msgstr "Zeigt das MediaMonkey Symbol in der Systemleiste"
+
+#: HelpContext.pas:242
+msgid "Choose whether text should scroll or bounce from side to side"
+msgstr "Definiert die Anzeigeart des Textes (Scrollen/Springen)"
+
+#: HelpContext.pas:243
+msgid "By default, MediaMonkey minimizes to the taskbar. 'Minimize to MicroPlayer' causes it to appear as a toolbar next to the System tray when minimized. 'Minimize to MiniPlayer', displays 'Now Playing' files even when the main application is minimized."
+msgstr "Standardmäßig wird MediaMonkey in die Taskleiste minimiert. 'In den MicroPlayer minimieren' bweirkt dass die Werkzeugleiste neben der Systemablage erscheint. 'In den MiniPlayer minimieren'  zeigt immer die Wiedergabeliste an, auch wenn die Anwendung minimiert ist."
+
+#: HelpContext.pas:244
+msgid "Minimizes to the Taskbar"
+msgstr "In die Systemleiste minimieren"
+
+#: HelpContext.pas:245
+msgid "Minimizes to the MicroPlayer if it is enabled (right-click on the System Task bar, and click 'Toolbars')."
+msgstr "Minimiert in den MicroPlayer wenn dieser aktiviert ist (Rechts-Klick auf Taskleiste -> Symbolleisten)"
+
+#: HelpContext.pas:246
+msgid "Minimizes to the MiniPlayer"
+msgstr "Minimiert in den MiniPlayer"
+
+#: HelpContext.pas:247
+msgid "This option causes MediaMonkey to never truly close--it always runs in the background, and is always accessible via the system tray."
+msgstr "Diese Option bewahrt MediaMonkey vor dem Beenden -- das Programm läuft beständig im Hintergrund und ist immer erreichbar über die System-Ablage."
+
+#: HelpContext.pas:248
+msgid "Improve performance of some tasks by utilizing multiple CPU cores"
+msgstr "Verbessert die Leistung einiger Programmaufgaben durch die Verwendung mehrerer Prozessor-Kerne."
+
+#: HelpContext.pas:249
+msgid "MediaMonkey performs numerous operations such as CD Ripping, Conversion, Tagging, Volume Levelling, etc. in the background. This option sets the priority of these background tasks. By default it is set to 'Lower' so that these tasks don't slow down other operations."
+msgstr "MediaMonkey vollführt viele Aktionen im Hintergrund: CD-Rippen, Konvertierungen, Taggen, Lautstärkeanpassung, etc. Diese Option ändert die Priorität dieser Hintergrund-Tätigkeiten. Die Standardeinstellung ist 'Niedriger', so dass andere Anwendungen nicht verlangsamt werden."
+
+#: HelpContext.pas:250
+msgid "Saves auto-converted content in a temporary cache so that it can be re-used, as needed."
+msgstr "Speichert automatisch konvertierten Inhalt im temporären Cache zwischen, damit es wiederverwendet werden kann."
+
+#: HelpContext.pas:251
+msgid "This allows you to select which file types will be associated with MediaMonkey, so that if the file is double-clicked, MediaMonkey will automatically run and play the file."
+msgstr "Hier können Sie die Dateitypen auswählen, die mit MediaMonkey verknüpft werden sollen, so dass MediaMonkey automatisch startet und die Datei abspielt, sobald Sie darauf doppelklicken."
+
+#: HelpContext.pas:252
+msgid "Some applications are set to 'steal' file associations, so that even if you've configured MediaMonkey to play MP3 files, the other application overides this setting. If you want to be certain that MediaMonkey will run, enable 'Re-associate file types on startup' to reset file associations each time you run MediaMonkey."
+msgstr "Einige Anwendungen sind so eingestellt, dass sie Programm-Verknüpfungen von Dateien 'stehlen': selbst wenn Sie MediaMonkey so eingestellt haben, dass es MP3-Dateien abspielt, wird diese Einstellung von der anderen Anwendung überschrieben. Wenn Sie sicher sein wollen, dass MediaMonkey die Verknüpfung behält, aktivieren Sie 'Dateitypen beim Programmstart verknüpfen'."
+
+#: HelpContext.pas:253
+msgid "This enables mouse gestures on the tray icon."
+msgstr "Aktiviert Mouse Gestures für das System-Icon."
+
+#: HelpContext.pas:254
+msgid "This enables tooltips for context help"
+msgstr "Aktiviert Tooltipps für die Hilfe"
+
+#: HelpContext.pas:255
+msgid "If enabled, MediaMonkey will prompt you whether to copy the entire folder, or only those contents that exist in the Library."
+msgstr "Wenn aktiviert wird MediaMonkey Sie fragen, ob Sie den gesamten Ordner oder nur die Inhalte kopieren möchten, die im Archiv verzeichnet sind."
+
+#: HelpContext.pas:256
+msgid "If enabled, MediaMonkey will prompt you whether to move the entire folder, or only those contents that exist in the Library."
+msgstr "Wenn aktiviert wird MediaMonkey Sie fragen, ob Sie den gesamten Ordner oder nur die Inhalte verschieben möchten, die im Archiv verzeichnet sind."
+
+#: HelpContext.pas:257
+msgid "If enabled, MediaMonkey will prompt you whether to remove tracks from the playlist, remove them from the playlist and the library, or delete them from the playlist, the library, and the computer system."
+msgstr "Wenn aktiviert wird MediaMonkey Sie fragen, ob Sie die Songs nur aus der Playliste, aus der Playliste und dem Archiv oder aus der Playliste, aus dem Archiv und von der Festplatte löschen möchten."
+
+#: HelpContext.pas:258
+msgid "If enabled, MediaMonkey will prompt you whether to remove tracks from the Now Playing list, remove them from the Now Playing list and the library, or delete them from the Now Playing list, the library, and the computer system."
+msgstr "Wenn aktiviert wird MediaMonkey Sie fragen, ob Sie die Songs nur aus der Wiedergabeliste, aus der Wiedergabeliste und dem Archiv oder aus der Wiedergabeliste, aus dem Archiv und von der Festplatte löschen möchten."
+
+#: HelpContext.pas:259
+msgid "If enabled, MediaMonkey will prompt you whether to delete the currently playing file from the system, since doing so will cause an interruption of playback."
+msgstr "Wenn aktiviert, wird MediaMonkey Sie fragen, ob Sie die momentan spielende Datei wirklich löschen möchten, da dies die Unterbrechung der Wiedergabe zur Folge hat."
+
+#: HelpContext.pas:260
+msgid "When enabled, MediaMonkey will prompt you whether to proceed with a rename operation if the resulting filename contains more than the 64-character limit that is standard for a CD."
+msgstr "Wenn aktiviert wird MediaMonkey Sie fragen, ob Sie die Datei wirklich umbenennen möchten, wenn dies dazu führt, dass der Dateiname mehr als die für eine CD standardgemäßen 64 Zeichen beinhaltet."
+
+#: HelpContext.pas:261
+msgid "If enabled, MediaMonkey will prompt you whether to link to artwork or add it to the Tag, and whether to apply the image to all files in an album / series."
+msgstr "Wenn aktiviert, wird MediaMonkey Sie fragen, ob Sie auf Bilder verlinken oder sie zum Datei-Tag hinzufügen möchten, und ob die Bilder zu allen Dateien des Albums/der Serie hinzugefügt werden sollen."
+
+#: HelpContext.pas:262
+msgid "If enabled, MediaMonkey will prompt you whenever an edit operation modifies more than 50 files at once."
+msgstr "Wenn aktiviert, wird MediaMonkey nach einer Bestätigung fragen, sowie mehr wie 50 Dateien gleichzeitig geändert werden."
+
+#: HelpContext.pas:264
+msgid "Displays file information and associated artwork"
+msgstr "Zeigt Datei-Informationen und Cover Bilder an"
+
+#: HelpContext.pas:265
+msgid "Indicates how long the Pop-up should display"
+msgstr "Stellt ein, wie lange das Pop-up angezeigt werden soll"
+
+#: HelpContext.pas:266
+msgid "MediaMonkey allows you to use the Player that is built into MediaMonkey, or Winamp. Using the MediaMonkey player enables Volume Leveling, an advanced equalizer, and is fully integrated with MediaMonkey's Now Playing list. Using Winamp may be desired if you wish to use certain plugins that are incompatible with MediaMonkey."
+msgstr "MediaMonkey erlaubt es Ihnen, entweder den im Programm integrierten Player zu benutzen, oder Winamp. Der MediaMonkey-Player ermöglicht Lautstärkeanpassung, einen erweiterten Equalizer und ist voll integriert in die Widergabeliste. Winamp ermöglicht dagegen eventuell die Verwendung einiger Plugins, die nicht kompatibel mit MediaMonkey sind."
+
+#: HelpContext.pas:267
+msgid "This determines what the default behavior is when a file is double-clicked or <enter> is pressed. Options are Play Now, Play Next, Play Last, or Edit Properties."
+msgstr "Diese Einstellung bestimmt das Standardverhalten des Programms, wenn eine Datei doppelt angeklickt oder wenn <Enter> gedrückt wird. Die Optionen sind 'Jetzt abspielen', 'Als nächstes abspielen', 'Zuletzt abspielen' oder 'Eigenschaften bearbeiten'."
+
+#: HelpContext.pas:268
+msgid "This determines what files are played when the Play Now command is run for a single file. By default the selected file and others subsequent to it play. The alternative is that only the selected file plays."
+msgstr "Diese Einstellung bestimmt, welche Dateien abgespielt werden, wenn eine einzelne Datei mit dem Befehl 'Jetzt abspielen' aufgerufen wird. Standardmäßig wird die ausgewählte Datei und die im Anzeigefenster darauf folgenden abgespielt. Alternativ kann nur die ausgewählte datei abgespielt werden."
+
+#: HelpContext.pas:269
+msgid "Displays a warning if a file in the Now Playing queue is inaccessible (e.g. if it's on a CD that isn't inserted)."
+msgstr "Zeigt eine Warnung an, wenn eine Datei in der Wiedergabeliste nicht auffindbar ist (z.B. wenn sie auf einer nicht eingelegten CD gespeichert ist)."
+
+#: HelpContext.pas:274
+msgid ""
+"The MediaMonkey Player supports Input plug-ins that are compatible with Winamp 2. They generally add support for new audio formats.\n"
+"\n"
+"To install a plug-in you'll have to follow either of the following procedures:\n"
+"\n"
+"1) If the plug-in is provided with an installer, the installer often chooses a default directory of /Program Files/Winamp. Change this to /Program Files/MediaMonkey. If you're unable to change the installation directory, you'll have to install to the Winamp directory and then manually copy the installed .dll file(s) to the Program Files/MediaMonkey/Plug-ins directory.\n"
+"\n"
+"2) If the plug-in is a .dll, simply copy the .dll to the Program Files/MediaMonkey/Plugins directory, and follow the instructions provided with the plug-in.\n"
+"\n"
+"Once the plug-in is installed, you can access it from the plug-ins pane, and press the Configure button."
+msgstr ""
+"Der MediaMonkey-Player unterstützt Input-Plugins, die mit Winamp 2 kompatibel sind. Diese ermöglichen normalerweise die Unterstützung neuer Audio-Formate.\n"
+"Um ein Plugin zu installieren müssen Sie einer dieser Anleitungen folgen:\n"
+"1) Wenn das Plugin ein Installationsprogramm besitzt, wählt dieses oft das Standardverzeichnis \\Programme\\Winamp. Ändern Sie dieses in \\Programme\\MediaMonkey oder das Verzeichnis, in welchem Sie MediaMonkey installiert haben. Wenn das Installationsverzeichnis sich nicht ändern lässt, müssen Sie das Plugin in das Winamp-Verzeichnis installieren und die installierte(n) .dll-Datei(en) manuell in das Verzeichnis \\Programme\\MediaMonkey\\Plugins kopieren.\n"
+"2) Wenn das Plugin eine .dll-Datei ist, kopieren Sie diese einfach in das Verzeichnis \\Programme\\MediaMonkey\\Plugins und folgen Sie den Anweisungen, die mit dem Plugin geliefert werden.\n"
+"Auf einmal installierte Plugins können Sie in den Plugin-Einstellungen über die Konfigurieren-Schaltfläche zugreifen."
+
+#: HelpContext.pas:279
+msgid ""
+"The MediaMonkey Player supports Output plug-ins that are compatible with Winamp 2. They generally control how MediaMonkey outputs audio.\n"
+"\n"
+"To install a plug-in you'll have to follow either of the following procedures:\n"
+"\n"
+"1) If the plug-in is provided with an installer, the installer often chooses a default directory of /Program Files/Winamp. Change this to /Program Files/MediaMonkey. If you're unable to change the installation directory, you'll have to install to the Winamp directory and then manually copy the installed .dll file(s) to the Program Files/MediaMonkey/Plug-ins directory.\n"
+"\n"
+"2) If the plug-in is a .dll, simply copy the .dll to the Program Files/MediaMonkey/Plugins directory, and follow the instructions provided with the plug-in.\n"
+"\n"
+"Once the plug-in is installed, you can access it from the plug-ins pane, and press the Configure button."
+msgstr ""
+"Der MediaMonkey-Player unterstützt Output-Plugins, die mit Winamp 2 kompatibel sind. Diese kontrollieren, wie MediaMonkey Audiodateien wiedergibt.\n"
+"Um ein Plugin zu installieren müssen Sie einer dieser Anleitungen folgen:\n"
+"1) Wenn das Plugin ein Installationsprogramm besitzt, wählt dieses oft das Standardverzeichnis \\Programme\\Winamp. Ändern Sie dieses in \\Programme\\MediaMonkey oder das Verzeichnis, in welchem Sie MediaMonkey installiert haben. Wenn das Installationsverzeichnis sich nicht ändern lässt, müssen Sie das Plugin in das Winamp-Verzeichnis installieren und die installierte(n) .dll-Datei(en) manuell in das Verzeichnis \\Programme\\MediaMonkey\\Plugins kopieren.\n"
+"2) Wenn das Plugin eine .dll-Datei ist, kopieren Sie diese einfach in das Verzeichnis \\Programme\\MediaMonkey\\Plugins und folgen Sie den Anweisungen, die mit dem Plugin geliefert werden.\n"
+"Auf einmal installierte Plugins können Sie in den Plugin-Einstellungen über die Konfigurieren-Schaltfläche zugreifen."
+
+#: HelpContext.pas:284
+msgid ""
+"The MediaMonkey Player supports DSP Audio effect plug-ins that are compatible with Winamp 2. They generally enhance and/or modify the audio in some way.\n"
+"\n"
+"To install a plug-in you'll have to follow either of the following procedures:\n"
+"\n"
+"1) If the plug-in is provided with an installer, the installer often chooses a default directory of /Program Files/Winamp. Change this to /Program Files/MediaMonkey. If you're unable to change the installation directory, you'll have to install to the Winamp directory and then manually copy the installed .dll file(s) to the Program Files/MediaMonkey/Plug-ins directory.\n"
+"\n"
+"2) If the plug-in is a .dll, simply copy the .dll to the Program Files/MediaMonkey/Plugins directory, and follow the instructions provided with the plug-in.\n"
+"\n"
+"Once the plug-in is installed, you can access it from the plug-ins pane, and press the Configure button. For DSP Audio Effect plug-ins, you can also set the order in which the plugins process the audio using the up/down arrows."
+msgstr ""
+"Der MediaMonkey-Player unterstützt DSP-Effekte-Plugins, die mit Winamp 2 kompatibel sind. Generell erweitern oder modifizieren diese die Audio-Wiedergabe in bestimmter Art und Weise.\n"
+"Um ein Plugin zu installieren müssen Sie einer dieser Anleitungen folgen:\n"
+"1) Wenn das Plugin ein Installationsprogramm besitzt, wählt dieses oft das Standardverzeichnis \\Programme\\Winamp. Ändern Sie dieses in \\Programme\\MediaMonkey oder das Verzeichnis, in welchem Sie MediaMonkey installiert haben. Wenn das Installationsverzeichnis sich nicht ändern lässt, müssen Sie das Plugin in das Winamp-Verzeichnis installieren und die installierte(n) .dll-Datei(en) manuell in das Verzeichnis \\Programme\\MediaMonkey\\Plugins kopieren.\n"
+"2) Wenn das Plugin eine .dll-Datei ist, kopieren Sie diese einfach in das Verzeichnis \\Programme\\MediaMonkey\\Plugins und folgen Sie den Anweisungen, die mit dem Plugin geliefert werden.\n"
+"Auf einmal installierte Plugins können Sie in den Plugin-Einstellungen über die Konfigurieren-Schaltfläche zugreifen. Für die Effekte-Plugins können Sie einstellen in welcher Reihenfolge die Plugins die Audiosignale verarbeiten, indem Sie die hoch/runter-Pfeile verwenden."
+
+#: HelpContext.pas:289
+msgid ""
+"The MediaMonkey Player supports General plug-ins that are compatible with Winamp 2. They often add some entirely new functionality to the application.\n"
+"\n"
+"To install a plug-in you'll have to follow either of the following procedures:\n"
+"\n"
+"1) If the plug-in is provided with an installer, the installer often chooses a default directory of /Program Files/Winamp. Change this to /Program Files/MediaMonkey. If you're unable to change the installation directory, you'll have to install to the Winamp directory and then manually copy the installed .dll file(s) to the Program Files/MediaMonkey/Plug-ins directory.\n"
+"\n"
+"2) If the plug-in is a .dll, simply copy the .dll to the Program Files/MediaMonkey/Plugins directory, and follow the instructions provided with the plug-in.\n"
+"\n"
+"Once the plug-in is installed, you can access it from the plug-ins pane, and press the Configure button."
+msgstr ""
+"Der MediaMonkey-Player unterstützt Allgemeine Plugins, die mit Winamp 2 kompatibel sind. Diese fügen oft völlig neue Funktionen zum Programm hinzu.\n"
+"Um ein Plugin zu installieren müssen Sie einer dieser Anleitungen folgen:\n"
+"1) Wenn das Plugin ein Installationsprogramm besitzt, wählt dieses oft das Standardverzeichnis \\Programme\\Winamp. Ändern Sie dieses in \\Programme\\MediaMonkey oder das Verzeichnis, in welchem Sie MediaMonkey installiert haben. Wenn das Installationsverzeichnis sich nicht ändern lässt, müssen Sie das Plugin in das Winamp-Verzeichnis installieren und die installierte(n) .dll-Datei(en) manuell in das Verzeichnis \\Programme\\MediaMonkey\\Plugins kopieren.\n"
+"2) Wenn das Plugin eine .dll-Datei ist, kopieren Sie diese einfach in das Verzeichnis \\Programme\\MediaMonkey\\Plugins und folgen Sie den Anweisungen, die mit dem Plugin geliefert werden.\n"
+"Auf einmal installierte Plugins können Sie in den Plugin-Einstellungen über die Konfigurieren-Schaltfläche zugreifen."
+
+#: HelpContext.pas:294
+msgid ""
+"The MediaMonkey Player supports Visualization plug-ins that are compatible with Winamp 2. They provide kaleidoscopic visual effects that are synchronized to the music.\n"
+"\n"
+"To install a plug-in you'll have to follow either of the following procedures:\n"
+"\n"
+"1) If the plug-in is provided with an installer, the installer often chooses a default directory of /Program Files/Winamp. Change this to /Program Files/MediaMonkey. If you're unable to change the installation directory, you'll have to install to the Winamp directory and then manually copy the installed .dll file(s) to the Program Files/MediaMonkey/Plug-ins directory.\n"
+"\n"
+"2) If the plug-in is a .dll, simply copy the .dll to the Program Files/MediaMonkey/Plugins directory, and follow the instructions provided with the plug-in.\n"
+"\n"
+"Once the plug-in is installed, you can access it from the plug-ins pane, and press the Configure button."
+msgstr ""
+"Der MediaMonkey-Player unterstützt Visualisierungs-Plugins, die mit Winamp 2 kompatibel sind. Diese liefern eine Vielzahl von visuellen Effekten, die mit der Musik synchronisiert sind.\n"
+"Um ein Plugin zu installieren müssen Sie einer dieser Anleitungen folgen:\n"
+"1) Wenn das Plugin ein Installationsprogramm besitzt, wählt dieses oft das Standardverzeichnis \\Programme\\Winamp. Ändern Sie dieses in \\Programme\\MediaMonkey oder das Verzeichnis, in welchem Sie MediaMonkey installiert haben. Wenn das Installationsverzeichnis sich nicht ändern lässt, müssen Sie das Plugin in das Winamp-Verzeichnis installieren und die installierte(n) .dll-Datei(en) manuell in das Verzeichnis \\Programme\\MediaMonkey\\Plugins kopieren.\n"
+"2) Wenn das Plugin eine .dll-Datei ist, kopieren Sie diese einfach in das Verzeichnis \\Programme\\MediaMonkey\\Plugins und folgen Sie den Anweisungen, die mit dem Plugin geliefert werden.\n"
+"Auf einmal installierte Plugins können Sie in den Plugin-Einstellungen über die Konfigurieren-Schaltfläche zugreifen."
+
+#: HelpContext.pas:298
+msgid ""
+"MediaMonkey can synchronize music contained in the Library with a variety of Portable Audio Devices and Media Servers. Plug-ins are included for iPods and iPhones, and other devices. The Windows Media Plug-in works with most devices, including MTP / 'Plays for Sure' devices, and Android or Blackberry devices. In some cases, it may be preferable to use the Generic Plug-in for USB Mass Storage Devices (i.e. those that appear with a Drive Letter in the Windows Explorer).\n"
+"\n"
+"For other devices, plugins can be installed via the MediaMonkey web site."
+msgstr ""
+"MediaMonkey kann die im Archiv enthaltene Musik mit einer Reihe von tragbaren Abspielgeräten und Mediaservern synchronisieren. Plug-Ins für iPods, iPhones und einige andere Geräte werden mitgeliefert. Das Windows Media Plug-In arbeitet mit den meisten Geräten, inklusive MTP-Geräten, Androids und Blackberries. In einigen Fällen ist es sinnvoll, das allgemeine Plug-Ins für USB-Massenspeicher zu verwenden (z.B. für Geräte die als Laufwerk erkannt werden).\n"
+"\n"
+"Für andere Geräte können zusätzlich Plugins über die MediaMonkey-Webseite bezogen werden."
+
+#: HelpContext.pas:299
+msgid "This value is used as the basis for displaying the volume leveling adjustment that appears in the Filelist. It also determines the volume to which tracks are leveled when 'Level Track Volume' is used."
+msgstr "Dieser Wert wird als Basis für die Anzeige der Lautstärkeanpassung verwendet, die in der Songliste angezeigt wird. Er bestimmt zudem die Lautstärke, an welche Songs angepasst werden, wenn die Lautstärkeanpassung verwendet wird."
+
+#: HelpContext.pas:300
+msgid "This value determines playback volume if 'Level Playback Volume' is enabled (for track(s) that have been analyzed)."
+msgstr "Legt die Wiedergabelautstärke fest, wenn \"Lautstärkeanpassung\" aktiviert wurde und die Titel analysiert wurden."
+
+#: HelpContext.pas:301
+msgid "If enabled, MediaMonkey adjusts volume to the Player's Target Volume, using previously analyzed volume leveling coefficients. It has no effect on tracks that do not have such a coefficient."
+msgstr "Wenn aktiviert, passt MediaMonkey die Lautstärke bei der Wiedergabe basierend auf den Wert der Lautstärkeanalyse an. Songs ohne Lautstärkeanalyse werden nicht davon beeinflusst."
+
+#: HelpContext.pas:302
+msgid "This value is used to set the volume of Audio CDs that are burned via MediaMonkey, if volume leveling is enabled when the CD is burned."
+msgstr "Dieser Wert wird verwendet, um den Lautstärkepegel von Audio-CDs festzulegen, die mit MediaMonkey gebrannt werden, falls Lautstärkeanpassung für das Brennen von CDs aktiviert ist."
+
+#: HelpContext.pas:303
+msgid "Clipping prevention ensures that volume leveling doesn't result in clipping of the audio track. It does so by limiting the volume adjustment when possible clipping is detected."
+msgstr "Clipping-Schutz sorgt dafür, dass die Lautstärkeanpassung nicht zu Clipping in einer Musikdatei führt. Das wird erreicht, indem die Lautstärkeeinstellung reduziert wird, wenn mögliches Clipping erkannt wird."
+
+#: HelpContext.pas:305
+msgid "Determines the method is used to level volume for playback and device synchronization. 'per Album' levels based on the Album volume co-efficient (if available), preserving relative volume differences of tracks on an Album. 'per Track' levels each track independently, preferable when Albums are rarely played as a whole."
+msgstr "Bestimmt die Methode der Lautstärkeanpassung für die Wiedergabe und Gerätesynchronisation. 'pro Album' passt die Lautstärke mit Hilfe der Albumlautstärke an (wenn vorhanden), dies erhält bestehende Lautstärkeunterschiede zwischen den einzelnen Titeln. 'pro Titel' passt die Lautstärke jedes einzelnen Titels an, hilfreich wenn ganze Alben eher selten abgespielt werden."
+
+#: HelpContext.pas:306
+msgid "Analyzes the relative volume of Tracks on a per Album basis, and saves the leveling co-efficient."
+msgstr "Analysiert die Lautstärke von Songs relativ zu dem gesamten Album"
+
+#: HelpContext.pas:307
+msgid "Automatically analyzes volume of Tracks as a background process"
+msgstr "Analysiert die Laustärke der Songs automatisch im Hintergrund"
+
+#: HelpContext.pas:309
+msgid "This option causes the Analyze Volume command to be carried out only on tracks that do not yet have a volume coefficient calculated. Since the number of tracks analyzed does not affect volume analysis results, there is little reason to disable this function."
+msgstr "Diese Option sorgt für die Ausführung der Lautstärke-Analyse nur für solche Songs, die noch keinen Lautstärkepegel-Koeffizienten besitzen. Da die Anzahl der analysierten Songs die Resultate folgender Analysen nicht beeinflusst, gibt es keinen Grund, diese Funktion zu deaktivieren."
+
+#: HelpContext.pas:310
+msgid "In cases where the tags do not contain much information, MediaMonkey can get some information such as Artist, Title, or Album from the Filename if this option is enabled. Note that the inferred properties are saved in the database, but not saved to the file tags (in case the information is incorrect). Once you've verified the data, you can update the tags manually--see Synchronizing Your Tags."
+msgstr "Falls ein Tag nicht viele Informationen enthält kann MediaMonkey Angaben über Interpreten, Titel oder Album aus dem Dateinamen ableiten, wenn diese Funktion aktiviert ist. Beachten Sie, dass abgeleitete Eigenschaften im Archiv gespeichert werden, aber nicht in den Datei-Tags (für den Fall, dass die Information inkorrekt ist). Sobald Sie die Daten verifiziert haben, können Sie die Tags manuell aktualisieren -- vergleichen Sie 'Tags synchronisieren'."
+
+#: HelpContext.pas:311
+msgid "Properties can be inferred from 'Filename' or 'Filename + Path'. Generally, it is better to infer from Filenames only, unless files are arranged in a highly organized directory structure, in which case 'Filename + Path' will yield better results."
+msgstr "Datei-Eigenschaften können aus 'Dateiname' oder aus 'Dateiname + Pfad' abgeleitet werden. Allgemein ist es besser, nur vom Dateinamen abzuleiten, außer die Dateien sind in einer gut organisierten Ordnerstruktur gespeichert."
+
+#: HelpContext.pas:312
+msgid "It is possible to specify whether to use 'Tags and then inferred properties', or vice versa. Generally, Tags contain more accurate information, so choosing 'Tags and then inferred properties' will import properties from Tags, and then any missing information will be imported from inferred properties. The only time one would want to use 'Inferred Properties and then Tags' is if it is known in advance that tags are inaccurate, and filenames contain more accurate data."
+msgstr "Es kann festgelegt werden, ob 'Erst Tags, dann abgeleitete Eigenschaften' zur Archivierung verwendet werden sollen, oder umgekehrt. Tags enthalten normalerweise korrektere Informationen; die Option 'Erst abgeleitete Eigenschaften, dann Tags' importiert zunächst die Tag-Informationen und ergänzt fehlende Angaben durch Ableitung aus Pfad und Dateiname. Diese Variante sollte man nur verwenden, wenn man sicher ist, dass die Tags falsche Informationen enthalten, der Dateiname dagegen korrekt ist."
+
+#: HelpContext.pas:313
+msgid "This setting defines how Album Titles and Track number properties are added to the Library. Options are 'Tags only', 'Tags then Playlists', and 'Playlists then Tags'. 'Tags only' should always be used, except in cases where a music collection is arranged in such a manner that each collection of tracks has an associated playlist that defines the Album."
+msgstr "Diese Einstellung definiert, wie Album-Titel- und Songnummer-Eigenschaften ins Archiv übertragen werden. Die Optionen sind 'Nur Tags', 'Erst Tags, dann Playlisten' und 'Erst Playlisten, dann Tags'. 'Nur Tags' sollte normalerweise verwendet werden, außer wenn die Musiksammlung so strukturiert ist, dass jede Anordnung von Songs eine zugehörige Album-Playliste besitzt."
+
+#: HelpContext.pas:314
+msgid "Removes underscores from inferred properties when adding files."
+msgstr "Entfernt Unterstriche aus abgeleiteten Eigenschaften wenn Dateien hinzugefügt werden."
+
+#: HelpContext.pas:315
+msgid "This creates a digital signature, for the audio content of each track (tags are ignored), so that each track can be uniquely identified. If any two tracks are duplicates (i.e. they have matching signatures) they will appear in the Files to Edit > Duplicate Content view."
+msgstr "Diese Einstellung generiert eine digitale Signatur für die Audiosignale jeden Songs (Tags werden ignoriert), so dass jeder Song eindeutig identifiziert werden kann. Wenn zwei Songs doppelt vorhanden sind (wenn sie also dieselbe Signatur haben) werden sie im Archivbaum angezeigt unter 'zu bearbeitende Dateien > Doppelter Inhalt'."
+
+#: HelpContext.pas:316
+msgid "This prevents Tracks that are less than a specified size (KB) or time (seconds) from being added to the Library, since it's unlikely that you really want such files to appear in your Library."
+msgstr "Diese Option verhindert, dass Songs von kleinerer als der angegebenen Größe (KB) oder Länge (Sekunden) in das Archiv aufgenommen werden, da es unwahrscheinlich ist, dass Sie solche Dateien im Archiv haben wollen."
+
+#: HelpContext.pas:317
+msgid "This causes all Tracks that are re-added (either manually by clicking 'Add Tracks...' or automatically via the File Monitor) to be updated--even those that already exist in the database. The effect is that if other applications have been used to modify tags, the Library will update based on information gleaned from the tags. The downside to this is that up-to-date track properties can be overwritten with out-of-date information from tags (this would only occur if tags are not kept up-to-date and in synch with the library)."
+msgstr "Diese Option sorgt dafür, dass alle Songs im Archiv mit neuen Einträge versehen werden, wenn sie entweder manuell oder automatisch durch die Dateiüberwachung neu/wiederholt hinzugefügt werden -- auch die Songs, die bereits im Archiv existieren. Dies ermöglicht es, das Archiv anhand von Tag-Daten zu aktualisieren, welche von anderen Anwendungen ergänzt/geändert wurden. Der Nachteil ist, dass aktuelle Song-Eigenschaften des Archivs möglicherweise mit veralteten Tag-Informationen überschrieben werden (dies geschieht dann, wenn die Tags nicht aktuell und synchron zu den Archiveinträgen gehalten sind)."
+
+#: HelpContext.pas:318
+msgid "Enabling this option speeds up all scans subsequent to the initial one by limiting re-addition to files that have changed in size or timestamp."
+msgstr "Wenn Sie diese Option aktivieren, beschleunigt sich das Archivieren nach dem allerersten Durchgang dadurch, dass nur noch solche Dateien neu hinzugefügt werden, deren Größe oder Zeitstempel sich geändert hat."
+
+#: HelpContext.pas:319
+msgid "You are given the option of choosing what version of ID3 tags to use: v1, v2, or both. Generally, 'both' is usually best as it ensures compatibility with devices that only support v1 tags, and allows for the much richer set of data that can be stored in v2 tags."
+msgstr "Sie können auswählen, welche ID3-Version für Tags Sie verwenden möchten: v1, v2 oder beide. Normalerweise ist es am besten, beide Versionen zu verwenden, denn dies gewährleistet die Kompatibilität mit Geräten, die nur v1-Tags unterstützen. Außerdem können wesentlich mehr Informationen gespeichert werden, als nur mit v2-Tags möglich wäre."
+
+#: HelpContext.pas:320
+msgid "If you have files with non-English characters, you'll want to enable ascii + Unicode, which saves tags in ascii except in cases where non-latin characters appear. Some players may have trouble reading Unicode tags, though."
+msgstr "Diese Option gibt Ihnen die Möglichkeit, ID3v2-Tags in Unicode oder im ASCII-Format zu verwenden. Wenn Sie Dateien mit nicht-englischen Zeichen im Titel etc. haben, sollten Sie Unicode verwenden -- allerdings haben manche Abspielgeräte Schwierigkeiten beim Auslesen von Unicode-Tags."
+
+#: HelpContext.pas:321
+msgid "Causes Tags to be updated immediately, as soon as changes to file properties are made."
+msgstr "Sorgt dafür, dass Tags gleich nach der Änderung von Datei-Eigenschaften aktualisiert werden."
+
+#: HelpContext.pas:322
+msgid "This causes MediaMonkey to update the file's timestamp whenever a tag is updated. This should be enabled so that other applications reading the file are aware that a change has been made."
+msgstr "Diese Option sorgt dafür, dass MediaMonkey den Zeitstempel einer Datei aktualisiert, wenn der Tag der Datei geändert wurde. Dies sollte aktiviert sein, damit andere Anwendungen, die auf die Datei zugreifen, erkennen, dass eine Änderung vorgenommen wurde."
+
+#: HelpContext.pas:323
+msgid "This causes MediaMonkey to save .m3u files in a format that preserves non-English characters. Note that some players may not support unicode .m3u playlists."
+msgstr "Diese Option gewährt, dass MediaMonkey .m3u-Dateien in einem Format speichert, in dem nicht-englische Zeichen bewahrt werden. Beachten Sie, dass manche Abspielgeräte keine Unicode-Playlisten unterstützen."
+
+#: HelpContext.pas:324
+msgid "This option is useful if you wish to automatically create playlists of newly added files to your library. The main use of this is if you wish to export playlists of newly added files to a portable device."
+msgstr "Diese Option erstellt automatisch Playlisten aus neuen Dateien, die Sie z.B. zur Synchronisierung mit einem tragbaren Gerät verwenden können."
+
+#: HelpContext.pas:325
+msgid "If enabled, a warning is provided whenever duplicate files are added to a playlist."
+msgstr "Wenn aktiviert, wird eine Warnmeldung ausgegeben, wenn Dateien mehrfach zu einer Playliste hinzugefügt werden."
+
+#: HelpContext.pas:326
+msgid "This sets the default location to which associated artwork is stored."
+msgstr "Setzt den Standard-Speicherort für Cover Bilder."
+
+#: HelpContext.pas:327
+msgid "This is the filename for the first image, as long as only a single Album, Series, or Movie is contained within the folder."
+msgstr "Gibt den Namen des ersten Bildes an, solange der Ordner nur ein Album/eine Serie/ein Film enthält."
+
+#: HelpContext.pas:330
+msgid "This filename is used whenever more than one image is stored to a folder. It is used a) for images other than the first image, when only a single Album/Series/Movie is contained within a folder b) for all images when multiple Albums/Series/Movies are contained within a folder."
+msgstr "Deser Dateiname wird immer dann verwendet, wenn der Ordner mehr als ein Bild beinhaltet. Es wird verwendet für a) weitere Bilder bei nur einem Album/einer Serie/eines Film pro Ordner b) für alle Bildere wenn ein Ordner mehrere Alben/Serien/Filme enthält."
+
+#: HelpContext.pas:332
+msgid "Folders set to scan on startup will be checked for changes each time MediaMonkey is run, so that any changes made by other applications or device when MediaMonkey isn't running will be reflected in the MediaMonkey Library."
+msgstr "Ordner die beim Programmstart geprüft werden, werden jedesmal überprüft, wenn MediaMonkey gestartet wird. So werden alle Änderungen übernommen, die durchgeführt wurden, während MediaMonkey nicht lief."
+
+#: HelpContext.pas:333
+msgid "Folders set to scan continuously will be monitored so that any changes within them will be immediately reflected in the MediaMonkey Library."
+msgstr "Ordner die stets überwacht werden, werden laufend überwacht, während MediaMonkey läuft, sodass alle Änderungen der enthaltenen Dateien berücksichtigt werden."
+
+#: HelpContext.pas:336
+msgid "Enable this if you wish the library to be pruned of any files that have been moved or deleted from a monitored folder. This is extremely useful, but should only be enabled if you're confident that you'll never move files to a folder that isn't monitored, as doing so would result in the file being removed from the Library entirely."
+msgstr "Aktivieren Sie diese Funktion, damit das Archiv um Dateieinträge bereinigt wird, die aus einem überwachten Ordner verschoben oder gelöscht wurden. Dies sollte aber nur aktiviert werden, wenn Sie sicher sind, dass Sie keine Dateien in nicht überwachte Ordner verschieben -- denn das hätte zur Folge, dass der Dateien komplett aus dem Archiv gelöscht werden."
+
+#: HelpContext.pas:337
+msgid "This causes any attributes (e.g. Artist) that are no longer associated with any files to be automatically removed from the Library."
+msgstr "Mit dieser Funktion wird jedes Attribut (z.B. Interpret), dass keine Songs mehr enthält, automatisch aus dem Archiv entfernt."
+
+#: HelpContext.pas:338
+msgid "This setting determines whether MediaMonkey searches file directories for artwork and links it to Tracks as they are added to the Library."
+msgstr "Diese Einstellung bestimmt ob MediaMonkey in Verzeichnissen nach Cover-Bildern sucht und sie mit den Songs verknüpft, wenn diese ins Archiv aufgenommen werden."
+
+#: HelpContext.pas:342
+msgid ""
+"You can set the following Virtual CD properties:\n"
+"-The compression format that you want to use for ripping the tracks. See Help: \"Ripping & Digital File Formats\".\n"
+"-The Directory and Filename format to be used for the new tracks."
+msgstr ""
+"Sie können folgende Einstellungen für Virtuelle CDs tätigen:\n"
+"- Das Kompressionsformat, dass für gerippte Songs verwendet werden soll. Vergleichen Sie 'Ripping & Digital File Formats' in der Hilfedatei.\n"
+"- Verzeichnis und Dateinamenformat, die für neue Songs verwendet werden sollen."
+
+#: HelpContext.pas:346
+msgid ""
+"You can set the following Preview properties:\n"
+"-The compression format that you want to use for ripping the tracks.\n"
+"-The start time and duration of each sample to be created.\n"
+"-The Directory and Filename format to be used for the Previews."
+msgstr ""
+"Sie können die folgenden Vorschau-Einstellungen tätigen:\n"
+"- Das Kompressionsformat, dass Sie für gerippte Songs verwenden möchten.\n"
+"- Die Anfangszeit und Dauer jeder zu erstellenden Vorschau.\n"
+"- Verzeichnis und Dateinamenformat, die für Vorschauen verwendet werden sollen."
+
+#: HelpContext.pas:348
+msgid "Determines whether album information is automatically looked up when a CD is scanned."
+msgstr "Bestimmt, ob Album-Informationen automatisch abgerufen werden sollen, wenn eine CD eingelesen wird."
+
+#: HelpContext.pas:349
+msgid "Configure which server to use (username and domain are optional). The main freedb server is entered by default, although you may want to change this to a server closer to your location."
+msgstr "Konfigurieren Sie hier, welcher Server verwendet werden soll (Benutzername und Domain sind optional). Der Hauptserver von Freedb ist voreingestellt, aber diesen können Sie gegebenenfalls durch einen Server ersetzen, der näher an Ihrem Wohnort liegt."
+
+#: HelpContext.pas:350
+msgid "Freedb connections usually use the CDDBP protocol, although you may want to use HTTP if you are having firewall related problems."
+msgstr "Freedb-Verbindungen verwenden normalerweise das CDDBP-Protokoll. Wenn Sie Probleme im Zusammenhang mit einer Firewall haben, sollten Sie jedoch HTTP verwenden."
+
+#: HelpContext.pas:352
+msgid "If your network uses a proxy server, you'll need to configure these settings to enable Freedb HTTP connections and MP3 / OGG streaming. If you don't know the Proxy Server settings, check with your Administrator."
+msgstr "Wenn ihr Netzwerk über einen Proxy Server verfügt, müssen sie diesen konfigurieren um FreeDB-HTTP-Verbindungen und mp3/Ogg-Streaming zu ermöglichen. Bei Fragen wenden Sie sich an ihren Administrator!"
+
+#: HelpContext.pas:354
+msgid "This causes MediaMonkey to get track properties embedded directly on an Audio CD in the CD-TEXT format when ripping the CD or adding it to the library."
+msgstr "Mit dieser Option kann MediaMonkey Song-Eigenschaften auslesen, die im CD-TEXT-Format auf einer Audio-CD vorhanden sind, wenn die CD gerippt oder dem Archiv hinzugefügt wird."
+
+#: HelpContext.pas:356
+msgid "This speeds up CD Ripping by encoding audio to another format as the audio is being extracted from the CD-ROM. For some drives, especially older ones, this should be disabled as it may reduce the quality of encoded files."
+msgstr "Diese Option beschleunigt das Rippen von CDs, indem die Audiodaten während der Extraktion von CD-ROM kodiert werden. Für einige Laufwerke, besonders ältere, sollte dies deaktiviert werden, da sonst die Qualität der kodierten Dateien leidet."
+
+#: HelpContext.pas:358
+msgid "This name is used to identify a portable device. This must be entered before you can synchronize with a portable device."
+msgstr "Dieser Name wird verwendet, um ein tragbares Gerät zu identifizieren. Dieser Eintrag muss gemacht werden, bevor Sie das Gerät mit Ihrem Archiv sychronisieren können."
+
+#: HelpContext.pas:359
+msgid "Choose the drive letter that is your portable device. You can verify which letter this is in Explorer. This must be entered before you can synchronize with a portable device."
+msgstr "Wählen Sie den Laufwerksbuchstaben, den Ihr tragbares Gerät hat. Sie können diesen Buchstaben im Windows Explorer nachschauen. Dieser Eintrag muss gemacht werden, bevor Sie das Gerät mit Ihrem Archiv synchronisieren können."
+
+#: HelpContext.pas:360
+msgid "Choose the directory and filename format when copying files to the portable device."
+msgstr "Wählen Sie das Verzeichnis und das Dateinamenformat für die Dateien, die auf das tragbare Gerät kopiert werden."
+
+#: HelpContext.pas:361
+msgid "Create M3U playlists to more easily navigate the tracks on a device"
+msgstr "Erstelle m3u-Wiedergabelisten zur einfacheren Navigation auf dem Gerät."
+
+#: HelpContext.pas:362
+msgid "Enable whichever formats are supported by your portable device.  Any formats that are not selected will not be copied to the device."
+msgstr "Wählen Sie das Format, das von ihrem tragbaren Gerät unterstützt wird.  Nicht ausgewählte Formate werden nicht auf das Gerät kopiert."
+
+#: HelpContext.pas:364
+msgid "Choose whether to synch your entire library or only a subset. This is usually based on how much space is available on your portable device."
+msgstr "Wählen Sie, ob Sie Ihr gesamtes Archiv synchronisieren möchten, oder nur einen Teil davon. Diese Entscheidung ist normalerweise davon abhängig, wieviel Speicherplatz auf ihrem tragbaren Gerät zur Verfügung steht."
+
+#: HelpContext.pas:366
+msgid "This will cause files that are on the device but not selected in the Auto-sync list to be deleted. This is useful if you have a music collection that is larger than your device, however, make certain to copy new files that are on your device to the Library before synchronizing."
+msgstr "Hierdurch werden Dateien entfernt, die auf dem Gerät sind, aber nicht für die Synchronisierung markiert wurden. Dies ist nützlich, wenn Ihre Musiksammlung größer als ihr tragbares Gerät ist -- achten Sie jedoch darauf, dass Sie neue Dateien, die auf dem Gerät aber nicht im Archiv vorhanden sind, vor der Synchronisierung ins Archiv kopieren!"
+
+#: HelpContext.pas:368
+msgid "This causes the tree in the MediaMonkey Explorer to open and close in an animated fashion. This may cause problems, though, if you are using a non-white background."
+msgstr "Diese Option sorgt dafür, dass der Archivbaum sich in animierter Form öffnet und schließt. Dies kann jedoch Probleme verursachen, wenn der Archivbaum-Hintergrund nicht weiß ist."
+
+#: HelpContext.pas:369
+msgid "Disabling this option causes masks to appear as they used to in Songs-DB. For advanced users only."
+msgstr "Wenn Sie diese Option deaktivieren, werden Eingabemasken so dargestellt wie in Songs-DB (Vorgängerprogramm von MediaMonkey). Nur für fortgeschrittene Benutzer."
+
+#: HelpContext.pas:370
+msgid "Select the skin that you wish to use with MediaMonkey."
+msgstr "Wählen sie das Design das sie mit MediaMonkey verwenden wollen."
+
+#: HelpContext.pas:371
+msgid "This is useful if you prefer MediaMonkey to use the theme of your Windows system or if you have an older systems and wish to improve performance slightly. Close MediaMonkey and restart it for this to take effect"
+msgstr "Dies ist nützlich, wenn Sie wollen, dass MediaMonkey das Design Ihres Windows erhält oder wenn Sie ein älteres System haben und die Perfomance etwas verbessern möchten. Schließen Sie MediaMonkey und starten Sie es erneut, um den Effekt zu sehen."
+
+#: HelpContext.pas:372
+msgid "This option causes MediaMonkey to overide the backgrounds that are included with the skins with custom backgrounds of your liking."
+msgstr "Mit dieser Option kann MediaMonkey die Hintergründe, die mit einem Motiv geliefert wurden, durch Ihre benutzerdefinierten Hintergründe ersetzen."
+
+#: HelpContext.pas:373
+msgid "You can create custom backgrounds--one for each of: the Tree, the Filelist, and the Now Playing window."
+msgstr "Sie können eigene Hintergründe definieren -- jeweils einen für den Archivbaum, die Dateiliste und die Wiedergabeliste."
+
+#: HelpContext.pas:374
+msgid "This enables smooth scrolling, but can cause flashing to occur depending on the background color chosen."
+msgstr "Diese Option aktiviert weiches Scrollen (smooth scrolling), kann abhängig von der gewählten Hintergrundfarbe aber auch zu einem unangenehmen Blink-Effekt führen."
+
+#: HelpContext.pas:375
+msgid "This allows you to change the headings that identify each of the Custom Fields."
+msgstr "Dies ermöglicht Ihnen die Änderung der Überschriften für die benutzerdefinierten Felder."
+
+#: HelpContext.pas:376
+msgid "This causes MediaMonkey to ignore the specified prefixes when sorting by Artist (separate multiple prefixes with a ','). For instance 'The Beatles' and 'Beatles' will appear directly adjacent to one another if this is enabled and 'the' is configured."
+msgstr "Hiermit werden Präfixe beim Sortieren der Interpreten ignoriert. So erscheinen zum Beispiel 'The Beatles' und 'Beatles' direkt hintereinander, wenn die Option aktiviert ist und 'the' eingestellt wurde. Aufzählung verschiedener Präfixe durch Trenner ','."
+
+#: HelpContext.pas:377
+msgid "This specifies what character is used to denote multiple values within a single field (e.g. Rock;Folk)."
+msgstr "Legt das Trennzeichen fest, mit dem Aufzählungen voneinander geltrennt werden (z.B. Rock;Folk)."
+
+#: HelpContext.pas:378
+msgid "Shows arrows in the Filelist that link to related content"
+msgstr "Zeigt Pfeile in der Dateiliste an, die zu verwandtem Inhalt verlinkt sind."
+
+#: HelpContext.pas:380
+msgid "If enabled, the 'All' node will appear at the top/bottom of each directory in the Location or My Computer nodes, allowing you to view library files in the directory and all of its subdirectories."
+msgstr "Zeigt den 'Alle'-Knoten am Anfang/Ende jedes Verzeichnisses in 'Speicherort' und 'Mein Computer' an, so dass du alle Songs in dem Verzeichnis und allen Unterverzeichnissen angezeigt bekommst."
+
+#: HelpContext.pas:381
+msgid "If enabled, the 'All' node will appear at the top/bottom of each directory in My Computer nodes, allowing you to view library files in the directory and all of its subdirectories."
+msgstr "Zeigt den 'Alle'-Knoten am Anfang/Ende jedes Verzeichnisses im 'Mein Computer'-Knoten, so dass Sie alle Songs im Verzeichnis und in allen Unterverzeichnissen angezeigt bekommen."
+
+#: HelpContext.pas:382
+msgid "If enabled, in addition to Tracks, MediaMonkey will display .m3u playlists that appear in directories in the My Computer node."
+msgstr "Wenn aktiviert, zeigt MediaMonkey im Mein Computer-Knoten zusätzlich zu den Songs auch .m3u-Playlisten aus den dortigen Unterverzeichnissen an."
+
+#: HelpContext.pas:384
+msgid "Type the key combination to activate the selected action"
+msgstr "Definiere die zu drückenden Tasten bei der die die Aktion auszuführen ist"
+
+#: HelpContext.pas:385
+msgid "Choose the action for which a Hotkey should be created"
+msgstr "Wähle die Aktion für die ein Tastenkürzel angelegt werden soll."
+
+#: HelpContext.pas:386
+msgid "Causes the Hotkey to function even when MediaMonkey isn't in focus"
+msgstr "Tastenkürzel funktionieren auch dann, wenn MediaMonkey nicht aktiv ist."
+
+#: HelpContext.pas:387
+msgid "Creates a new Hotkey"
+msgstr "Erstellt ein neues Tastenkürzel"
+
+#: HelpContext.pas:388
+msgid "Deletes existing Hotkey"
+msgstr "Löscht ein Tastenkürzel"
+
+#: HelpContext.pas:389
+msgid "Applies the changes made to an existing Hotkey entry"
+msgstr "Speichert die Änderungen des Tastenkürzels"
+
+#: HelpContext.pas:390
+msgid "Hotkeys let you define keyboard shortcuts to accomplish various actions. Select <New Hotkey> to create a new shortcut."
+msgstr "Mit Hotkeys können sie sie Tastenkombinationen definieren, die verschiedene Aktionen ausführen. Wähle <Neuer Hotkey> um einen neuen Eintrag zu erzeugen."
+
+#: HelpContext.pas:400
+msgid ""
+"Search Tips:\n"
+"A : finds files with A*, a*, or variants with an accent\n"
+"+A : finds files with A* only\n"
+"\"A\" : finds files with A only\n"
+"A B : finds files with A AND B\n"
+"A OR B : finds files with either A or B\n"
+"A -B : find files with A and NOT B\n"
+"artist:A : finds files with Artist = A\n"
+"year:X..Y : finds files in range X to Y\n"
+"rating: X.. : finds files with X stars or more"
+msgstr ""
+"Such-Tips:\n"
+"A: finde alle Dateien mit A*, a* oder Varianten mit Akzent\n"
+"+A: finde alle Dateien mit A*\n"
+"\"A\": finde alle Dateien mit A\n"
+"A B: finde alle Dateien mit A und B\n"
+"A OR B : finde alle Dateien mit A oder B\n"
+"A -B : finde alle Dateien mit A aber ohne B\n"
+"intertpret:A : finde alle Dateien mit Interpret = A\n"
+"jahr:X..Y : finde alle Dateien im Zeitraum zwischen X und Y\n"
+"bewertung:X.. : finde alle Dateien mit Berwertung X oder größer"
+
+#: HelpContext.pas:402
+msgid "Determines which actions are presented when a disk is inserted"
+msgstr "Bestimmt welche Aktion beim Einlegen einer Disk ausgeführt wird"
+
+#: HelpContext.pas:403
+msgid "Determines which actions are available in the Explorer context-menu"
+msgstr "Bestimmt welche Einträge im Kontext-Menü des Windows-Explorers sichtbar sind"
+
+#: HelpContext.pas:404
+msgid "Prevents the Auto-DJ from adding tracks while this Type of content is playing"
+msgstr "Unterbindet bei Wiedergabe dieses datetyps das Hinzufügen von Dateien durch den den Auto-DJ"
+
+#: HelpContext.pas:405
+msgid "Determines how the 'Summary' field displays for different content Types"
+msgstr "Bestimmt wie das Erscheinungsbild der Spalte 'Zusammenfassung' für verschiedene Medienformate"
+
+#: HelpContext.pas:406
+msgid "Determines what fields display below Artwork in Art and Art Browser views"
+msgstr "Bestimmt welche Felder unter dem Bild in den Bild-Ansichten anzeigt werden"
+
+#: HelpContext.pas:407
+msgid "Turns on the UPnP/DLNA server(s), so that MediaMonkey behaves as a Digital Media Server"
+msgstr "Aktiviert UPnP/DLNA Server und verwandelt MediaMonkey in einen DMS (Digital Media Server)"
+
+#: HelpContext.pas:409
+msgid "Lets MediaMonkey behave as a Digital Media Renderer so that it can play content from a Digital Media Controller which retrieves content from a Digital Media Server. If you wish to play content from MediaMonkey's library, you must also enable Media Sharing."
+msgstr "Verwandelt MediaMonkey in einen DMR (Digital Media Renderer) um Inhalte von einem DMS (Digital Media Server) wiedergeben zu können. Um Inhalte des MediaMonkey-Archivs wiedergeben zu können, muß die Freigabe in MediaMonkey aktiviert werden."
+
+#: HelpContext.pas:410
+msgid "Displays all contents of a Collection in the Collection's root node. Can be disabled for very large Libraries."
+msgstr "Zeige alle Datei-Einträge in der Baumwurzel an. Ssollte für sehr große Archive deaktiviert werden."
+
+#: HelpContext.pas:411
+msgid "Displays a mirror image of Artwork in the Art views."
+msgstr "Zeigt ein Spiegelbild im Bild-Fenster an."
+
+#: HelpContext.pas:412
+msgid "Choose which nodes to enable in the Media Tree, and edit the properties of Collections."
+msgstr "Wählen Sie die anzuzeigenden Baum-Knoten und bearbeiten sie die Eigenschaften der Sammlungen."
+
+#~ msgid ""
+#~ "When enabled, any changes that occured in the Monitored Folder while "
+#~ "MediaMonkey wasn't running will be detected at startup. This is useful in "
+#~ "case changes are made using other applications or devices made while "
+#~ "MediaMonkey isn't running."
+#~ msgstr ""
+#~ "Wenn aktiviert, werden alle Änderungen der überwachten Ordner, die "
+#~ "während MediaMonkey nicht aktiv war, beim Programmstart nachgeholt. Die "
+#~ "ist sinnvoll wenn Änderungen mit anderen Programmen durchgeführt werden, "
+#~ "ohne dass MediaMonkey im Hintergrund läuft."
+
+#~ msgid ""
+#~ "'per Album' levels volume based on relative volume of the Album, if that "
+#~ "co-efficient has been calculated, and otherwise uses the Track leveling "
+#~ "co-efficient. 'per Track' is only preferable if Albums are rarely played "
+#~ "as a whole."
+#~ msgstr ""
+#~ "'pro Album' passt die Lautstärke basierend auf den Album-Laustärkepegel "
+#~ "an, wenn dieser berechnet wurde. Ansonsten wird der Song-Pegel verwendet. "
+#~ "'pro Song' sollte bevorzugt werden, wenn Alben nur selten als Ganzes "
+#~ "gehört werden."
+
+#~ msgid ""
+#~ "Choose the temporary working directory that MediaMonkey uses. Any "
+#~ "directory is fine, since the contents of this directory are only "
+#~ "temporary."
+#~ msgstr ""
+#~ "Wählen Sie das temporäre Arbeitsverzeichnis, das MediaMonkey benutzt. Das "
+#~ "Verzeichnis kann beliebig gewählt werden, da sein Inhalt nur temporär ist."
+
+#~ msgid ""
+#~ "This value is used to control playback volume for any track(s) that have "
+#~ "been analyzed, assuming 'Level Playback Volume' is enabled."
+#~ msgstr ""
+#~ "Dieser Wert wird verwendet, um die Wiedergabe-Lautstärke der Songs zu "
+#~ "kontrollieren, deren Lautstärkepegel analyisert wurde -- vorausgesetzt, "
+#~ "'Lautstärke anpassen' ist aktiviert."

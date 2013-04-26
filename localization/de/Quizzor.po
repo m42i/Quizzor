@@ -1,0 +1,133 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Quizzor_de\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-26 17:46+0100\n"
+"PO-Revision-Date: 2013-04-26 18:14+0100\n"
+"Last-Translator: m42i <mfourtytwoi@gmail.com>\n"
+"Language-Team: m42i <mfourtytwoi@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: Localize;LocalizedFormat\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: /home/user/Source/Quizzor\n"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:175
+msgid "Randomizing a playlist cannot be undone."
+msgstr "Das Mischen einer Playliste kann nicht rückgängig gemacht werden."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:176
+#: /home/user/Source/Quizzor/Quizzor.vbs:797
+msgid "Randomize"
+msgstr "Mischen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:176
+#: /home/user/Source/Quizzor/Quizzor.vbs:536
+#: /home/user/Source/Quizzor/Quizzor.vbs:542
+#: /home/user/Source/Quizzor/Quizzor.vbs:611
+msgid "Cancel"
+msgstr "Abbrechen"
+
+# After this comes a date
+#: /home/user/Source/Quizzor/Quizzor.vbs:207
+msgid "Quiz of "
+msgstr "Quiz vom"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:230
+msgid "Please create a new quiz first."
+msgstr "Bitte erst ein Quiz starten."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:243
+msgid "No songs visible. Please fill the main window first."
+msgstr "Es sind keine"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:319
+msgid "Album"
+msgstr "Album"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:323
+msgid "Title"
+msgstr "Titel"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:327
+msgid "Artist"
+msgstr "Interpret"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:331
+msgid "Comment"
+msgstr "Kommentar"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:335
+msgid "File"
+msgstr "Datei"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:352
+msgid "Play"
+msgstr "Start"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:357
+msgid "Pause"
+msgstr "Pause"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:362
+msgid "Next"
+msgstr "Nächster"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:367
+msgid "Show Information"
+msgstr "Zeige Daten"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:373
+msgid "Hide Information"
+msgstr "Verstecke Daten"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:530
+msgid "A previous quiz exists. Do you want to restore the last quiz"
+msgstr "Es gibt ein gespeichertes Quiz. Soll dieses geladen werden?"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:535
+#: /home/user/Source/Quizzor/Quizzor.vbs:541
+msgid "New Quiz"
+msgstr "Neues Quiz"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:536
+msgid "Restore Quiz"
+msgstr "Quiz laden"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:539
+msgid "Creating a new quiz means losing the current queue."
+msgstr "Wird ein neues Quiz erstellt geht die aktuelle Wiedergabeliste verloren."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:590
+msgid "Please select a playlist."
+msgstr "Bitte eine Wiedergabeliste auswählen."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:602
+msgid "Playlist is empty. Won't start quiz."
+msgstr "Die Playliste ist leer. Es wird kein Quiz gestartet."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:610
+msgid "The current queue is not empty. Do you want to replace all tracks?"
+msgstr "Die aktuelle Wiedergabeliste ist nicht leer. Sollen alle Titel darin ersetzt werden?"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:611
+msgid "Replace queue"
+msgstr "Titel ersetzen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:666
+msgid "Empty queue. Please create a new quiz."
+msgstr "Wiedergabeliste leer, bitte ein neues Quiz starten."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:711
+msgid "No more songs in queue."
+msgstr "Keine weiteren Titel in der Wiedergabeliste."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:789
+msgid "Begin Quiz"
+msgstr "Starte Quiz"
+

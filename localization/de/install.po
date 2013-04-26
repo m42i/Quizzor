@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MediaMonkey 2.4\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2011-05-18 13:37+0100\n"
+"Last-Translator: onkel_enno <onkelenno@freenet.de>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Themes:"
+msgstr "Motive:"
+
+msgid "Enable full skinning (override Windows System theme)"
+msgstr "Designs aktivieren (Windows-Design überschreiben)"
+
+msgid "MediaMonkey Read Me"
+msgstr "MediaMonkey Liesmich-Datei"
+
+msgid "MediaMonkey Help"
+msgstr "MediaMonkey Hilfe"
+
+msgid "View the README file"
+msgstr "README-Datei lesen"
+
+msgid "Download language"
+msgstr "Sprache herunterladen"
+
+msgid "Downloading language files for:"
+msgstr "Sprachdateien herunterladen für:"
+
+msgid "Failed to download language files for:"
+msgstr "Fehler beim Herunterladen der Sprachdateien für:"
+
+msgid "Error parsing parameter"
+msgstr "Paramaterfehler"
+
+msgid "Install error"
+msgstr "Installationsfehler"
+
+msgid "Download error"
+msgstr "Fehler beim Herunterladen"
+
+msgid "Unknown error"
+msgstr "Unbekannter Fehler"
+
+msgid "Portable installation"
+msgstr "Portable Installation"
+
+msgid "This lets you run MediaMonkey on a portable device that you can use on any PC.%nWhen your USB flash drive or portable hard drive is plugged in, you can access MediaMonkey as you would on your own PC,%nand when it's unplugged, none of your data is left behind. The downside is that it isn't optimized for your particular PC (e.g. no Start menu entry)."
+msgstr "Ermöglicht die Ausführung von MediaMonkey auf tragbaren Geräten. %nNach dem Anschließen des externen Gerätes, steht MediaMonkey zur Verfügung und du kannst es wie gewohnt nutzen. %nAlle Daten werden auf dem Gerät gespeichert. Nach dem Entfernen des Gerätes, verbleiben keine Daten auf dem Rechner. %nNachteil ist, dass dein Rechner nicht an MediaMonkey angepasst wurde (z.B. Startmenüeintrag)."
+

@@ -1,0 +1,16 @@
+MediaMonkey German Catalog files
+
+Note: (x.x.yyy.z: x=MediaMonkey version, yyy=build#, z=version for this build)
+
+2.2.721a: Final by Tyll Zybura
+2.2.746a: Spelling correction to English sources by RS
+3.0.0.1097: Updated by Onkel Enno
+3.0.0.1098: Updated by Rusty based on distributor feedback
+3.0.0.1109: Updated by Onkel Enno for minor corrections
+3.1.0.1204: Updated by Onkel Enno for version 3.1
+3.1.0.1217: Updated by Onkel Enno
+3.1.0.1217b: Updated by Okel Enno (fixed shortcuts)
+3.1.0.1236: Updated by Onkel Enno (fixed bug #5508)
+4.0.0.1349: Updated by Onkel Enno for MM4
+4.0.0.1355: Updated by Onkel Enno
+4.0.1375.0: Updated by Onkel Enno
