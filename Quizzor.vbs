@@ -526,11 +526,9 @@ Sub NewQuiz(Item)
         LastPlaylistID = OptionsFile.IntValue("Quizzor", "LastPlaylistID")
         Set LastPlaylist = SDB.PlaylistByID(LastPlaylistID)
 
-        DialogText = SDB.LocalizedFormat(_
-            "A previous quiz exists. Do you want to restore the last quiz" & _
-            " %s or create a new quiz?" & vbCrLf & _
-            "Either way the current queue will be lost.", _
-            LastPlaylist.Title,0,0)
+        DialogText = SDB.Localize("A previous quiz exists. Do you want to restore the last quiz") & _
+            SDB.LocalizedFormat(" %s or create a new quiz?", LastPlaylist.Title,0,0) & vbCrLf & _
+            SDB.Localize("Either way the current queue will be lost.") 
 
         OptionsArray = Array(SDB.Localize("New Quiz"), _
             SDB.Localize("Restore Quiz"), SDB.Localize("Cancel"))
