@@ -2,132 +2,209 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Quizzor_de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-26 17:46+0100\n"
-"PO-Revision-Date: 2013-04-26 18:14+0100\n"
+"POT-Creation-Date: 2013-05-06 19:42+0100\n"
+"PO-Revision-Date: 2013-05-06 19:45+0100\n"
 "Last-Translator: m42i <mfourtytwoi@gmail.com>\n"
 "Language-Team: m42i <mfourtytwoi@gmail.com>\n"
-"Language: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: Localize;LocalizedFormat\n"
 "X-Poedit-Basepath: .\n"
-"X-Poedit-Language: German\n"
-"X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: /home/user/Source/Quizzor\n"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:175
+#: /home/user/Source/Quizzor/Quizzor.vbs:200
 msgid "Randomizing a playlist cannot be undone."
 msgstr "Das Mischen einer Playliste kann nicht rückgängig gemacht werden."
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:176
-#: /home/user/Source/Quizzor/Quizzor.vbs:797
+#: /home/user/Source/Quizzor/Quizzor.vbs:201
+#: /home/user/Source/Quizzor/Quizzor.vbs:1215
 msgid "Randomize"
 msgstr "Mischen"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:176
-#: /home/user/Source/Quizzor/Quizzor.vbs:536
-#: /home/user/Source/Quizzor/Quizzor.vbs:542
-#: /home/user/Source/Quizzor/Quizzor.vbs:611
+#: /home/user/Source/Quizzor/Quizzor.vbs:201
+#: /home/user/Source/Quizzor/Quizzor.vbs:559
+#: /home/user/Source/Quizzor/Quizzor.vbs:565
+#: /home/user/Source/Quizzor/Quizzor.vbs:709
+#: /home/user/Source/Quizzor/Quizzor.vbs:1149
 msgid "Cancel"
 msgstr "Abbrechen"
 
 # After this comes a date
-#: /home/user/Source/Quizzor/Quizzor.vbs:207
+#: /home/user/Source/Quizzor/Quizzor.vbs:232
 msgid "Quiz of "
 msgstr "Quiz vom"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:230
+#: /home/user/Source/Quizzor/Quizzor.vbs:255
 msgid "Please create a new quiz first."
 msgstr "Bitte erst ein Quiz starten."
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:243
+#: /home/user/Source/Quizzor/Quizzor.vbs:268
 msgid "No songs visible. Please fill the main window first."
 msgstr "Es sind keine"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:319
+#: /home/user/Source/Quizzor/Quizzor.vbs:344
 msgid "Album"
 msgstr "Album"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:323
+#: /home/user/Source/Quizzor/Quizzor.vbs:348
 msgid "Title"
 msgstr "Titel"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:327
+#: /home/user/Source/Quizzor/Quizzor.vbs:352
 msgid "Artist"
 msgstr "Interpret"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:331
+#: /home/user/Source/Quizzor/Quizzor.vbs:356
 msgid "Comment"
 msgstr "Kommentar"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:335
+#: /home/user/Source/Quizzor/Quizzor.vbs:360
 msgid "File"
 msgstr "Datei"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:352
+#: /home/user/Source/Quizzor/Quizzor.vbs:377
 msgid "Play"
 msgstr "Start"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:357
+#: /home/user/Source/Quizzor/Quizzor.vbs:382
 msgid "Pause"
 msgstr "Pause"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:362
+#: /home/user/Source/Quizzor/Quizzor.vbs:387
 msgid "Next"
 msgstr "Nächster"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:367
+#: /home/user/Source/Quizzor/Quizzor.vbs:392
 msgid "Show Information"
 msgstr "Zeige Daten"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:373
+#: /home/user/Source/Quizzor/Quizzor.vbs:398
 msgid "Hide Information"
 msgstr "Verstecke Daten"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:530
+#: /home/user/Source/Quizzor/Quizzor.vbs:554
 msgid "A previous quiz exists. Do you want to restore the last quiz"
 msgstr "Es gibt ein gespeichertes Quiz. Soll dieses geladen werden?"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:535
-#: /home/user/Source/Quizzor/Quizzor.vbs:541
+#: /home/user/Source/Quizzor/Quizzor.vbs:555
+#, python-format
+msgid " %s or create a new quiz?"
+msgstr "%s oder ein neues Quiz starten?"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:556
+msgid "Either way the current queue will be lost."
+msgstr "In jedem Fall ist die Wiedergabeliste verloren."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:558
+#: /home/user/Source/Quizzor/Quizzor.vbs:564
 msgid "New Quiz"
 msgstr "Neues Quiz"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:536
+#: /home/user/Source/Quizzor/Quizzor.vbs:559
 msgid "Restore Quiz"
 msgstr "Quiz laden"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:539
+#: /home/user/Source/Quizzor/Quizzor.vbs:562
 msgid "Creating a new quiz means losing the current queue."
-msgstr "Wird ein neues Quiz erstellt geht die aktuelle Wiedergabeliste verloren."
+msgstr ""
+"Wird ein neues Quiz erstellt geht die aktuelle Wiedergabeliste verloren."
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:590
+#: /home/user/Source/Quizzor/Quizzor.vbs:613
 msgid "Please select a playlist."
 msgstr "Bitte eine Wiedergabeliste auswählen."
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:602
+#: /home/user/Source/Quizzor/Quizzor.vbs:700
 msgid "Playlist is empty. Won't start quiz."
 msgstr "Die Playliste ist leer. Es wird kein Quiz gestartet."
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:610
+#: /home/user/Source/Quizzor/Quizzor.vbs:708
 msgid "The current queue is not empty. Do you want to replace all tracks?"
-msgstr "Die aktuelle Wiedergabeliste ist nicht leer. Sollen alle Titel darin ersetzt werden?"
+msgstr ""
+"Die aktuelle Wiedergabeliste ist nicht leer. Sollen alle Titel darin ersetzt "
+"werden?"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:611
+#: /home/user/Source/Quizzor/Quizzor.vbs:709
 msgid "Replace queue"
 msgstr "Titel ersetzen"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:666
-msgid "Empty queue. Please create a new quiz."
-msgstr "Wiedergabeliste leer, bitte ein neues Quiz starten."
+#: /home/user/Source/Quizzor/Quizzor.vbs:735
+#, python-format
+msgid "Do you want to continue from position %d?"
+msgstr "Soll von der Position %d fortgesetzt werden?"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:711
-msgid "No more songs in queue."
-msgstr "Keine weiteren Titel in der Wiedergabeliste."
+#: /home/user/Source/Quizzor/Quizzor.vbs:737
+msgid "Continue"
+msgstr "Fortsetzen"
 
-#: /home/user/Source/Quizzor/Quizzor.vbs:789
+#: /home/user/Source/Quizzor/Quizzor.vbs:737
+msgid "Start new"
+msgstr "Neu starten"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:816
+msgid "Last song reached. Please create a new quiz."
+msgstr "Das letzte Lied wurde erreicht. Bitte starten Sie ein neues Quiz."
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:921
+#: /home/user/Source/Quizzor/created_options_sheet.vbs:6
+msgid "Enable random images"
+msgstr "Zufällige Bilder aktivieren"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:932
+msgid "Random images"
+msgstr "Zufällige Bilder"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:951
+msgid "Clear"
+msgstr "Löschen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:960
+msgid "Remove"
+msgstr "Entfernen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:970
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:985
+msgid "Show image after every "
+msgstr "Bilder anzeigen nach"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1000
+msgid "to"
+msgstr "bis"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1016
+msgid "titles"
+msgstr "Titel"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1103
+msgid "Select one or more images"
+msgstr "Wähle eins oder mehr Bilder"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1148
+msgid "Do you want to remove all images?"
+msgstr "Sollen alle Bilder entfernt werden?"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1149
+msgid "Remove all"
+msgstr "Alle entfernen"
+
+#: /home/user/Source/Quizzor/Quizzor.vbs:1204
 msgid "Begin Quiz"
 msgstr "Starte Quiz"
 
+#: /home/user/Source/Quizzor/created_options_sheet.vbs:17
+msgid "Load Images"
+msgstr "Bilder laden"
+
+#: /home/user/Source/Quizzor/created_options_sheet.vbs:26
+#, python-format
+msgid "%i images loaded"
+msgstr "%i Bilder geladen"
+
+#~ msgid "No more songs in queue."
+#~ msgstr "Keine weiteren Titel in der Wiedergabeliste."
