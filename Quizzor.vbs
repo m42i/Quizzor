@@ -22,12 +22,21 @@
 ' O Keep track of correctly guessed tracks
 
 Const DEBUG_ON = True
-Const BTN_MARGIN = 5 ' Defines the standard margin between buttons
-Const BTN_HEIGHT = 25 ' Defines standard height of a button
-Const BTN_WIDTH = 80 ' Defines standard width of a button
+
+' Defines the standard margin between buttons
+' 9 is equal to the margin of a group box in an options sheet
+Const BTN_MARGIN = 9
+' Defines standard height of a button
+' 24 equals the normal button height, e.g. 'Ok', 'Cancel' 
+Const BTN_HEIGHT = 24
+' Defines standard width of a button
+' 74 equals the normal button width, e.g. 'Ok', 'Cancel' 
+Const BTN_WIDTH = 74
+Const BTN_LONG_WIDTH = 111 ' Defines width of a long button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
 
-' Node types, see http://www.mediamonkey.com/wiki/index.php/MediaMonkey_Tree_structure
+' Node types
+' see http://www.mediamonkey.com/wiki/index.php/MediaMonkey_Tree_structure
 Const NODE_PLAYLIST_ROOT = 6
 Const NODE_PLAYLIST_AUTO = 71
 Const NODE_PLAYLIST_MANUAL = 61
@@ -76,8 +85,10 @@ Dim OptionsFile
 ' Buttons is an Array of Strings, arranged from right to left, aligned right
 ' Empty strings will not create buttons, usefule to specify the return value
 ' Return value is the String position in the array Buttons()
-' If a button is not pressed (e.g. window closed), the return value will negative 
+' If a button is not pressed (e.g. window closed), 
+' the return value will be negative 
 ' and by 100 smaller than the default modal result
+' e.g. -98 for Cancel (2)
 Function FreeFormMessageBox(Text, Buttons())
     ' Construct form
     Set MsgWindow = SDB.UI.NewForm
@@ -602,7 +613,7 @@ Sub StartQuiz(Item)
     End If
 
     ' TODO: Set the first track in main track window focused
-    ' This is a workaround, since the above TODO doesn't work
+    ' Using the queue is a workaround, since the above TODO doesn't work
     If SDB.Player.PlaylistCount > 0 Then
         OverwriteQueue = FreeFormMessageBox( _
             SDB.Localize("The current queue is not empty. Do you want to replace all tracks?"), _
@@ -769,6 +780,55 @@ Sub RestoreLastSession
     SelectPlaylist Quiz_Playlist
 End Sub
 
+Sub BuildSheet(Sheet)
+    Set EnableRandomImages = SDB.UI.NewCheckBox(Sheet)
+    EnableRandomImages.Caption = SDB.Localize("Enable random images")
+    EnableRandomImages.Checked = True
+    EnableRandomImages.Common.SetRect BTN_WIDTH,0,BTN_WIDTH,BTN_HEIGHT
+    ' EnableRandomImages.Common.Align = 1
+    EnableRandomImages.Common.ControlName = "EnableRandomImages"
+
+    Set RandomImagesBox = SDB.UI.NewGroupBox(Sheet)
+    RandomImagesBox.Common.SetRect 0,20,500,90
+    RandomImagesBox.Common.ControlName = "EnableRandonImageBox"
+
+    Set LoadImages = SDB.UI.NewButton(RandomImagesBox)
+    LoadImages.Caption = SDB.Localize("Load Images")
+    LoadImages.UseScript = Script.ScriptPath
+    LoadImages.OnClickFunc = "LoadImages"
+    LoadImages.Common.SetRect 10,10,75,20
+    LoadImages.Common.ControlName = "LoadImagesBtn"
+
+    Set ImageCount = SDB.UI.NewLabel(RandomImagesBox)
+    ImageCount.Common.SetRect 90,10,200,25
+    ImageCount.Common.ControlName = "ImagesLoadedLabel"
+    ImageCount.Caption = SDB.LocalizedFormat("%d images loaded", 0,0,0)
+
+    Set MinImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
+    MinImageWaitTitles.MinValue = 1
+    MinImageWaitTitles.Value = 1
+    MinImageWaitTitles.Common.SetRect 120,40,50,20
+    MinImageWaitTitles.Common.ControlName = "MinImageWaitTitles"
+
+    Set MaxImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
+    MaxImageWaitTitles.MinValue = 1
+    MaxImageWaitTitles.Value = 1
+    MaxImageWaitTitles.Common.SetRect 200,40,50,20
+    MaxImageWaitTitles.Common.ControlName = "MaxImageWaitTitles"
+
+    Set Label3 = SDB.UI.NewLabel(RandomImagesBox)
+    Label3.Common.SetRect 0,0,65,17
+
+    Set TranspRandomImagesBox = SDB.UI.NewTranspPanel(Sheet)
+    TranspRandomImagesBox.Common.SetRect 427,287,100,90
+    TranspRandomImagesBox.Common.ControlName = "TranspRandomImagesBox"
+End Sub
+
+Sub SaveSheet(Sheet)
+    EnableRandomImages = _
+    Sheet.Common.ChildControl("EnableRandomImages").Checked
+End Sub
+
 Sub OnStartup
     Set UI = SDB.UI
 
@@ -793,11 +853,19 @@ Sub OnStartup
         SDB.Objects("RandomizePlaylistMenuItem") = RandomizePlaylistMenuItem  
     End If
     RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
-    Script.RegisterEvent RandomizePlaylistMenuItem, "OnClick", "RandomizePlaylist"
+    Script.RegisterEvent RandomizePlaylistMenuItem, _
+                                    "OnClick", "RandomizePlaylist"
     
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
 
     Set OptionsFile = SDB.IniFile
+    ' Create options sheet
+    Set OptionsSheet = SDB.Objects("OptionsSheet")
+    If OptionsSheet Is Nothing Then
+        Set OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
+            "BuildSheet", "SaveSheet", 0)
+        SDB.Objects("OptionsSheet") = OptionsSheet
+    End If
 End Sub
 
 ' Hide the main player panel
