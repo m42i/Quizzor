@@ -21,7 +21,7 @@
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
 
-Const DEBUG_ON = True
+Const DEBUG_ON = False
 
 ' Defines the standard margin between buttons
 ' 9 is equal to the margin of a group box in an options sheet
@@ -43,6 +43,11 @@ Const NODE_PLAYLIST_MANUAL = 61
 
 ' %font-size% should be replaced with the font size, e.g. 200%
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
+' Using variable to allow for multi line string
+Dim HTML_Style_Imageframe : HTML_Style_Imageframe = _
+    "<style type='text/css'> body { overflow: auto; " & vbCrLf & _
+    "width:90%; height:90%; position:absolute;top:0;left:0; } " & _
+    vbCrLf & "</style>"
 
 ' Anchor constants, add them for multiple anchors
 Const akLeft = 1
@@ -80,6 +85,13 @@ Dim CurrentSongLength
 ' LastSongIndexForPlaylist_<Playlist.ID> = <SDB.Player.CurrentSongIndex> As Long
 '
 Dim OptionsFile
+
+' Some variables to help building and reorganizing GUI elements
+' Remember: For labels add BTN_MARGIN/2 to ensure the text is 
+' centered vertically
+Dim CurrentRow
+Dim CurrentTopMargin  
+Dim CurrentCol
 
 ' Creates a modal message box window, with the "Text".
 ' Buttons is an Array of Strings, arranged from right to left, aligned right
@@ -780,53 +792,294 @@ Sub RestoreLastSession
     SelectPlaylist Quiz_Playlist
 End Sub
 
+' Some helper methods for simpler reordering of GUI elements
+' Resets the current row
+Sub StartRowCount
+    CurrentRow = 0
+    CurrentTopMargin = 0
+End Sub
+' Increases the current row by BTN_HEIGHT + BTN_MARGIN
+Sub NextRow
+    CurrentRow = CurrentRow + BTN_HEIGHT
+    CurrentTopMargin = CurrentTopMargin + BTN_MARGIN
+End Sub
+' Increases the current row by BTN_HEIGHT
+' Useful before group boxes
+Sub NextRowWithoutTopMargin
+    CurrentRow = CurrentRow + BTN_HEIGHT
+    CurrentTopMargin = CurrentTopMargin + BTN_MARGIN
+End Sub
+' Increases only the top margin, useful after creating a group box
+Sub AddTopMargin
+    CurrentTopMargin = CurrentTopMargin + BTN_MARGIN
+End Sub
+' Skips x rows, each as high as BTN_HEIGHT
+Sub SkipRows(rows)
+    CurrentRow = CurrentRow + rows*BTN_HEIGHT
+    CurrentTopMargin = CurrentTopMargin + BTN_MARGIN
+End Sub
+
 Sub BuildSheet(Sheet)
+    StartRowCount
+    AddTopMargin
+
     Set EnableRandomImages = SDB.UI.NewCheckBox(Sheet)
+    EnableRandomImages.Common.ControlName = "EnableRandomImages"
+    EnableRandomImages.Common.SetRect BTN_MARGIN, _ 
+        CurrentTopMargin + CurrentRow, _
+        Sheet.Common.ClientWidth, BTN_HEIGHT
     EnableRandomImages.Caption = SDB.Localize("Enable random images")
     EnableRandomImages.Checked = True
-    EnableRandomImages.Common.SetRect BTN_WIDTH,0,BTN_WIDTH,BTN_HEIGHT
-    ' EnableRandomImages.Common.Align = 1
-    EnableRandomImages.Common.ControlName = "EnableRandomImages"
+    NextRowWithoutTopMargin
 
     Set RandomImagesBox = SDB.UI.NewGroupBox(Sheet)
-    RandomImagesBox.Common.SetRect 0,20,500,90
     RandomImagesBox.Common.ControlName = "EnableRandonImageBox"
+    RandomImagesBox.Common.SetRect BTN_MARGIN, _
+        CurrentTopMargin + CurrentRow, _
+        Sheet.Common.ClientWidth - 2*BTN_MARGIN, _
+        10*BTN_HEIGHT + 4*BTN_MARGIN
+    RandomImagesBox.Common.Anchors = akLeft + akTop + akRight
+    RandomImagesBox.Caption = SDB.Localize("Random images")
 
-    Set LoadImages = SDB.UI.NewButton(RandomImagesBox)
-    LoadImages.Caption = SDB.Localize("Load Images")
-    LoadImages.UseScript = Script.ScriptPath
-    LoadImages.OnClickFunc = "LoadImages"
-    LoadImages.Common.SetRect 10,10,75,20
-    LoadImages.Common.ControlName = "LoadImagesBtn"
+    ' Group box requires a new row count and two margins
+    StartRowCount
+    AddTopMargin
+    AddTopMargin
 
-    Set ImageCount = SDB.UI.NewLabel(RandomImagesBox)
-    ImageCount.Common.SetRect 90,10,200,25
-    ImageCount.Common.ControlName = "ImagesLoadedLabel"
-    ImageCount.Caption = SDB.LocalizedFormat("%d images loaded", 0,0,0)
+    ' Image loading
+    Set ImagesListBox = SDB.UI.NewListBox(RandomImagesBox)
+    ImagesListBox.Common.ControlName = "ImagesListBox"
+    ImagesListBox.Common.SetClientRect BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, _
+        4*BTN_WIDTH + 2*BTN_MARGIN + 3, _
+        7*BTN_HEIGHT
+    ImagesListBox.Common.Anchors = akLeft + akTop + akRight
+    SkipRows 7
+
+    Set ClearRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    ClearRandomImageBtn.Common.ControlName = "ClearRandomImageBtn"
+    ClearRandomImageBtn.Caption = SDB.Localize("Clear")
+    ClearRandomImageBtn.UseScript = Script.ScriptPath
+    ClearRandomImageBtn.OnClickFunc = "ClearRandomImagesString"
+    ClearRandomImageBtn.Common.SetClientRect _
+        BTN_MARGIN, CurrentRow + CurrentTopMargin, _
+        BTN_WIDTH, BTN_HEIGHT
+
+    Set RemoveRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    RemoveRandomImageBtn.Common.ControlName = "RemoveRandomImageBtn"
+    RemoveRandomImageBtn.Caption = SDB.Localize("Remove")
+    RemoveRandomImageBtn.UseScript = Script.ScriptPath
+    RemoveRandomImageBtn.OnClickFunc = "RemoveRandomImage"
+    RemoveRandomImageBtn.Common.SetClientRect _
+        2*BTN_WIDTH + 3*BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, _
+        BTN_WIDTH, BTN_HEIGHT
+
+    Set AddRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    AddRandomImageBtn.Common.ControlName = "AddRandomImageBtn"
+    AddRandomImageBtn.Caption = SDB.Localize("Add")
+    AddRandomImageBtn.UseScript = Script.ScriptPath
+    AddRandomImageBtn.OnClickFunc = "AddRandomImage"
+    AddRandomImageBtn.Common.SetClientRect _
+        3*BTN_WIDTH + 4*BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
+    NextRow
+
+    ' Show image after every x to y titles
+    Set ImageWaitTitlesInfo = SDB.UI.NewLabel(RandomImagesBox)
+    ImageWaitTitlesInfo.Common.ControlName = "ImageWaitTitlesInfo"
+    ImageWaitTitlesInfo.Common.SetClientRect _
+        BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
+        BTN_LONG_WIDTH, BTN_HEIGHT
+    ImageWaitTitlesInfo.Caption = SDB.Localize("Show image after every ")
 
     Set MinImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
-    MinImageWaitTitles.MinValue = 1
-    MinImageWaitTitles.Value = 1
-    MinImageWaitTitles.Common.SetRect 120,40,50,20
     MinImageWaitTitles.Common.ControlName = "MinImageWaitTitles"
+    MinImageWaitTitles.Common.SetRect 3*BTN_MARGIN + BTN_LONG_WIDTH, _
+        CurrentRow + CurrentTopMargin, _
+        BTN_WIDTH/2, BTN_HEIGHT
+
+    Set ImageWaitTitlesSep = SDB.UI.NewLabel(RandomImagesBox)
+    ImageWaitTitlesSep.Common.ControlName = "ImageWaitTitlesSep"
+    ImageWaitTitlesSep.Common.SetClientRect _
+        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH/2, _
+        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
+        BTN_WIDTH/2, BTN_HEIGHT
+    ImageWaitTitlesSep.Alignment = 2 ' Center
+    ImageWaitTitlesSep.Caption = " " + SDB.Localize("to")
 
     Set MaxImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
-    MaxImageWaitTitles.MinValue = 1
-    MaxImageWaitTitles.Value = 1
-    MaxImageWaitTitles.Common.SetRect 200,40,50,20
     MaxImageWaitTitles.Common.ControlName = "MaxImageWaitTitles"
+    MaxImageWaitTitles.Common.SetRect _
+        3*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH/2 + BTN_WIDTH/2, _
+        CurrentRow + CurrentTopMargin, _
+        BTN_WIDTH/2, BTN_HEIGHT
 
-    Set Label3 = SDB.UI.NewLabel(RandomImagesBox)
-    Label3.Common.SetRect 0,0,65,17
+    Set ImageWaitTitles = SDB.UI.NewLabel(RandomImagesBox)
+    ImageWaitTitles.Common.ControlName = "ImageWaitTitles"
+    ImageWaitTitles.Common.SetClientRect _
+        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH + BTN_WIDTH/2, _
+        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
+        BTN_WIDTH/2, BTN_HEIGHT
+    ImageWaitTitles.Alignment = 2 ' Center
+    ImageWaitTitles.Caption = " " + SDB.Localize("titles")
+    NextRow
 
-    Set TranspRandomImagesBox = SDB.UI.NewTranspPanel(Sheet)
-    TranspRandomImagesBox.Common.SetRect 427,287,100,90
-    TranspRandomImagesBox.Common.ControlName = "TranspRandomImagesBox"
+    SkipRows 2
+    RandomImagesBox.Common.Height = CurrentRow
+
+    ' Load values
+    If OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
+        EnableRandomImages.Checked = _
+                OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
+        Sheet.Common.ChildControl("MinImageWaitTitles").Value = _
+                OptionsFile.IntValue("Quizzor", "MinImageWaitTitles")
+        Sheet.Common.ChildControl("MaxImageWaitTitles").Value = _
+                OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
+    End If
+    If OptionsFile.ValueExists("Quizzor", "RandomImagesString") Then
+        Set ImagesListBox.Items = SDB.NewStringList
+        For Each Filename In Split(OptionsFile.StringValue("Quizzor", _
+                              "RandomImagesString"), ";") 
+            ImagesListBox.Items.Add Filename
+        Next
+    End If
 End Sub
 
 Sub SaveSheet(Sheet)
-    EnableRandomImages = _
-    Sheet.Common.ChildControl("EnableRandomImages").Checked
+    OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
+            Sheet.Common.ChildControl("EnableRandomImages").Checked
+
+    ' Save all images
+    Set ImagesListBox = Sheet.Common.ChildControl("ImagesListBox")
+    Dim RandomImagesString
+    For i = 0 To ImagesListBox.Items.Count - 1
+        If i > 0 Then
+            RandomImagesString = _
+                RandomImagesString & ";" & ImagesListBox.Items.Item(i)
+        Else
+            RandomImagesString = ImagesListBox.Items.Item(i)
+        End If
+    Next
+    OptionsFile.StringValue("Quizzor", "RandomImagesString") = _
+            RandomImagesString
+
+    OptionsFile.IntValue("Quizzor", "MinImageWaitTitles") = _
+            Sheet.Common.ChildControl("MinImageWaitTitles").Value
+    OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles") = _
+            Sheet.Common.ChildControl("MaxImageWaitTitles").Value
+
+    OptionsFile.Flush
+End Sub
+
+Sub PrepareImageForm
+    Set ImageForm = SDB.Objects("ImageForm")
+    If ImageForm Is Nothing Then
+        Set ImageForm = SDB.UI.Newform
+        Set SDB.Objects("ImageForm") = ImageForm
+    End If
+    ImageForm.Common.SetClientRect BTN_MARGIN,BTN_MARGIN,500,500
+    ImageForm.BorderStyle = 2
+
+    Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
+    If ImageHTML Is Nothing Then
+        Set ImageHTML = SDB.UI.NewActiveX(ImageForm, "Shell.Explorer")
+        ImageHTML.Common.ControlName = "ImageHTML"
+    End If
+    ImageHTML.Common.SetRect BTN_MARGIN, BTN_MARGIN, _
+        ImageForm.Common.ClientWidth - 2*BTN_MARGIN, _
+        ImageForm.Common.ClientHeight - 2*BTN_MARGIN 
+    ImageHTML.Common.Align = alClient
+    ImageHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
+    ImageHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
+
+    ImageForm.Common.Visible = False
+End Sub
+
+' Add an item to random images listbox
+Sub AddRandomImage(Button)
+    Set OpenFileDialog = SDB.CommonDialog
+    OpenFileDialog.Title = SDB.Localize("Select one or more images")
+    OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
+    ' TODO: Multiselect dialog ist currently not supported
+    OpenFileDialog.Flags = cdlOFNFileMustExist
+    OpenFileDialog.ShowOpen 
+
+    If Not OpenFileDialog.Ok Then 
+        Exit Sub
+    End If
+
+    Filename = OpenFileDialog.Filename
+
+    Set ImagesListBox = _
+        Button.Common.Parent.Common.ChildControl("ImagesListBox")
+    If Not IsInStringList(ImagesListBox.Items, Filename) Then
+        If ImagesListBox.Items Is Nothing Then
+            Set ImagesListBox.Items = SDB.NewStringList
+        End If
+
+        ImagesListBox.Items.Add Filename
+    End If
+End Sub
+
+' Remove selected item from random images listbox
+Sub RemoveRandomImage(Button)
+    Set ImagesListBox = _
+        Button.Common.Parent.Common.ChildControl("ImagesListBox")
+
+    DeleteIndex = ImagesListBox.ItemIndex
+    If DeleteIndex >= 0 Then
+        Filename = ImagesListBox.Items.Item(DeleteIndex)
+        ImagesListBox.Items.Delete DeleteIndex
+    End If
+End Sub
+
+' Remove all items from the random images listbox
+Sub ClearRandomImagesString(Button)
+    Set ImagesListBox = _
+        Button.Common.Parent.Common.ChildControl("ImagesListBox")
+
+    If ImagesListBox.Items.Count <= 0 Then
+        Exit Sub
+    End If
+
+    MessageResult = FreeFormMessageBox( _ 
+        SDB.Localize("Do you want to remove all images?"), _
+        Array(SDB.Localize("Cancel"), SDB.Localize("Remove all")))
+
+    If MessageResult <> 1 Then
+        Exit Sub
+    End If 
+
+    Set ImagesListBox.Items = SDB.NewStringList
+End Sub
+
+' Checks if Search as String is in SourceList as SDBStringList
+Function IsInStringList(SourceList, Search)
+    For i=0 To SourceList.Count - 1
+        If LCase(Search) = LCase(SourceList.Item(i)) Then
+            IsInStringList = True
+            Exit Function
+        End If
+    Next
+
+    IsInStringList = False
+End Function
+
+Sub DisplayImage(ImageFileName)
+    Set ImageForm = SDB.Objects("ImageForm")
+    Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
+    Set HTMLDocument = ImageHTML.Interf.Document
+    HTMLDocument.Write "<html><head>" & vbCrLf & _
+        HTML_Style_Imageframe & vbCrLf & _
+        "</head><body>" & vbCrLf  & _
+        "    <img style='height:90%' src='" + ImageFileName + "'/>" & _
+            vbCrLf  & _
+        "</body></html>" 
+    HTMLDocument.Close
+ 
+    ImageForm.Common.Visible = True 
 End Sub
 
 Sub OnStartup
@@ -847,15 +1100,18 @@ Sub OnStartup
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
     
-    Set RandomizePlaylistMenuItem = SDB.Objects("RandomizePlaylistMenuItem")
+    Set RandomizePlaylistMenuItem = _
+            SDB.Objects("RandomizePlaylistMenuItem")
     If RandomizePlaylistMenuItem Is Nothing Then
-        Set RandomizePlaylistMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
-        SDB.Objects("RandomizePlaylistMenuItem") = RandomizePlaylistMenuItem  
+        Set RandomizePlaylistMenuItem = _
+                UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
+        SDB.Objects("RandomizePlaylistMenuItem") = _
+                RandomizePlaylistMenuItem  
     End If
     RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
     Script.RegisterEvent RandomizePlaylistMenuItem, _
                                     "OnClick", "RandomizePlaylist"
-    
+
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
 
     Set OptionsFile = SDB.IniFile
@@ -867,6 +1123,7 @@ Sub OnStartup
         SDB.Objects("OptionsForm") = OptionsForm
         OptionsForm.Common.SetClientRect 200, 100, 600, 400
         OptionsForm.FormPosition = 4 ' screen center
+        Script.RegisterEvent OptionsForm, "OnClose", "SaveSheet"
 
         BuildSheet(OptionsForm)
 
