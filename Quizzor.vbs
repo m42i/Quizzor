@@ -859,12 +859,21 @@ Sub OnStartup
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
 
     Set OptionsFile = SDB.IniFile
+
     ' Create options sheet
-    Set OptionsSheet = SDB.Objects("OptionsSheet")
-    If OptionsSheet Is Nothing Then
-        Set OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
-            "BuildSheet", "SaveSheet", 0)
-        SDB.Objects("OptionsSheet") = OptionsSheet
+    If DEBUG_ON Then
+        ' Create a frame with the options for rapid prototyping
+        Set OptionsForm = UI.NewForm
+        SDB.Objects("OptionsForm") = OptionsForm
+        OptionsForm.Common.SetClientRect 200, 100, 600, 400
+        OptionsForm.FormPosition = 4 ' screen center
+
+        BuildSheet(OptionsForm)
+
+        OptionsForm.ShowModal
+    Else
+        OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
+                "BuildSheet", "SaveSheet", 0)
     End If
 End Sub
 
