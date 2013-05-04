@@ -720,12 +720,20 @@ Sub StartQuiz(Item)
     SDB.Player.PlaylistClear
     SDB.Player.PlaylistAddTracks SongList
 
-    ' Restore last index in playlist
+    ' Restore last index in playlist if wanted
     ResumeIndex = 0
     If OptionsFile.ValueExists("Quizzor", _ 
         "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) Then
-        ResumeIndex = OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
-            CStr(Quiz_Playlist.ID))
+        OldResumeIndex = _
+            OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
+                                                    CStr(Quiz_Playlist.ID))
+        MessageResult = FreeFormMessageBox( _
+            SDB.LocalizedFormat("Do you want to continue from Position %d?", _
+                OldResumeIndex + 1, 0, 0), _
+            Array(SDB.Localize("Continue"), SDB.Localize("Start new")))
+        If MessageResult = 0 Then
+            ResumeIndex = OldResumeIndex
+        End If
     End If
 
     InitializeRandomImageDisplay
