@@ -75,9 +75,9 @@ Dim Quiz_Playlist
 ' Keep track of important control elements
 Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
-Dim CurrentSongLength
+Dim CurrentPlaylistPosition, CurrentSongLength
 Dim ImageWaitTitles, CurrentRandomImageIndex
-Dim RandomImagesStringList
+Dim RandomImagesStringList, ShowRandomImagesEnabled
 
 ' Keep track of playlists between sessions
 ' [SectionName]
@@ -333,7 +333,7 @@ Function GetSongInfoHTML(SongData)
     End If 
 
     GetSongInfoHTML = "<html>" & vbCrLf & _
-        Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 2) & "%") & vbCrLf & _
+        Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 3) & "%") & vbCrLf & _
         "<table border='1' cellspacing='0' cellpaddin='2' rules='rows'" & _
         " frame='void' width='100%' height='100%'>" & vbCrLf & _
         "<colgroup>" & vbCrLf & _
@@ -635,16 +635,18 @@ End Function
 ' Initializes the display of random images
 Sub InitializeRandomImageDisplay
     If Not OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
+        ShowRandomImagesEnabled = False
         Exit Sub
     End If
 
-    EnableRandomImages = _
+    ShowRandomImagesEnabled = _
         OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
-    If Not EnableRandomImages Then Exit Sub
+    If Not ShowRandomImagesEnabled Then Exit Sub
 
     ' Load and randomize list of images
-    Set RandomImagesStringList = RandomizeStringList(NewStringListFromString( _
-        OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";"))
+    Set RandomImagesStringList = _
+        RandomizeStringList(NewStringListFromString( _
+            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";"))
 
     NewImageWaitTitles
     CurrentRandomImageIndex = 0
@@ -664,6 +666,8 @@ End Sub
 ' Displays a random image if wait titles is zero,
 ' Otherwise reduce wait titles by one
 Sub DisplayRandomImage
+    If Not ShowRandomImagesEnabled Then Exit Sub
+
     ' If the end of the image list is reached, stop displaying images
     If CurrentRandomImageIndex >= RandomImagesStringList.Count Then
         Exit Sub
@@ -721,27 +725,29 @@ Sub StartQuiz(Item)
     SDB.Player.PlaylistAddTracks SongList
 
     ' Restore last index in playlist if wanted
-    ResumeIndex = 0
+    CurrentPlaylistPosition = 0
     If OptionsFile.ValueExists("Quizzor", _ 
         "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) Then
         OldResumeIndex = _
             OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
                                                     CStr(Quiz_Playlist.ID))
         MessageResult = FreeFormMessageBox( _
-            SDB.LocalizedFormat("Do you want to continue from Position %d?", _
+        SDB.LocalizedFormat("Do you want to continue from position %d?", _
                 OldResumeIndex + 1, 0, 0), _
             Array(SDB.Localize("Continue"), SDB.Localize("Start new")))
         If MessageResult = 0 Then
-            ResumeIndex = OldResumeIndex
+            CurrentPlaylistPosition = OldResumeIndex
         End If
     End If
 
     InitializeRandomImageDisplay
 
-    SDB.Player.CurrentSongIndex = ResumeIndex
+    SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
 End Sub
 
 Sub StopQuiz(Item)
+    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = CurrentPlaylistPosition
+
     UpdateOptionsFile
 
     If SDB.Player.isPlaying And IsObject(SongTimer) Then
@@ -755,7 +761,6 @@ Sub StopQuiz(Item)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
     If IsObject(Quiz_Playlist) Then Set Quiz_Playlist = Nothing
-    SDB.ProcessMessages ' Ensure, that changes to Quiz_Playlist are applied
 
     HideSongInfo
 End Sub
@@ -763,12 +768,13 @@ End Sub
 Sub StartPlaying
     If Not QuizExists() Then Exit Sub 
 
-    If SDB.Player.CurrentPlaylist.Count <= 0 Then
-        SDB.MessageBox SDB.Localize("Empty queue. Please create a new quiz."), _
-            mtInformation, Array(mbOk)
-        StopQuiz Nothing
-        Exit Sub
-    End If
+    ' Make sure the current song stays,
+    ' this prevents playing the next title if the previous ended
+    SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
+
+    ' Always play from the beginning
+    SDB.Player.PlaybackTime = 0
+    SDB.Player.Play
     
     ' If the player is paused, just continue playing.
     If SDB.Player.isPaused Then
@@ -776,7 +782,7 @@ Sub StartPlaying
         Exit Sub
     End If
 
-    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
+    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 100
     SongTrackBar.MinValue = 0
     SongTrackBar.MaxValue = CurrentSongLength
     SongTrackBar.Value = 0
@@ -788,11 +794,6 @@ Sub StartPlaying
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     ' Disable playing next title
-    ' Always play from the beginning
-    SDB.Player.PlaybackTime = 0
-    ' DEBUG: Don't play, because it's slow on wine...
-    ' SDB.Player.Play
-    DebugOutput "Playing Song. New images in... " & CStr(ImageWaitTitles)
     SDB.Player.StopAfterCurrent = True
 End Sub
 
@@ -804,20 +805,19 @@ End Sub
 Sub PlayNext
     If Not QuizExists() Then Exit Sub
 
+    SDB.Player.Stop
     HideSongInfo
-
-    NewIndex = SDB.Player.CurrentSongIndex + 1
-    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = NewIndex
-
-    If SDB.Player.CurrentSongIndex = SDB.Player.CurrentSongList.Count - 1 Then
-        Result = SDB.MessageBox(SDB.Localize("No more songs in queue."), _
-            mtInformation, Array(mbOk))
-        Exit Sub
-    End If
 
     DisplayRandomImage
 
-    SDB.Player.CurrentSongIndex = NewIndex
+    CurrentPlaylistPosition = CurrentPlaylistPosition + 1
+    If CurrentPlaylistPosition >= SDB.Player.CurrentSongList.Count - 1 Then
+        SDB.MessageBox _
+        SDB.Localize("Last song reached. Please create a new quiz."), _
+            mtInformation, Array(mbOk)
+        Exit Sub
+    End If
+
     StartPlaying
 End Sub
 
@@ -831,6 +831,12 @@ Sub HideSongInfo
 End Sub
 
 Sub ShowSongInfo
+    ' Only reset the current song if necessary, 
+    ' otherwise the playback starts from the beginning
+    If SDB.Player.CurrentSongIndex <> CurrentPlaylistPosition Then
+        SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
+    End If
+
     Set CurrentSong = SDB.Player.CurrentSong
     If Not IsObject(CurrentSong) Then Exit Sub
     
@@ -849,10 +855,11 @@ Sub UpdateSongTime(Timer)
     PlaybackTime = SDB.Player.PlaybackTime / 1000
     SongTrackBar.Value = PlaybackTime
     SongTime.Caption = GetFormattedTime(PlaybackTime)
-    SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
+    SongTimeLeft.Caption = _
+        "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
 
     ' Update again in 100 ms
-    Set SongTimer = SDB.CreateTimer(100)
+    Set SongTimer = SDB.CreateTimer(1000)
 End Sub
 
 ' Restores the last session
@@ -934,7 +941,7 @@ Sub BuildSheet(Sheet)
     ImagesListBox.Common.ControlName = "ImagesListBox"
     ImagesListBox.Common.SetClientRect BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, _
-        4*BTN_WIDTH + 2*BTN_MARGIN + 3, _
+        Sheet.Common.ClientWidth - 4*BTN_MARGIN, _
         7*BTN_HEIGHT
     ImagesListBox.Common.Anchors = akLeft + akTop + akRight
     SkipRows 7
@@ -1162,13 +1169,15 @@ End Function
 
 Sub DisplayImage(ImageFileName)
     Set ImageForm = SDB.Objects("ImageForm")
+    ImageForm.Common.Align = alClient
+
     Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
+    ImageHTML.Common.Align = alClient
+
     Set HTMLDocument = ImageHTML.Interf.Document
     HTMLDocument.Write "<html><head>" & vbCrLf & _
         HTML_Style_Imageframe & vbCrLf & _
         "</head><body>" & vbCrLf  & _
-        "   <h1>Image Index: " & CStr(CurrentRandomImageIndex) & vbCrLf& _
-            "</h1>" & _
         "    <img style='height:90%' src='" + ImageFileName + "'/>" & _
             vbCrLf  & _
         "</body></html>" 
