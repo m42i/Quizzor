@@ -76,6 +76,8 @@ Dim Quiz_Playlist
 Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentSongLength
+Dim ImageWaitTitles, CurrentRandomImageIndex
+Dim RandomImagesStringList
 
 ' Keep track of playlists between sessions
 ' [SectionName]
@@ -484,7 +486,7 @@ Sub ResizeMainPanel
     SongInfoHTML.Common.SetClientRect BTN_MARGIN, _
         3*BTN_MARGIN + 2*BTN_HEIGHT, _
         QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 6*BTN_MARGIN - 2*BTN_HEIGHT
+        QuizzorMainPanel.Common.Height - 7*BTN_MARGIN - 2*BTN_HEIGHT
 End Sub
 
 ' Open the playlists node
@@ -613,6 +615,77 @@ Function IsPlaylistNode
     End If
 End Function
 
+' Returns a new randomized SDBStringList
+Function RandomizeStringList(StringList)
+    Set Result = SDB.NewStringList
+    Set LocalCopy = StringList.Copy
+
+    Randomize
+    n = LocalCopy.Count - 1
+    While n >= 0
+        i = Int(n*Rnd)
+        Result.Add LocalCopy.Item(i)
+        LocalCopy.Delete i
+        n = n - 1
+    WEnd
+
+    Set RandomizeStringList = Result
+End Function
+
+' Initializes the display of random images
+Sub InitializeRandomImageDisplay
+    If Not OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
+        Exit Sub
+    End If
+
+    EnableRandomImages = _
+        OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
+    If Not EnableRandomImages Then Exit Sub
+
+    ' Load and randomize list of images
+    Set RandomImagesStringList = RandomizeStringList(NewStringListFromString( _
+        OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";"))
+
+    NewImageWaitTitles
+    CurrentRandomImageIndex = 0
+End Sub
+
+' Sets the ImageWaitTitles to a new value depending on saved options
+Sub NewImageWaitTitles
+    MinImageWaitTitles = _
+        OptionsFile.IntValue("Quizzor", "MinImageWaitTitles")
+    MaxImageWaitTitles = _
+        OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
+    Randomize
+    ImageWaitTitles = MinImageWaitTitles + CInt(Rnd() _
+                            * (MaxImageWaitTitles - MinImageWaitTitles))
+End Sub
+
+' Displays a random image if wait titles is zero,
+' Otherwise reduce wait titles by one
+Sub DisplayRandomImage
+    ' If the end of the image list is reached, stop displaying images
+    If CurrentRandomImageIndex >= RandomImagesStringList.Count Then
+        Exit Sub
+    End If
+
+    If ImageWaitTitles <= 0 Then
+        DisplayImage RandomImagesStringList.Item(CurrentRandomImageIndex)
+        CurrentRandomImageIndex = CurrentRandomImageIndex + 1
+        NewImageWaitTitles
+    Else
+        ImageWaitTitles = ImageWaitTitles - 1
+    End If
+
+    If DEBUG_ON Then
+        Result = SDB.MessageBox( _
+            CStr(ImageWaitTitles) & " -- Next?", mtConfirmation, Array(mbYes, mbNo))
+        If Result = mrYes Then
+            DisplayRandomImage
+        End If
+    End If
+End Sub
+
 Sub StartQuiz(Item)
     If Not IsPlaylistNode() Then Exit Sub
 
@@ -655,10 +728,9 @@ Sub StartQuiz(Item)
             CStr(Quiz_Playlist.ID))
     End If
 
-    SDB.Player.CurrentSongIndex = ResumeIndex
-End Sub
+    InitializeRandomImageDisplay
 
-Sub StopBtnClicked(Item)
+    SDB.Player.CurrentSongIndex = ResumeIndex
 End Sub
 
 Sub StopQuiz(Item)
@@ -700,17 +772,19 @@ Sub StartPlaying
     SongTrackBar.MinValue = 0
     SongTrackBar.MaxValue = CurrentSongLength
     SongTrackBar.Value = 0
-    
+
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
-    
+
     Set SongTimer = SDB.CreateTimer(100)
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     ' Disable playing next title
     ' Always play from the beginning
     SDB.Player.PlaybackTime = 0
-    SDB.Player.Play
+    ' DEBUG: Don't play, because it's slow on wine...
+    ' SDB.Player.Play
+    DebugOutput "Playing Song. New images in... " & CStr(ImageWaitTitles)
     SDB.Player.StopAfterCurrent = True
 End Sub
 
@@ -725,14 +799,15 @@ Sub PlayNext
     HideSongInfo
 
     NewIndex = SDB.Player.CurrentSongIndex + 1
-    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = _
-        NewIndex
+    OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) = NewIndex
 
     If SDB.Player.CurrentSongIndex = SDB.Player.CurrentSongList.Count - 1 Then
-        SDB.MessageBox SDB.Localize("No more songs in queue.")
-            mtInformation, Array(mbOk)
+        Result = SDB.MessageBox(SDB.Localize("No more songs in queue."), _
+            mtInformation, Array(mbOk))
         Exit Sub
     End If
+
+    DisplayRandomImage
 
     SDB.Player.CurrentSongIndex = NewIndex
     StartPlaying
@@ -939,13 +1014,28 @@ Sub BuildSheet(Sheet)
                 OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
     End If
     If OptionsFile.ValueExists("Quizzor", "RandomImagesString") Then
-        Set ImagesListBox.Items = SDB.NewStringList
-        For Each Filename In Split(OptionsFile.StringValue("Quizzor", _
-                              "RandomImagesString"), ";") 
-            ImagesListBox.Items.Add Filename
-        Next
+        Set ImagesListBox.Items = NewStringListFromString( _
+            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";") 
     End If
 End Sub
+        
+' Returns a SDBStringList with items from Source, seperated by Delimiter
+Function NewStringListFromString(Source, Delimiter)
+    Set Result = SDB.NewStringList
+    For Each Element In Split(Source, Delimiter)
+        Result.Add Element
+    Next
+    Set NewStringListFromString = Result
+End Function
+
+' Returns a SDBStringList with items from Source, seperated by Delimiter
+Function NewStringListFromString(Source, Delimiter)
+    Set Result = SDB.NewStringList
+    For Each Element In Split(Source, Delimiter)
+        Result.Add Element
+    Next
+    Set NewStringListFromString = Result
+End Function
 
 Sub SaveSheet(Sheet)
     OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
@@ -979,7 +1069,7 @@ Sub PrepareImageForm
         Set ImageForm = SDB.UI.Newform
         Set SDB.Objects("ImageForm") = ImageForm
     End If
-    ImageForm.Common.SetClientRect BTN_MARGIN,BTN_MARGIN,500,500
+    ImageForm.Common.Align = alClient
     ImageForm.BorderStyle = 2
 
     Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
@@ -987,14 +1077,9 @@ Sub PrepareImageForm
         Set ImageHTML = SDB.UI.NewActiveX(ImageForm, "Shell.Explorer")
         ImageHTML.Common.ControlName = "ImageHTML"
     End If
-    ImageHTML.Common.SetRect BTN_MARGIN, BTN_MARGIN, _
-        ImageForm.Common.ClientWidth - 2*BTN_MARGIN, _
-        ImageForm.Common.ClientHeight - 2*BTN_MARGIN 
     ImageHTML.Common.Align = alClient
     ImageHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
     ImageHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
-
-    ImageForm.Common.Visible = False
 End Sub
 
 ' Add an item to random images listbox
@@ -1074,12 +1159,14 @@ Sub DisplayImage(ImageFileName)
     HTMLDocument.Write "<html><head>" & vbCrLf & _
         HTML_Style_Imageframe & vbCrLf & _
         "</head><body>" & vbCrLf  & _
+        "   <h1>Image Index: " & CStr(CurrentRandomImageIndex) & vbCrLf& _
+            "</h1>" & _
         "    <img style='height:90%' src='" + ImageFileName + "'/>" & _
             vbCrLf  & _
         "</body></html>" 
     HTMLDocument.Close
- 
-    ImageForm.Common.Visible = True 
+
+    ImageForm.ShowModal
 End Sub
 
 Sub OnStartup
@@ -1116,6 +1203,8 @@ Sub OnStartup
 
     Set OptionsFile = SDB.IniFile
 
+    PrepareImageForm
+
     ' Create options sheet
     If DEBUG_ON Then
         ' Create a frame with the options for rapid prototyping
@@ -1125,9 +1214,10 @@ Sub OnStartup
         OptionsForm.FormPosition = 4 ' screen center
         Script.RegisterEvent OptionsForm, "OnClose", "SaveSheet"
 
-        BuildSheet(OptionsForm)
+        ' OptionsForm.ShowModal
 
-        OptionsForm.ShowModal
+        InitializeRandomImageDisplay
+        DisplayRandomImage
     Else
         OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
                 "BuildSheet", "SaveSheet", 0)
