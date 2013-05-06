@@ -1,8 +1,8 @@
 <SoftwareVersion>
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>1</VersionMinor>
+    <VersionMinor>2</VersionMinor>
     <VersionRelease>0</VersionRelease>
     <VersionBuild>0</VersionBuild>
-    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.1.mmip</UpdateURL>
-    <NewVersionDescription>New, more playlist centric workflow.</NewVersionDescription>
+    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.2.mmip</UpdateURL>
+    <NewVersionDescription>Add ability to show random images between songs.</NewVersionDescription>
 </SoftwareVersion>
