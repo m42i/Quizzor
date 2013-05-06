@@ -13,6 +13,16 @@ Usage:
 - The position in the playlist is retained until between restarts
 - If you want to start from the beginning, you need to create a new playlist
 
+Version 1.2 additions:
+- Ability to display random images between songs. For enabling this go to
+  the options and select Quizzor at the bottom.
+- You have to add images one by one, because the MediaMonkey API doesn't
+  expose multi-select dialogs yet
+- The image list is randomized at the beginning and every image is only
+  shown once
+- Currently the list advancement is not saved, meaning all images are
+  loaded again if a quiz is resumed
+
 Localization:
 Because MM doesn't support localization for scripts yet, seperate releases are
 packaged for different languages.
