@@ -64,6 +64,10 @@ def load_all_arguments():
         arguments.source_files = [arguments.project_name+'.vbs']
     globals().update(vars(arguments))
 
+def delete_locale_indicator(filename, locale):
+    '''Removes _<locale> from a given filename '''
+    return filename.replace('_'+locale, '')
+
 load_all_arguments()
 
 # Define localization strings
@@ -124,7 +128,8 @@ for language in os.listdir(locales_dir):
                     with zipfile.ZipFile(project_name+'_'+language+'.mmip', 
                                          mode='w') as package_file:
                         for filename in package_files:
-                            package_file.write(filename) 
+                            package_file.write(filename, arcname=
+                            delete_locale_indicator(filename, language)) 
                         package_file.write(temp_file.name, 
                                            arcname=source_file_name)
 
