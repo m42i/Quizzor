@@ -1,8 +1,8 @@
 <SoftwareVersion>
     <VersionMajor>1</VersionMajor>
     <VersionMinor>2</VersionMinor>
-    <VersionRelease>0</VersionRelease>
+    <VersionRelease>1</VersionRelease>
     <VersionBuild>0</VersionBuild>
     <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.2.mmip</UpdateURL>
-    <NewVersionDescription>Add ability to show random images between songs.</NewVersionDescription>
+    <NewVersionDescription>It's now possible to add multiple files at once.</NewVersionDescription>
 </SoftwareVersion>

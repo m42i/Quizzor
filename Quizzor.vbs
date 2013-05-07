@@ -973,6 +973,17 @@ Sub BuildSheet(Sheet)
     AddRandomImageBtn.Common.SetClientRect _
         3*BTN_WIDTH + 4*BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
+
+    Set AddAllRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    AddAllRandomImageBtn.Common.ControlName = "AddAllRandomImageBtn"
+    AddAllRandomImageBtn.Caption = SDB.Localize("Add All")
+    AddAllRandomImageBtn.Common.Hint = _
+     SDB.Localize("Adds all images in the same directory as the selected.")
+    AddAllRandomImageBtn.UseScript = Script.ScriptPath
+    AddAllRandomImageBtn.OnClickFunc = "AddAllRandomImage"
+    AddAllRandomImageBtn.Common.SetClientRect _
+        4*BTN_WIDTH + 5*BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, BTN_LONG_WIDTH, BTN_HEIGHT
     NextRow
 
     ' Show image after every x to y titles
@@ -1110,17 +1121,52 @@ Sub AddRandomImage(Button)
         Exit Sub
     End If
 
+    ' We will iterate through all files in the same directory
     Filename = OpenFileDialog.Filename
 
     Set ImagesListBox = _
         Button.Common.Parent.Common.ChildControl("ImagesListBox")
-    If Not IsInStringList(ImagesListBox.Items, Filename) Then
-        If ImagesListBox.Items Is Nothing Then
-            Set ImagesListBox.Items = SDB.NewStringList
-        End If
+    If ImagesListBox.Items Is Nothing Then
+        Set ImagesListBox.Items = SDB.NewStringList
+    End If
 
+    If Not IsInStringList(ImagesListBox.Items, Filename) Then
         ImagesListBox.Items.Add Filename
     End If
+End Sub
+
+' Adds all files in the same directory as the selected
+Sub AddAllRandomImage(Button)
+    Set OpenFileDialog = SDB.CommonDialog
+    OpenFileDialog.Title = SDB.Localize("Select one or more images")
+    OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
+    ' TODO: Multiselect dialog ist currently not supported
+    OpenFileDialog.Flags = cdlOFNFileMustExist
+    OpenFileDialog.ShowOpen 
+
+    If Not OpenFileDialog.Ok Then 
+        Exit Sub
+    End If
+
+    ' We will iterate through all files in the same directory
+    Filename = OpenFileDialog.Filename
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set FolderObject = FileSystem.GetFolder( _
+                                Left(Filename, InStrRev(Filename, "\")))
+
+    Set ImagesListBox = _
+        Button.Common.Parent.Common.ChildControl("ImagesListBox")
+    If ImagesListBox.Items Is Nothing Then
+        Set ImagesListBox.Items = SDB.NewStringList
+    End If
+
+    For Each File in FolderObject.Files
+        Extension = LCase(Mid(File.Name, InStrRev(File.Name, ".") + 1))
+        If (Extension = "jpg" Or Extension = "png") _
+                And Not IsInStringList(ImagesListBox.Items, File.Path) Then
+            ImagesListBox.Items.Add File.Path
+        End If
+    Next
 End Sub
 
 ' Remove selected item from random images listbox
@@ -1231,7 +1277,8 @@ Sub OnStartup
         OptionsForm.FormPosition = 4 ' screen center
         Script.RegisterEvent OptionsForm, "OnClose", "SaveSheet"
 
-        ' OptionsForm.ShowModal
+        BuildSheet OptionsForm
+        OptionsForm.ShowModal
 
         InitializeRandomImageDisplay
         DisplayRandomImage
