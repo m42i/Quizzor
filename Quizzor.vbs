@@ -606,11 +606,10 @@ End Sub
 ' show message if not
 Function IsPlaylistNode
     Set SelectedNode = SDB.MainTree.CurrentNode
-    If (SelectedNode.NodeType = NODE_PLAYLIST_AUTO) _
-            Or (SelectedNode.NodeType = NODE_PLAYLIST_MANUAL) Then
+    If SelectedNode.NodeType = NODE_PLAYLIST_MANUAL Then
         IsPlaylistNode = True
     Else
-        DebugOutput SDB.Localize("Please select a playlist.")
+        DebugOutput SDB.Localize("Please select a normal, non-auto playlist.")
         IsPlaylistNode = False
     End If
 End Function
