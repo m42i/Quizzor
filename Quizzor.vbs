@@ -1053,15 +1053,6 @@ Function NewStringListFromString(Source, Delimiter)
     Set NewStringListFromString = Result
 End Function
 
-' Returns a SDBStringList with items from Source, seperated by Delimiter
-Function NewStringListFromString(Source, Delimiter)
-    Set Result = SDB.NewStringList
-    For Each Element In Split(Source, Delimiter)
-        Result.Add Element
-    Next
-    Set NewStringListFromString = Result
-End Function
-
 Sub SaveSheet(Sheet)
     OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
             Sheet.Common.ChildControl("EnableRandomImages").Checked
