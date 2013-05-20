@@ -45,8 +45,8 @@ Const NODE_PLAYLIST_MANUAL = 61
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
 ' Using variable to allow for multi line string
 Dim HTML_Style_Imageframe : HTML_Style_Imageframe = _
-    "<style type='text/css'> body { overflow: auto; " & vbCrLf & _
-    "width:90%; height:90%; position:absolute;top:0;left:0; } " & _
+    "<style type='text/css'> " & vbCrLf & _
+    "img { height: 100%; } " & vbCrLf & _
     vbCrLf & "</style>"
 
 ' Anchor constants, add them for multiple anchors
@@ -1214,7 +1214,7 @@ Sub DisplayImage(ImageFileName)
     HTMLDocument.Write "<html><head>" & vbCrLf & _
         HTML_Style_Imageframe & vbCrLf & _
         "</head><body>" & vbCrLf  & _
-        "    <img style='height:90%' src='" + ImageFileName + "'/>" & _
+        "<center><img src='" & ImageFileName & "'/></center>" & _
             vbCrLf  & _
         "</body></html>" 
     HTMLDocument.Close
