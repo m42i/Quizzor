@@ -197,9 +197,17 @@ End Sub
 Sub RandomizePlaylist(Item)
     If Not IsPlaylistNode() Then Exit Sub
 
-    DoShuffle = FreeFormMessageBox(SDB.Localize("Randomizing a playlist cannot be undone."), _
-        Array(SDB.Localize("Randomize"), SDB.Localize("Cancel")))
-    If DoShuffle <> 0 Then Exit Sub
+    WarnRandomize = True
+    If OptionsFile.ValueExists("Quizzor", "WarnRandomizePlaylist") Then
+        WarnRandomize = OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist") 
+    End If
+
+    If WarnRandomize Then
+        DoShuffle = FreeFormMessageBox(SDB.Localize("Randomizing a playlist cannot be undone."), _
+            Array(SDB.Localize("Randomize"), SDB.Localize("Cancel")))
+
+        If DoShuffle <> 0 Then Exit Sub
+    End If
 
     ' Because of OLE error 80020006 with wine, the queue is used for shuffling
     ' and restored afterwards
@@ -1029,6 +1037,15 @@ Sub CreateOptionsSheet(Sheet)
     SkipRows 2
     ' Set the height of the surroundingbox
     RandomImagesBox.Common.Height = CurrentRow
+    
+    Set WarnRandomizePlaylist = SDB.UI.NewCheckBox(Sheet)
+    WarnRandomizePlaylist.Common.ControlName = "WarnRandomizePlaylist"
+    WarnRandomizePlaylist.Common.SetRect BTN_MARGIN, _ 
+        CurrentTopMargin + CurrentRow, _
+        Sheet.Common.ClientWidth, BTN_HEIGHT
+    WarnRandomizePlaylist.Caption = SDB.Localize("Warn before randomizing a playlist")
+    WarnRandomizePlaylist.Checked = True
+    NextRow
 
     ' Load values
     If OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
@@ -1042,6 +1059,10 @@ Sub CreateOptionsSheet(Sheet)
     If OptionsFile.ValueExists("Quizzor", "RandomImagesString") Then
         Set ImagesListBox.Items = NewStringListFromString( _
             OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";") 
+    End If
+    If OptionsFile.ValueExists("Quizzor", "WarnRandomizePlaylist") Then
+        WarnRandomizePlaylist.Checked = _
+                OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist")
     End If
 End Sub
         
@@ -1057,6 +1078,8 @@ End Function
 Sub SaveOptionsSheet(Sheet)
     OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
             Sheet.Common.ChildControl("EnableRandomImages").Checked
+    OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist") = _
+            Sheet.Common.ChildControl("WarnRandomizePlaylist").Checked
 
     ' Save all images
     Set ImagesListBox = Sheet.Common.ChildControl("ImagesListBox")
