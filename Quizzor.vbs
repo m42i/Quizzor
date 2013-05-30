@@ -1,16 +1,16 @@
 ' Quizzor - A MediaMonkey plugin for performing music quizzes
-' Copyright (C) 2013 "m42i" 
-' 
+' Copyright (C) 2013 "m42i"
+'
 ' This program is free software: you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
 ' the Free Software Foundation, either version 3 of the License, or
 ' (at your option) any later version.
-' 
+'
 ' This program is distributed in the hope that it will be useful,
 ' but WITHOUT ANY WARRANTY; without even the implied warranty of
 ' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ' GNU General Public License for more details.
-' 
+'
 ' You should have received a copy of the GNU General Public License
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,10 +27,10 @@ Const DEBUG_ON = False
 ' 9 is equal to the margin of a group box in an options sheet
 Const BTN_MARGIN = 9
 ' Defines standard height of a button
-' 24 equals the normal button height, e.g. 'Ok', 'Cancel' 
+' 24 equals the normal button height, e.g. 'Ok', 'Cancel'
 Const BTN_HEIGHT = 24
 ' Defines standard width of a button
-' 74 equals the normal button width, e.g. 'Ok', 'Cancel' 
+' 74 equals the normal button width, e.g. 'Ok', 'Cancel'
 Const BTN_WIDTH = 74
 Const BTN_LONG_WIDTH = 111 ' Defines width of a long button
 Const TIME_WIDTH = 50 ' Defines standard width of a time label
@@ -42,7 +42,7 @@ Const NODE_PLAYLIST_AUTO = 71
 Const NODE_PLAYLIST_MANUAL = 61
 
 ' %font-size% should be replaced with the font size, e.g. 200%
-Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>" 
+Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>"
 ' Using variable to allow for multi line string
 Dim HTML_Style_Imageframe : HTML_Style_Imageframe = _
     "<style type='text/css'> " & vbCrLf & _
@@ -79,28 +79,32 @@ Dim CurrentPlaylistPosition, CurrentSongLength
 Dim ImageWaitTitles, CurrentRandomImageIndex
 Dim RandomImagesStringList, ShowRandomImagesEnabled
 
+' If this is true, the previous song should be played
+' instead of the beginning of the current song
+Dim RewindMode
+
 ' Keep track of playlists between sessions
 ' [SectionName]
 ' key = description
-' 
+'
 ' [Quizzor]
 ' LastSongIndexForPlaylist_<Playlist.ID> = <SDB.Player.CurrentSongIndex> As Long
 '
 Dim OptionsFile
 
 ' Some variables to help building and reorganizing GUI elements
-' Remember: For labels add BTN_MARGIN/2 to ensure the text is 
+' Remember: For labels add BTN_MARGIN/2 to ensure the text is
 ' centered vertically
 Dim CurrentRow
-Dim CurrentTopMargin  
+Dim CurrentTopMargin
 Dim CurrentCol
 
 ' Creates a modal message box window, with the "Text".
 ' Buttons is an Array of Strings, arranged from right to left, aligned right
 ' Empty strings will not create buttons, usefule to specify the return value
 ' Return value is the String position in the array Buttons()
-' If a button is not pressed (e.g. window closed), 
-' the return value will be negative 
+' If a button is not pressed (e.g. window closed),
+' the return value will be negative
 ' and by 100 smaller than the default modal result
 ' e.g. -98 for Cancel (2)
 Function FreeFormMessageBox(Text, Buttons())
@@ -123,9 +127,9 @@ Function FreeFormMessageBox(Text, Buttons())
 
     ' create buttons, set ModalResult
     ' Use extra variable to prevent big spaces between buttons
-    btnNr = 0 
+    btnNr = 0
     For i = 0 To UBound(Buttons)
-        If Buttons(i) <> "" Then 
+        If Buttons(i) <> "" Then
             Set Button = SDB.UI.NewButton(MsgWindow)
             Button.Common.SetClientRect _
                 MsgWindow.Common.ClientWidth - BTN_WIDTH*(btnNr+1) - BTN_MARGIN*(btnNr+1), _
@@ -147,9 +151,9 @@ Function GetFormattedDate()
     Today = Date
     This_Year = Year(Today)
     This_Month = Month(Today)
-    If This_Month < 10 Then This_Month = "0" + CStr(This_Month) 
+    If This_Month < 10 Then This_Month = "0" + CStr(This_Month)
     Dim This_Day : This_Day = Day(Today)
-    If This_Day < 10 Then This_Day = "0" + CStr(This_Day) 
+    If This_Day < 10 Then This_Day = "0" + CStr(This_Day)
 
     GetFormattedDate = CStr(This_Year) + "-" + CStr(This_Month) + "-" + CStr(This_Day)
 End Function
@@ -172,7 +176,7 @@ End Sub
 Function ClonePlaylist(ByVal SongList)
     Set NewPlaylist = SDB.NewSongList
 
-    If SongList.Count > 0 Then 
+    If SongList.Count > 0 Then
         For i = 0 To SongList.Count - 1
             NewPlaylist.Add SongList.Item(i)
         Next
@@ -199,7 +203,7 @@ Sub RandomizePlaylist(Item)
 
     WarnRandomize = True
     If OptionsFile.ValueExists("Quizzor", "WarnRandomizePlaylist") Then
-        WarnRandomize = OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist") 
+        WarnRandomize = OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist")
     End If
 
     If WarnRandomize Then
@@ -214,7 +218,7 @@ Sub RandomizePlaylist(Item)
     Set NodePlaylist = SDB.PlaylistByID( SDB.MainTree.CurrentNode.RelatedObjectID )
 
     song_count = NodePlaylist.Tracks.Count
-    If song_count > 1 Then 
+    If song_count > 1 Then
         Shuffle NodePlaylist
         SDB.MainTracksWindow.Refresh
     End If
@@ -222,7 +226,7 @@ End Sub
 
 ' Get a comma seperated string list of all IDs in a given SongList
 Function GetSongIDList(SongList)
-    If SongList.Count = 0 Then 
+    If SongList.Count = 0 Then
         GetSongIDList = ""
         Exit Function
     End If
@@ -238,7 +242,7 @@ End Function
 ' Create a new empty quiz playlist and prevent duplicates
 Function CreateNewPlaylist()
     Dim NewBaseTitle : NewBaseTitle = SDB.Localize("Quiz of " + GetFormattedDate())
-    
+
     ' If a playlist with that name doesn't exist, root is returned
     Set Playlist_Root = SDB.PlaylistByTitle(NewBaseTitle)
 
@@ -262,10 +266,10 @@ Function QuizExists()
 
         SDB.MessageBox SDB.Localize("Please create a new quiz first."), mtInformation, Array(mbOk)
     End If
-    
+
     QuizExists = QExists
 End Function
-    
+
 ' Check whether songs are visible, and display message if not
 Function SongsVisible()
     Dim SVisible : SVisible = True
@@ -316,7 +320,7 @@ Sub DestroyAllObjects
         QuizzorMainPanel.Common.Visible = False
         Set SDB.Objects("QuizzorMainPanel") = Nothing
     End If
-    
+
     Set SDB.Objects("QuizBar") = Nothing
     Set SDB.Objects("NewQuizBtn") = Nothing
 
@@ -338,7 +342,7 @@ Function GetSongInfoHTML(SongData)
         WindowHeight = QuizzorMainPanel.Common.ClientHeight
     Else
         WindowHeight = 800
-    End If 
+    End If
 
     GetSongInfoHTML = "<html>" & vbCrLf & _
         Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 3) & "%") & vbCrLf & _
@@ -373,12 +377,17 @@ End Function
 
 Sub CreateMainPanel()
     Set UI = SDB.UI
-    
+
     Set QuizzorMainPanel = UI.NewForm
     QuizzorMainPanel.BorderStyle = 2
     QuizzorMainPanel.Common.Visible = False
     QuizzorMainPanel.Common.Align = alClient
     Script.RegisterEvent QuizzorMainPanel, "OnClose", "StopQuiz"
+
+    Set PreviousBtn = UI.NewButton(QuizzorMainPanel)
+    PreviousBtn.Common.ControlName = "PreviousBtn"
+    PreviousBtn.Caption = SDB.Localize("Previous")
+    Script.RegisterEvent PreviousBtn, "OnClick", "PlayPrevious"
 
     Set PlayBtn = UI.NewButton(QuizzorMainPanel)
     PlayBtn.Common.ControlName = "PlayBtn"
@@ -387,6 +396,7 @@ Sub CreateMainPanel()
 
     Set PauseBtn = UI.NewButton(QuizzorMainPanel)
     PauseBtn.Common.ControlName = "PauseBtn"
+    PauseBtn.Common.Visible = False
     PauseBtn.Caption = SDB.Localize("Pause")
     Script.RegisterEvent PauseBtn, "OnClick", "PausePlayback"
 
@@ -405,7 +415,7 @@ Sub CreateMainPanel()
     HideInfoBtn.Common.Visible = False
     HideInfoBtn.Caption = SDB.Localize("Hide Information")
     Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
-       
+
     ' TODO: Implement a close button, testing with wine gives an OLE error
     ' Set StopQuizBtn = UI.NewButton(QuizzorMainPanel)
     ' StopQuizBtn.Common.ControlName = "StopQuizBtn"
@@ -451,8 +461,12 @@ Sub ResizeMainPanel
         CreateMainPanel
     End If
 
+    Set PreviousBtn = QuizzorMainPanel.Common.ChildControl("PreviousBtn")
+    PreviousBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
+
     Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    PlayBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
+    PlayBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
+        BTN_WIDTH, BTN_HEIGHT
 
     Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
     PauseBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
@@ -501,10 +515,10 @@ End Sub
 Sub SelectPlaylist(Playlist)
     Set Root = SDB.MainTree
     Set ParentPlaylistNode = Root.Node_Playlists
-    
+
     ' Iterate through all nodes until Playlist is found
     Set PlaylistNode = Root.FirstChildNode(ParentPlaylistNode)
-    While Not (PlaylistNode Is Nothing) 
+    While Not (PlaylistNode Is Nothing)
         If PlaylistNode.RelatedObjectID = Playlist.ID Then
             Set Root.CurrentNode = PlaylistNode
             PlaylistNode.Expanded = True
@@ -519,13 +533,13 @@ End Sub
 Sub UpdateOptionsFile
     ' Check if the last QuizPlaylist still exists and delete the key if not
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
-        Set Playlist = SDB.PlaylistByID(OptionsFile.IntValue("Quizzor", "LastPlaylistID")) 
+        Set Playlist = SDB.PlaylistByID(OptionsFile.IntValue("Quizzor", "LastPlaylistID"))
         ' If no playlist exists, root (ID=0) is returned
         If Playlist.ID = 0 Then
             OptionsFile.DeleteKey "Quizzor", "LastPlaylistID"
         End If
     End If
-    
+
     ' Go through all saved playlists and check if they exist
     ' A playlist is saved with the key "LastSongIndexForPlaylist_<Playlist.ID>"
     Set KeyList = OptionsFile.Keys("Quizzor")
@@ -537,7 +551,7 @@ Sub UpdateOptionsFile
         If IDPosition > 0 Then
             ID = Mid(Key, IDPosition + 1)
             If SDB.PlaylistByID(ID).ID = 0 Then
-                OptionsFile.DeleteKey "Quizzor", Key 
+                OptionsFile.DeleteKey "Quizzor", Key
             End If
         End If
     Next
@@ -545,13 +559,13 @@ Sub UpdateOptionsFile
     OptionsFile.Flush
 End Sub
 
-' Creates a new quiz. 
+' Creates a new quiz.
 ' If a last session exists, the user is asked to use that.
 ' If not, a new quiz is created.
 ' Cancelling the dialog will change nothing.
 Sub NewQuiz(Item)
     UpdateOptionsFile
-    
+
     Dim NewQuizDialogAnswer
     Dim OptionsArray
     Dim DialogText
@@ -561,7 +575,7 @@ Sub NewQuiz(Item)
 
         DialogText = SDB.Localize("A previous quiz exists. Do you want to restore the last quiz") & _
             SDB.LocalizedFormat(" %s or create a new quiz?", LastPlaylist.Title,0,0) & vbCrLf & _
-            SDB.Localize("Either way the current queue will be lost.") 
+            SDB.Localize("Either way the current queue will be lost.")
 
         OptionsArray = Array(SDB.Localize("New Quiz"), _
             SDB.Localize("Restore Quiz"), SDB.Localize("Cancel"))
@@ -584,7 +598,7 @@ Sub NewQuiz(Item)
     Else
         Exit Sub
     End If
-    
+
     If IsObject(Quiz_Playlist) Then
         StartQuiz(Item)
     End If
@@ -595,7 +609,7 @@ Sub CreateNewQuiz
     ' The user decided to create a new playlist, so we clear the current
     StopQuiz(Item)
 
-    ' Replace playing queue with current tracks from main window 
+    ' Replace playing queue with current tracks from main window
     SDB.Player.PlaylistClear
     SDB.Player.PlaylistAddTracks SDB.AllVisibleSongList
     RandomizePlaylist
@@ -724,7 +738,7 @@ Sub StartQuiz(Item)
     QuizzorMainPanel.Common.Visible = True
     ' Ensure that the elements are redrawn
     ResizeMainPanel
-    
+
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
@@ -733,7 +747,7 @@ Sub StartQuiz(Item)
 
     ' Restore last index in playlist if wanted
     CurrentPlaylistPosition = 0
-    If OptionsFile.ValueExists("Quizzor", _ 
+    If OptionsFile.ValueExists("Quizzor", _
         "LastSongIndexForPlaylist_" + CStr(Quiz_Playlist.ID)) Then
         OldResumeIndex = _
             OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
@@ -763,7 +777,7 @@ Sub StopQuiz(Item)
     End If
 
     SDB.Player.Stop
-    
+
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = GetFormattedTime(0)
 
@@ -773,21 +787,26 @@ Sub StopQuiz(Item)
 End Sub
 
 Sub StartPlaying
-    If Not QuizExists() Then Exit Sub 
+    If Not QuizExists() Then Exit Sub
+
+    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+    PlayBtn.Common.Visible = False
+    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
+    PauseBtn.Common.Visible = True
 
     ' Make sure the current song stays,
     ' this prevents playing the next title if the previous ended
     SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
 
-    ' Always play from the beginning
-    SDB.Player.PlaybackTime = 0
-    SDB.Player.Play
-    
     ' If the player is paused, just continue playing.
     If SDB.Player.isPaused Then
         SDB.Player.Pause
         Exit Sub
     End If
+
+    ' Always play from the beginning
+    SDB.Player.PlaybackTime = 0
+    SDB.Player.Play
 
     CurrentSongLength = SDB.Player.CurrentSong.SongLength / 100
     SongTrackBar.MinValue = 0
@@ -806,7 +825,48 @@ End Sub
 
 ' Pause and unpause playback
 Sub PausePlayback
+    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+    PlayBtn.Common.Visible = True
+    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
+    PauseBtn.Common.Visible = False
+
     SDB.Player.Pause
+End Sub
+
+Sub PlayPrevious
+    HideSongInfo
+
+    ' If a song is not playing, play the previous
+    If Not SDB.Player.isPlaying Then
+        CurrentPlaylistPosition = CurrentPlaylistPosition - 1
+        If CurrentPlaylistPosition < 0 Then
+            CurrentPlaylistPosition = 0
+        End If
+    ElseIf RewindMode Then
+        Set RewindModeTimer = SDB.Objects("RewindModeTimer")
+        If Not (RewindModeTimer Is Nothing) Then
+            RewindModeTimer.Enabled = False
+            Script.UnRegisterEvents RewindModeTimer
+        End If
+        RewindMode = False
+
+        CurrentPlaylistPosition = CurrentPlaylistPosition - 1
+        If CurrentPlaylistPosition < 0 Then
+            CurrentPlaylistPosition = 0
+        End If
+    Else
+        Set RewindModeTimer = SDB.CreateTimer(5000)
+        SDB.Objects("RewindModeTimer") = RewindModeTimer
+        Script.RegisterEvent RewindModeTimer, "OnTimer", "QuitRewindMode"
+        RewindMode = True
+    End If
+
+    SDB.Player.Stop
+    SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
+
+    ' TODO: Handle random images...
+
+    StartPlaying
 End Sub
 
 Sub PlayNext
@@ -828,17 +888,22 @@ Sub PlayNext
     StartPlaying
 End Sub
 
+Sub QuitRewindMode(Timer)
+    RewindMode = False
+    Script.UnRegisterEvents Timer
+End Sub
+
 Sub HideSongInfo
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
     ShowInfoBtn.Common.Visible = True
     Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
     HideInfoBtn.Common.Visible = False
-    
+
     ClearSongInfoHTML
 End Sub
 
 Sub ShowSongInfo
-    ' Only reset the current song if necessary, 
+    ' Only reset the current song if necessary,
     ' otherwise the playback starts from the beginning
     If SDB.Player.CurrentSongIndex <> CurrentPlaylistPosition Then
         SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
@@ -846,7 +911,7 @@ Sub ShowSongInfo
 
     Set CurrentSong = SDB.Player.CurrentSong
     If Not IsObject(CurrentSong) Then Exit Sub
-    
+
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
     ShowInfoBtn.Common.Visible = False
     Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
@@ -922,7 +987,7 @@ Sub CreateOptionsSheet(Sheet)
 
     Set EnableRandomImages = SDB.UI.NewCheckBox(Sheet)
     EnableRandomImages.Common.ControlName = "EnableRandomImages"
-    EnableRandomImages.Common.SetRect BTN_MARGIN, _ 
+    EnableRandomImages.Common.SetRect BTN_MARGIN, _
         CurrentTopMargin + CurrentRow, _
         500, BTN_HEIGHT
     EnableRandomImages.Caption = SDB.Localize("Enable random images")
@@ -952,7 +1017,7 @@ Sub CreateOptionsSheet(Sheet)
         7*BTN_HEIGHT
     ImagesListBox.Common.Anchors = akLeft + akTop + akRight
     SkipRows 7
-    
+
     Set AddRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
     AddRandomImageBtn.Common.ControlName = "AddRandomImageBtn"
     AddRandomImageBtn.Caption = SDB.Localize("Add")
@@ -1038,10 +1103,10 @@ Sub CreateOptionsSheet(Sheet)
     SkipRows 2
     ' Set the height of the surroundingbox
     RandomImagesBox.Common.Height = CurrentRow
-    
+
     Set WarnRandomizePlaylist = SDB.UI.NewCheckBox(Sheet)
     WarnRandomizePlaylist.Common.ControlName = "WarnRandomizePlaylist"
-    WarnRandomizePlaylist.Common.SetRect BTN_MARGIN, _ 
+    WarnRandomizePlaylist.Common.SetRect BTN_MARGIN, _
         CurrentTopMargin + CurrentRow, _
         Sheet.Common.ClientWidth, BTN_HEIGHT
     WarnRandomizePlaylist.Caption = SDB.Localize("Warn before randomizing a playlist")
@@ -1059,14 +1124,14 @@ Sub CreateOptionsSheet(Sheet)
     End If
     If OptionsFile.ValueExists("Quizzor", "RandomImagesString") Then
         Set ImagesListBox.Items = NewStringListFromString( _
-            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";") 
+            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";")
     End If
     If OptionsFile.ValueExists("Quizzor", "WarnRandomizePlaylist") Then
         WarnRandomizePlaylist.Checked = _
                 OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist")
     End If
 End Sub
-        
+
 ' Returns a SDBStringList with items from Source, seperated by Delimiter
 Function NewStringListFromString(Source, Delimiter)
     Set Result = SDB.NewStringList
@@ -1130,9 +1195,9 @@ Sub AddRandomImage(Button)
     OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
     ' TODO: Multiselect dialog ist currently not supported
     OpenFileDialog.Flags = cdlOFNFileMustExist
-    OpenFileDialog.ShowOpen 
+    OpenFileDialog.ShowOpen
 
-    If Not OpenFileDialog.Ok Then 
+    If Not OpenFileDialog.Ok Then
         Exit Sub
     End If
 
@@ -1157,9 +1222,9 @@ Sub AddAllRandomImages(Button)
     OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
     ' TODO: Multiselect dialog ist currently not supported
     OpenFileDialog.Flags = cdlOFNFileMustExist
-    OpenFileDialog.ShowOpen 
+    OpenFileDialog.ShowOpen
 
-    If Not OpenFileDialog.Ok Then 
+    If Not OpenFileDialog.Ok Then
         Exit Sub
     End If
 
@@ -1205,13 +1270,13 @@ Sub RemoveAllRandomImagesString(Button)
         Exit Sub
     End If
 
-    MessageResult = FreeFormMessageBox( _ 
+    MessageResult = FreeFormMessageBox( _
         SDB.Localize("Do you want to remove all images?"), _
         Array(SDB.Localize("Cancel"), SDB.Localize("Remove all")))
 
     If MessageResult <> 1 Then
         Exit Sub
-    End If 
+    End If
 
     Set ImagesListBox.Items = SDB.NewStringList
 End Sub
@@ -1241,7 +1306,7 @@ Sub DisplayImage(ImageFileName)
         "</head><body>" & vbCrLf  & _
         "<center><img src='" & ImageFileName & "'/></center>" & _
             vbCrLf  & _
-        "</body></html>" 
+        "</body></html>"
     HTMLDocument.Close
 
     ImageForm.ShowModal
@@ -1251,27 +1316,27 @@ Sub OnStartup
     Set UI = SDB.UI
 
     ' Add right-click menu
-    Set QuizMenuPopSeperator = SDB.Objects("QuizMenuPopSeperator") 
+    Set QuizMenuPopSeperator = SDB.Objects("QuizMenuPopSeperator")
     If QuizMenuPopSeperator Is Nothing Then
         Set QuizMenuPopSeperator = UI.AddMenuItemSep(UI.Menu_Pop_Tree, 0, 0)
         SDB.Objects("QuizMenuPopSeperator") = QuizMenuPopSeperator
     End If
 
-    Set BeginQuizMenuItem = SDB.Objects("BeginQuizMenuItem") 
+    Set BeginQuizMenuItem = SDB.Objects("BeginQuizMenuItem")
     If BeginQuizMenuItem Is Nothing Then
         Set BeginQuizMenuItem = UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
-        SDB.Objects("BeginQuizMenuItem") = BeginQuizMenuItem 
+        SDB.Objects("BeginQuizMenuItem") = BeginQuizMenuItem
     End If
     BeginQuizMenuItem.Caption = SDB.Localize("Begin Quiz")
     Script.RegisterEvent BeginQuizMenuItem, "OnClick", "StartQuiz"
-    
+
     Set RandomizePlaylistMenuItem = _
             SDB.Objects("RandomizePlaylistMenuItem")
     If RandomizePlaylistMenuItem Is Nothing Then
         Set RandomizePlaylistMenuItem = _
                 UI.AddMenuItem(UI.Menu_Pop_Tree, 0, -1)
         SDB.Objects("RandomizePlaylistMenuItem") = _
-                RandomizePlaylistMenuItem  
+                RandomizePlaylistMenuItem
     End If
     RandomizePlaylistMenuItem.Caption = SDB.Localize("Randomize")
     Script.RegisterEvent RandomizePlaylistMenuItem, _
@@ -1309,11 +1374,11 @@ Sub OnShutdownHandler
         OptionsFile.Flush
     End If
     If IsObject(QuizzorMainPanel) Then
-        QuizzorMainPanel.Common.Visible = False 
+        QuizzorMainPanel.Common.Visible = False
     End If
 End Sub
 
-Sub Uninstall 
+Sub Uninstall
     OptionsFile.DeleteSection "Quizzor"
     DestroyAllObjects
 End Sub
