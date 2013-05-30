@@ -908,7 +908,7 @@ Sub SkipRows(rows)
     CurrentTopMargin = CurrentTopMargin + BTN_MARGIN
 End Sub
 
-Sub BuildSheet(Sheet)
+Sub CreateOptionsSheet(Sheet)
     StartRowCount
     AddTopMargin
 
@@ -973,14 +973,14 @@ Sub BuildSheet(Sheet)
         3*BTN_WIDTH + 4*BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
 
-    Set AddAllRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    AddAllRandomImageBtn.Common.ControlName = "AddAllRandomImageBtn"
-    AddAllRandomImageBtn.Caption = SDB.Localize("Add All")
-    AddAllRandomImageBtn.Common.Hint = _
+    Set AddAllRandomImagesBtn = SDB.UI.NewButton(RandomImagesBox)
+    AddAllRandomImagesBtn.Common.ControlName = "AddAllRandomImagesBtn"
+    AddAllRandomImagesBtn.Caption = SDB.Localize("Add All")
+    AddAllRandomImagesBtn.Common.Hint = _
      SDB.Localize("Adds all images in the same directory as the selected.")
-    AddAllRandomImageBtn.UseScript = Script.ScriptPath
-    AddAllRandomImageBtn.OnClickFunc = "AddAllRandomImage"
-    AddAllRandomImageBtn.Common.SetClientRect _
+    AddAllRandomImagesBtn.UseScript = Script.ScriptPath
+    AddAllRandomImagesBtn.OnClickFunc = "AddAllRandomImages"
+    AddAllRandomImagesBtn.Common.SetClientRect _
         4*BTN_WIDTH + 5*BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, BTN_LONG_WIDTH, BTN_HEIGHT
     NextRow
@@ -1027,6 +1027,7 @@ Sub BuildSheet(Sheet)
     NextRow
 
     SkipRows 2
+    ' Set the height of the surroundingbox
     RandomImagesBox.Common.Height = CurrentRow
 
     ' Load values
@@ -1053,7 +1054,7 @@ Function NewStringListFromString(Source, Delimiter)
     Set NewStringListFromString = Result
 End Function
 
-Sub SaveSheet(Sheet)
+Sub SaveOptionsSheet(Sheet)
     OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
             Sheet.Common.ChildControl("EnableRandomImages").Checked
 
@@ -1126,7 +1127,7 @@ Sub AddRandomImage(Button)
 End Sub
 
 ' Adds all files in the same directory as the selected
-Sub AddAllRandomImage(Button)
+Sub AddAllRandomImages(Button)
     Set OpenFileDialog = SDB.CommonDialog
     OpenFileDialog.Title = SDB.Localize("Select one or more images")
     OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
@@ -1265,16 +1266,16 @@ Sub OnStartup
         SDB.Objects("OptionsForm") = OptionsForm
         OptionsForm.Common.SetClientRect 200, 100, 600, 400
         OptionsForm.FormPosition = 4 ' screen center
-        Script.RegisterEvent OptionsForm, "OnClose", "SaveSheet"
+        Script.RegisterEvent OptionsForm, "OnClose", "SaveOptionsSheet"
 
-        BuildSheet OptionsForm
+        CreateOptionsSheet OptionsForm
         OptionsForm.ShowModal
 
         InitializeRandomImageDisplay
         DisplayRandomImage
     Else
         OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
-                "BuildSheet", "SaveSheet", 0)
+                "CreateOptionsSheet", "SaveOptionsSheet", 0)
     End If
 End Sub
 
