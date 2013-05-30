@@ -952,15 +952,26 @@ Sub CreateOptionsSheet(Sheet)
         7*BTN_HEIGHT
     ImagesListBox.Common.Anchors = akLeft + akTop + akRight
     SkipRows 7
+    
+    Set AddRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    AddRandomImageBtn.Common.ControlName = "AddRandomImageBtn"
+    AddRandomImageBtn.Caption = SDB.Localize("Add")
+    AddRandomImageBtn.UseScript = Script.ScriptPath
+    AddRandomImageBtn.OnClickFunc = "AddRandomImage"
+    AddRandomImageBtn.Common.SetClientRect _
+        BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
 
-    Set ClearRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    ClearRandomImageBtn.Common.ControlName = "ClearRandomImageBtn"
-    ClearRandomImageBtn.Caption = SDB.Localize("Clear")
-    ClearRandomImageBtn.UseScript = Script.ScriptPath
-    ClearRandomImageBtn.OnClickFunc = "ClearRandomImagesString"
-    ClearRandomImageBtn.Common.SetClientRect _
-        BTN_MARGIN, CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH, BTN_HEIGHT
+    Set AddAllRandomImagesBtn = SDB.UI.NewButton(RandomImagesBox)
+    AddAllRandomImagesBtn.Common.ControlName = "AddAllRandomImagesBtn"
+    AddAllRandomImagesBtn.Caption = SDB.Localize("Add all")
+    AddAllRandomImagesBtn.Common.Hint = _
+     SDB.Localize("Adds all images in the same directory as the selected.")
+    AddAllRandomImagesBtn.UseScript = Script.ScriptPath
+    AddAllRandomImagesBtn.OnClickFunc = "AddAllRandomImages"
+    AddAllRandomImagesBtn.Common.SetClientRect _
+        BTN_WIDTH + 2*BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, BTN_LONG_WIDTH, BTN_HEIGHT
 
     Set RemoveRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
     RemoveRandomImageBtn.Common.ControlName = "RemoveRandomImageBtn"
@@ -968,29 +979,19 @@ Sub CreateOptionsSheet(Sheet)
     RemoveRandomImageBtn.UseScript = Script.ScriptPath
     RemoveRandomImageBtn.OnClickFunc = "RemoveRandomImage"
     RemoveRandomImageBtn.Common.SetClientRect _
-        2*BTN_WIDTH + 3*BTN_MARGIN, _
+        BTN_LONG_WIDTH + BTN_WIDTH + 3*BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, _
         BTN_WIDTH, BTN_HEIGHT
 
-    Set AddRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    AddRandomImageBtn.Common.ControlName = "AddRandomImageBtn"
-    AddRandomImageBtn.Caption = SDB.Localize("Add")
-    AddRandomImageBtn.UseScript = Script.ScriptPath
-    AddRandomImageBtn.OnClickFunc = "AddRandomImage"
-    AddRandomImageBtn.Common.SetClientRect _
-        3*BTN_WIDTH + 4*BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
-
-    Set AddAllRandomImagesBtn = SDB.UI.NewButton(RandomImagesBox)
-    AddAllRandomImagesBtn.Common.ControlName = "AddAllRandomImagesBtn"
-    AddAllRandomImagesBtn.Caption = SDB.Localize("Add All")
-    AddAllRandomImagesBtn.Common.Hint = _
-     SDB.Localize("Adds all images in the same directory as the selected.")
-    AddAllRandomImagesBtn.UseScript = Script.ScriptPath
-    AddAllRandomImagesBtn.OnClickFunc = "AddAllRandomImages"
-    AddAllRandomImagesBtn.Common.SetClientRect _
-        4*BTN_WIDTH + 5*BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, BTN_LONG_WIDTH, BTN_HEIGHT
+    Set RemoveAllRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
+    RemoveAllRandomImageBtn.Common.ControlName = "RemoveAllRandomImageBtn"
+    RemoveAllRandomImageBtn.Caption = SDB.Localize("Remove all")
+    RemoveAllRandomImageBtn.UseScript = Script.ScriptPath
+    RemoveAllRandomImageBtn.OnClickFunc = "RemoveAllRandomImagesString"
+    RemoveAllRandomImageBtn.Common.SetClientRect _
+        BTN_LONG_WIDTH + 2*BTN_WIDTH + 4*BTN_MARGIN, _
+        CurrentRow + CurrentTopMargin, _
+        BTN_LONG_WIDTH, BTN_HEIGHT
     NextRow
 
     ' Show image after every x to y titles
@@ -1196,7 +1197,7 @@ Sub RemoveRandomImage(Button)
 End Sub
 
 ' Remove all items from the random images listbox
-Sub ClearRandomImagesString(Button)
+Sub RemoveAllRandomImagesString(Button)
     Set ImagesListBox = _
         Button.Common.Parent.Common.ChildControl("ImagesListBox")
 
