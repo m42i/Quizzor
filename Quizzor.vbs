@@ -924,7 +924,7 @@ Sub CreateOptionsSheet(Sheet)
     EnableRandomImages.Common.ControlName = "EnableRandomImages"
     EnableRandomImages.Common.SetRect BTN_MARGIN, _ 
         CurrentTopMargin + CurrentRow, _
-        Sheet.Common.ClientWidth, BTN_HEIGHT
+        500, BTN_HEIGHT
     EnableRandomImages.Caption = SDB.Localize("Enable random images")
     EnableRandomImages.Checked = True
     NextRowWithoutTopMargin
@@ -933,7 +933,7 @@ Sub CreateOptionsSheet(Sheet)
     RandomImagesBox.Common.ControlName = "EnableRandonImageBox"
     RandomImagesBox.Common.SetRect BTN_MARGIN, _
         CurrentTopMargin + CurrentRow, _
-        Sheet.Common.ClientWidth - 2*BTN_MARGIN, _
+        500 - 2*BTN_MARGIN, _
         10*BTN_HEIGHT + 4*BTN_MARGIN
     RandomImagesBox.Common.Anchors = akLeft + akTop + akRight
     RandomImagesBox.Caption = SDB.Localize("Random images")
@@ -948,7 +948,7 @@ Sub CreateOptionsSheet(Sheet)
     ImagesListBox.Common.ControlName = "ImagesListBox"
     ImagesListBox.Common.SetClientRect BTN_MARGIN, _
         CurrentRow + CurrentTopMargin, _
-        Sheet.Common.ClientWidth - 4*BTN_MARGIN, _
+        RandomImagesBox.Common.ClientWidth - 2*BTN_MARGIN, _
         7*BTN_HEIGHT
     ImagesListBox.Common.Anchors = akLeft + akTop + akRight
     SkipRows 7
