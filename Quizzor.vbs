@@ -425,6 +425,7 @@ Sub CreateMainPanel()
     Set SongTime = UI.NewLabel(QuizzorMainPanel)
     SongTime.Common.ControlName = "SongTime"
     SongTime.Common.Anchors = akLeft + akTop
+    SongTime.Common.FontSize = 18
     SongTime.Alignment = txtAlCenter
     SongTime.Autosize = False
     SongTime.Caption = "00:00"
@@ -434,13 +435,14 @@ Sub CreateMainPanel()
     SongTrackBar.Common.ControlName = "SongTrackBar"
     SongTrackBar.Common.Anchors = akTop
     SongTrackBar.Common.Enabled = False
-    SongTrackBar.Common.Anchors = akLeft + akBottom + akRight
+    SongTrackBar.Common.Anchors = akLeft + akTop + akRight
     SongTrackBar.Value = 0
     SongTrackBar.Horizontal = True
 
     Set SongTimeLeft = UI.NewLabel(QuizzorMainPanel)
     SongTimeLeft.Common.ControlName = "SongTimeLeft"
     SongTimeLeft.Common.Anchors = akTop + akRight
+    SongTimeLeft.Common.FontSize = 18
     SongTimeLeft.Alignment = txtAlCenter
     SongTimeLeft.Autosize = False
     SongTimeLeft.Caption = "00:00"
@@ -490,25 +492,25 @@ Sub ResizeMainPanel
         ' BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
 
     Set SongTime = QuizzorMainPanel.Common.ChildControl("SongTime")
-    SongTime.Common.SetRect 2*BTN_MARGIN, BTN_HEIGHT + 3*BTN_MARGIN, _
-        TIME_WIDTH, BTN_HEIGHT
+    SongTime.Common.SetRect BTN_MARGIN, BTN_HEIGHT + 2*BTN_MARGIN, _
+        2*TIME_WIDTH, BTN_HEIGHT
 
     Set SongTrackBar = QuizzorMainPanel.Common.ChildControl("SongTrackBar")
-    SongTrackBar.Common.SetRect BTN_MARGIN + TIME_WIDTH, _
-        BTN_HEIGHT + 3*BTN_MARGIN,_
-        QuizzorMainPanel.Common.Width - 2*TIME_WIDTH - 2*BTN_MARGIN, _
+    SongTrackBar.Common.SetRect 2*TIME_WIDTH, _
+        BTN_HEIGHT + 2*BTN_MARGIN,_
+        QuizzorMainPanel.Common.Width - 4*TIME_WIDTH - 2*BTN_MARGIN, _
         BTN_HEIGHT
 
     Set SongTimeLeft = QuizzorMainPanel.Common.ChildControl("SongTimeLeft")
     SongTimeLeft.Common.SetRect _
-        BTN_MARGIN + TIME_WIDTH + SongTrackBar.Common.Width, _
-        BTN_HEIGHT + 3*BTN_MARGIN, TIME_WIDTH, BTN_HEIGHT
+        2*TIME_WIDTH + SongTrackBar.Common.Width, _
+        BTN_HEIGHT + 2*BTN_MARGIN, 2*TIME_WIDTH, BTN_HEIGHT
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     SongInfoHTML.Common.SetClientRect BTN_MARGIN, _
         3*BTN_MARGIN + 2*BTN_HEIGHT, _
-        QuizzorMainPanel.Common.Width - 3*BTN_MARGIN, _
-        QuizzorMainPanel.Common.Height - 7*BTN_MARGIN - 2*BTN_HEIGHT
+        QuizzorMainPanel.Common.Width - 4*BTN_MARGIN, _
+        QuizzorMainPanel.Common.Height - 9*BTN_MARGIN - 2*BTN_HEIGHT
 End Sub
 
 ' Open the playlists node
