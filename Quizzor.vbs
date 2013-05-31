@@ -724,7 +724,11 @@ Sub StartQuiz(Item)
 
     ' TODO: Set the first track in main track window focused
     ' Using the queue is a workaround, since the above TODO doesn't work
-    If SDB.Player.PlaylistCount > 0 Then
+    WarnReplaceQueue = True
+    If OptionsFile.ValueExists("Quizzor", "WarnReplaceQueue") Then
+        WarnReplaceQueue = OptionsFile.BoolValue("Quizzor", "WarnReplaceQueue")
+    End If
+    If SDB.Player.PlaylistCount > 0 And WarnReplaceQueue Then
         OverwriteQueue = FreeFormMessageBox( _
             SDB.Localize("The current queue is not empty. Do you want to replace all tracks?"), _
             Array(SDB.Localize("Replace queue"), SDB.Localize("Cancel")))
@@ -1113,6 +1117,15 @@ Sub CreateOptionsSheet(Sheet)
     WarnRandomizePlaylist.Checked = True
     NextRow
 
+    Set WarnReplaceQueue = SDB.UI.NewCheckBox(Sheet)
+    WarnReplaceQueue.Common.ControlName = "WarnReplaceQueue"
+    WarnReplaceQueue.Common.SetRect BTN_MARGIN, _
+        CurrentTopMargin + CurrentRow, _
+        Sheet.Common.ClientWidth, BTN_HEIGHT
+    WarnReplaceQueue.Caption = SDB.Localize("Warn before overwriting the queue")
+    WarnReplaceQueue.Checked = True
+    NextRow
+
     ' Load values
     If OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
         EnableRandomImages.Checked = _
@@ -1130,6 +1143,10 @@ Sub CreateOptionsSheet(Sheet)
         WarnRandomizePlaylist.Checked = _
                 OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist")
     End If
+    If OptionsFile.ValueExists("Quizzor", "WarnReplaceQueue") Then
+        WarnReplaceQueue.Checked = _
+                OptionsFile.BoolValue("Quizzor", "WarnReplaceQueue")
+    End If
 End Sub
 
 ' Returns a SDBStringList with items from Source, seperated by Delimiter
@@ -1146,6 +1163,8 @@ Sub SaveOptionsSheet(Sheet)
             Sheet.Common.ChildControl("EnableRandomImages").Checked
     OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist") = _
             Sheet.Common.ChildControl("WarnRandomizePlaylist").Checked
+    OptionsFile.BoolValue("Quizzor", "WarnReplaceQueue") = _
+            Sheet.Common.ChildControl("WarnReplaceQueue").Checked
 
     ' Save all images
     Set ImagesListBox = Sheet.Common.ChildControl("ImagesListBox")
