@@ -728,6 +728,7 @@ Sub StartQuiz(Item)
     If OptionsFile.ValueExists("Quizzor", "WarnReplaceQueue") Then
         WarnReplaceQueue = OptionsFile.BoolValue("Quizzor", "WarnReplaceQueue")
     End If
+
     If SDB.Player.PlaylistCount > 0 And WarnReplaceQueue Then
         OverwriteQueue = FreeFormMessageBox( _
             SDB.Localize("The current queue is not empty. Do you want to replace all tracks?"), _
@@ -756,12 +757,14 @@ Sub StartQuiz(Item)
         OldResumeIndex = _
             OptionsFile.IntValue("Quizzor", "LastSongIndexForPlaylist_" + _
                                                     CStr(Quiz_Playlist.ID))
-        MessageResult = FreeFormMessageBox( _
-        SDB.LocalizedFormat("Do you want to continue from position %d?", _
-                OldResumeIndex + 1, 0, 0), _
-            Array(SDB.Localize("Continue"), SDB.Localize("Start new")))
-        If MessageResult = 0 Then
-            CurrentPlaylistPosition = OldResumeIndex
+        If OldResumeIndex > 0 Then
+            MessageResult = FreeFormMessageBox( _
+            SDB.LocalizedFormat("Do you want to continue from position %d?", _
+                    OldResumeIndex + 1, 0, 0), _
+                Array(SDB.Localize("Continue"), SDB.Localize("Start new")))
+            If MessageResult = 0 Then
+                CurrentPlaylistPosition = OldResumeIndex
+            End If
         End If
     End If
 
