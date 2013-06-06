@@ -817,7 +817,7 @@ Sub StartPlaying
     SDB.Player.PlaybackTime = 0
     SDB.Player.Play
 
-    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 100
+    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
     SongTrackBar.MinValue = 0
     SongTrackBar.MaxValue = CurrentSongLength
     SongTrackBar.Value = 0
@@ -864,7 +864,7 @@ Sub PlayPrevious
             CurrentPlaylistPosition = 0
         End If
     Else
-        Set RewindModeTimer = SDB.CreateTimer(5000)
+        Set RewindModeTimer = SDB.CreateTimer(1500)
         SDB.Objects("RewindModeTimer") = RewindModeTimer
         Script.RegisterEvent RewindModeTimer, "OnTimer", "QuitRewindMode"
         RewindMode = True
@@ -940,7 +940,7 @@ Sub UpdateSongTime(Timer)
         "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
 
     ' Update again in 100 ms
-    Set SongTimer = SDB.CreateTimer(1000)
+    Set SongTimer = SDB.CreateTimer(100)
 End Sub
 
 ' Restores the last session
