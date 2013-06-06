@@ -101,7 +101,7 @@ Dim CurrentCol
 
 ' Creates a modal message box window, with the "Text".
 ' Buttons is an Array of Strings, arranged from right to left, aligned right
-' Empty strings will not create buttons, usefule to specify the return value
+' Empty strings will not create buttons, usefull to specify the return value
 ' Return value is the String position in the array Buttons()
 ' If a button is not pressed (e.g. window closed),
 ' the return value will be negative
@@ -831,6 +831,9 @@ Sub StartPlaying
     Set SongTimer = SDB.CreateTimer(100)
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
+    Script.RegisterEvent SDB, "OnTrackEnd", "PlaybackStopped"
+    Script.RegisterEvent SDB, "OnStop", "PlaybackStopped"
+
     ' Disable playing next title
     SDB.Player.StopAfterCurrent = True
 End Sub
@@ -933,6 +936,16 @@ Sub ShowSongInfo
     Set HTMLDocument = SongInfoHTML.Interf.Document
     HTMLDocument.Write GetSongInfoHTML(CurrentSong)
     HTMLDocument.Close
+End Sub
+
+Sub PlaybackStopped
+    SongTimer.Enabled = False
+    Script.UnRegisterEvents SongTimer
+
+    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
+    PlayBtn.Common.Visible = True
+    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
+    PauseBtn.Common.Visible = False
 End Sub
 
 Sub UpdateSongTime(Timer)
