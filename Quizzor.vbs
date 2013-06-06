@@ -331,7 +331,9 @@ End Sub
 Sub ClearSongInfoHTML
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
-    HTMLDocument.Write "<html>" & vbCrLf & Replace(HTML_Style,"%font-size%","100%") & vbCrLf & "<body>&nbsp;</body></html>"
+    HTMLDocument.Write "<html>" & vbCrLf & _
+        Replace(HTML_Style,"%font-size%","100%") & _
+        vbCrLf & "<body>&nbsp;</body></html>"
     HTMLDocument.Close
 End Sub
 
@@ -345,7 +347,8 @@ Function GetSongInfoHTML(SongData)
     End If
 
     GetSongInfoHTML = "<html>" & vbCrLf & _
-        Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 3) & "%") & vbCrLf & _
+        Replace(Replace(HTML_Style, "%font-size%", CStr(WindowHeight / 3) & "%"), _
+                ",",".") & vbCrLf & _
         "<table border='1' cellspacing='0' cellpaddin='2' rules='rows'" & _
         " frame='void' width='100%' height='100%'>" & vbCrLf & _
         "<colgroup>" & vbCrLf & _
