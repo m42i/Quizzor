@@ -893,10 +893,11 @@ Sub PlayNext
     DisplayRandomImage
 
     CurrentPlaylistPosition = CurrentPlaylistPosition + 1
-    If CurrentPlaylistPosition >= SDB.Player.CurrentSongList.Count - 1 Then
+    If CurrentPlaylistPosition >= SDB.Player.PlaylistCount Then
+        CurrentPlaylistPosition = SDB.Player.PlaylistCount - 1
         SDB.MessageBox _
-        SDB.Localize("Last song reached. Please create a new quiz."), _
-            mtInformation, Array(mbOk)
+            SDB.Localize("Last song reached. Please create a new quiz."), _
+                         mtInformation, Array(mbOk)
         Exit Sub
     End If
 
