@@ -419,6 +419,15 @@ Sub CreateMainPanel()
     HideInfoBtn.Caption = SDB.Localize("Hide Information")
     Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
 
+    Set TrackProgressLabel = UI.NewLabel(QuizzorMainPanel)
+    TrackProgressLabel.Common.ControlName = "TrackProgressLabel"
+    TrackProgressLabel.Common.Anchors = akTop + akRight
+    TrackProgressLabel.Common.FontSize = 18
+    TrackProgressLabel.Common.Visible = False
+    TrackProgressLabel.Alignment = txtAlRight
+    TrackProgressLabel.Autosize = False
+    TrackProgressLabel.Caption = SDB.Format("%d / %d", 0, 0, 0)
+
     ' TODO: Implement a close button, testing with wine gives an OLE error
     ' Set StopQuizBtn = UI.NewButton(QuizzorMainPanel)
     ' StopQuizBtn.Common.ControlName = "StopQuizBtn"
@@ -488,6 +497,12 @@ Sub ResizeMainPanel
     Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
     HideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
+
+    Set TrackProgressLabel = _
+        QuizzorMainPanel.Common.ChildControl("TrackProgressLabel")
+    TrackProgressLabel.Common.SetRect _
+        QuizzorMainPanel.Common.Width - 2*BTN_LONG_WIDTH - BTN_WIDTH, BTN_MARGIN, _
+        2*BTN_LONG_WIDTH + 4*BTN_MARGIN, BTN_HEIGHT + BTN_MARGIN
 
     ' Set StopQuizBtn = QuizzorMainPanel.Common.ChildControl("StopQuizBtn")
     ' StopQuizBtn.Common.SetRect _
@@ -775,7 +790,17 @@ Sub StartQuiz(Item)
 
     InitializeRandomImageDisplay
 
+    UpdateTrackProgress
+
     SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
+End Sub
+
+Sub UpdateTrackProgress
+    Set TrackProgressLabel = _
+        QuizzorMainPanel.Common.ChildControl("TrackProgressLabel")
+    TrackProgressLabel.Common.Visible = True
+    TrackProgressLabel.Caption = SDB.Format("%d / %d", _
+        CurrentPlaylistPosition + 1, SDB.Player.PlaylistCount, 0)
 End Sub
 
 Sub StopQuiz(Item)
@@ -827,6 +852,8 @@ Sub StartPlaying
 
     SongTime.Caption = GetFormattedTime(0)
     SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
+
+    UpdateTrackProgress
 
     Set SongTimer = SDB.CreateTimer(100)
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
