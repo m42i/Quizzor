@@ -77,6 +77,7 @@ Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentPlaylistPosition, CurrentSongLength
 Dim ImageWaitTitles, CurrentRandomImageIndex
+Dim LastItemRandomImage, NextItemRandomImage
 Dim RandomImagesStringList, ShowRandomImagesEnabled
 
 ' If this is true, the previous song should be played
@@ -709,15 +710,11 @@ End Sub
 Sub DisplayRandomImage
     If Not ShowRandomImagesEnabled Then Exit Sub
 
-    ' If the end of the image list is reached, stop displaying images
-    If CurrentRandomImageIndex >= RandomImagesStringList.Count Then
-        Exit Sub
-    End If
-
     If ImageWaitTitles <= 0 Then
-        DisplayImage RandomImagesStringList.Item(CurrentRandomImageIndex)
+        DisplayImageIndex CurrentRandomImageIndex
         CurrentRandomImageIndex = CurrentRandomImageIndex + 1
-        NewImageWaitTitles
+        NewImageWaitTitles ' set the number of titles to wait to a new value
+        LastItemRandomImage = True
     Else
         ImageWaitTitles = ImageWaitTitles - 1
     End If
@@ -729,6 +726,16 @@ Sub DisplayRandomImage
             DisplayRandomImage
         End If
     End If
+End Sub
+
+' Displays the random image at the given index
+Sub DisplayImageIndex(ImageIndex)
+    ' If the end of the image list is reached, stop displaying images
+    If ImageIndex < 0 Or ImageIndex >= RandomImagesStringList.Count Then
+        Exit Sub
+    End If
+
+    DisplayImage RandomImagesStringList.Item(ImageIndex)
 End Sub
 
 Sub StartQuiz(Item)
@@ -877,14 +884,25 @@ End Sub
 
 Sub PlayPrevious
     HideSongInfo
+    SDB.Player.Stop
 
+    If LastItemRandomImage Then 
+        CurrentRandomImageIndex = CurrentRandomImageIndex - 1
+        DisplayImageIndex CurrentRandomImageIndex 
+        LastItemRandomImage = False
+        ' Make sure if next is pressed display a image
+        ImageWaitTitles = 0
+        StartPlaying
+        Exit Sub
     ' If a song is not playing, play the previous
-    If Not SDB.Player.isPlaying Then
+    ElseIf Not SDB.Player.IsPlaying And Not SDB.Player.IsStartingPlayback Then
+        DebugOutput "Is not playing -- " + CStr(CurrentPlaylistPosition)
         CurrentPlaylistPosition = CurrentPlaylistPosition - 1
         If CurrentPlaylistPosition < 0 Then
             CurrentPlaylistPosition = 0
         End If
     ElseIf RewindMode Then
+        DebugOutput "Rewind mode: On -- " + CStr(CurrentPlaylistPosition)
         Set RewindModeTimer = SDB.Objects("RewindModeTimer")
         If Not (RewindModeTimer Is Nothing) Then
             RewindModeTimer.Enabled = False
@@ -897,16 +915,14 @@ Sub PlayPrevious
             CurrentPlaylistPosition = 0
         End If
     Else
+        DebugOutput "Set Rewind Timer -- " + CStr(CurrentPlaylistPosition)
         Set RewindModeTimer = SDB.CreateTimer(1500)
         SDB.Objects("RewindModeTimer") = RewindModeTimer
         Script.RegisterEvent RewindModeTimer, "OnTimer", "QuitRewindMode"
         RewindMode = True
     End If
 
-    SDB.Player.Stop
     SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
-
-    ' TODO: Handle random images...
 
     StartPlaying
 End Sub
@@ -974,6 +990,10 @@ Sub PlaybackStopped
     PlayBtn.Common.Visible = True
     Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
     PauseBtn.Common.Visible = False
+
+    Script.UnRegisterHandler "UpdateSongTime"
+    Script.UnRegisterHandler "PlaybackStopped"
+    Script.ShowHangingEvents
 End Sub
 
 Sub UpdateSongTime(Timer)
