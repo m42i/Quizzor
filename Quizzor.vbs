@@ -696,9 +696,9 @@ End Sub
 ' Sets the ImageWaitTitles to a new value depending on saved options
 Sub NewImageWaitTitles
     MinImageWaitTitles = _
-        OptionsFile.IntValue("Quizzor", "MinImageWaitTitles")
+        OptionsFile.IntValue("Quizzor", "MinImageWaitTitles") - 1
     MaxImageWaitTitles = _
-        OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
+        OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles") - 1
     Randomize
     ImageWaitTitles = MinImageWaitTitles + CInt(Rnd() _
                             * (MaxImageWaitTitles - MinImageWaitTitles))
@@ -1125,12 +1125,13 @@ Sub CreateOptionsSheet(Sheet)
     MinImageWaitTitles.Common.ControlName = "MinImageWaitTitles"
     MinImageWaitTitles.Common.SetRect 3*BTN_MARGIN + BTN_LONG_WIDTH, _
         CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH/2, BTN_HEIGHT
+        BTN_WIDTH, BTN_HEIGHT
+    Script.RegisterEvent MinImageWaitTitles, "OnChange", "MinImgWaittitlesChanged"
 
     Set ImageWaitTitlesSep = SDB.UI.NewLabel(RandomImagesBox)
     ImageWaitTitlesSep.Common.ControlName = "ImageWaitTitlesSep"
     ImageWaitTitlesSep.Common.SetClientRect _
-        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH/2, _
+        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH, _
         CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
         BTN_WIDTH/2, BTN_HEIGHT
     ImageWaitTitlesSep.Alignment = 2 ' Center
@@ -1139,9 +1140,10 @@ Sub CreateOptionsSheet(Sheet)
     Set MaxImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
     MaxImageWaitTitles.Common.ControlName = "MaxImageWaitTitles"
     MaxImageWaitTitles.Common.SetRect _
-        3*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH/2 + BTN_WIDTH/2, _
+        3*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH + BTN_WIDTH/2, _
         CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH/2, BTN_HEIGHT
+        BTN_WIDTH, BTN_HEIGHT
+    Script.RegisterEvent MaxImageWaitTitles, "OnChange", "MaxImgWaittitlesChanged"
 
     Set ImageWaitTitles = SDB.UI.NewLabel(RandomImagesBox)
     ImageWaitTitles.Common.ControlName = "ImageWaitTitles"
@@ -1179,8 +1181,12 @@ Sub CreateOptionsSheet(Sheet)
     If OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
         EnableRandomImages.Checked = _
                 OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
+    End If
+    If OptionsFile.ValueExists("Quizzor", "MinImageWaitTitles") Then
         Sheet.Common.ChildControl("MinImageWaitTitles").Value = _
                 OptionsFile.IntValue("Quizzor", "MinImageWaitTitles")
+    End If
+    If OptionsFile.ValueExists("Quizzor", "MaxImageWaitTitles") Then
         Sheet.Common.ChildControl("MaxImageWaitTitles").Value = _
                 OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
     End If
@@ -1347,6 +1353,28 @@ Sub RemoveAllRandomImagesString(Button)
     End If
 
     Set ImagesListBox.Items = SDB.NewStringList
+End Sub
+
+' Manually check the spin edit values, to allow all numbers
+' Make sure the minimum won't go below 1 and change max value if necessary
+Sub MinImgWaittitlesChanged(Item)
+    Set MinImageWaitTitles = Item
+    Set MaxImageWaitTitles = _
+        Item.Common.Parent.Common.ChildControl("MaxImageWaitTitles")
+    If MinImageWaitTitles.Value > MaxImageWaitTitles.Value Then
+        MaxImageWaitTitles.Value = MinImageWaitTitles.Value
+    End If
+    If MinImageWaitTitles.Value < 1 Then
+        MinImageWaitTitles.Value = 1
+    End If
+End Sub
+Sub MaxImgWaittitlesChanged(Item)
+    Set MaxImageWaitTitles = Item
+    Set MinImageWaitTitles = _
+        Item.Common.Parent.Common.ChildControl("MinImageWaitTitles")
+    If MaxImageWaitTitles.Value < MinImageWaitTitles.Value Then
+        MinImageWaitTitles.Value = MaxImageWaitTitles.Value
+    End If
 End Sub
 
 ' Checks if Search as String is in SourceList as SDBStringList
