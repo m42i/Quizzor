@@ -75,7 +75,7 @@ Dim Quiz_Playlist
 ' Keep track of important control elements
 Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
-Dim CurrentPlaylistPosition, CurrentSongLength
+Dim CurrentPlaylistPosition
 Dim ImageWaitTitles, CurrentRandomImageIndex
 Dim PreviousItemRandomImage, NextItemRandomImage
 Dim RandomImagesStringList, ShowRandomImagesEnabled
@@ -167,6 +167,17 @@ Function GetFormattedTime(Time)
     If Seconds < 10 Then Seconds = "0" + CStr(Seconds)
 
     GetFormattedTime = CStr(Minutes) + ":" + CStr(Seconds)
+End Function
+
+Function GetCurrentSongLength
+    If Not (SDB.Player.CurrentSong Is Nothing) And SDB.Player.IsPlaying Then
+        GetCurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
+    Elseif CurrentSongIndex >= 0 Then
+        GetCurrentSongLength = _
+                    SDB.Player.CurrentSongList.Item(CurrentSongIndex).SongLength / 1000
+    Else
+        GetCurrentSongLength = 0
+    End If
 End Function
 
 Sub DebugOutput(msg)
@@ -852,13 +863,12 @@ Sub StartPlaying
     SDB.Player.PlaybackTime = 0
     SDB.Player.Play
 
-    CurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
     SongTrackBar.MinValue = 0
-    SongTrackBar.MaxValue = CurrentSongLength
+    SongTrackBar.MaxValue = GetCurrentSongLength
     SongTrackBar.Value = 0
 
     SongTime.Caption = GetFormattedTime(0)
-    SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength)
+    SongTimeLeft.Caption = "- " + GetFormattedTime(GetCurrentSongLength)
 
     UpdateTrackProgress
 
@@ -922,9 +932,8 @@ Sub PlayPrevious
         RewindMode = True
     End If
 
-    SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
-
-    StartPlaying
+    UpdateSongProgress
+    UpdateTrackProgress
 End Sub
 
 Sub PlayNext
@@ -944,7 +953,8 @@ Sub PlayNext
         Exit Sub
     End If
 
-    StartPlaying
+    UpdateSongProgress
+    UpdateTrackProgress
 End Sub
 
 Sub QuitRewindMode(Timer)
@@ -997,14 +1007,21 @@ Sub PlaybackStopped
 End Sub
 
 Sub UpdateSongTime(Timer)
-    PlaybackTime = SDB.Player.PlaybackTime / 1000
-    SongTrackBar.Value = PlaybackTime
-    SongTime.Caption = GetFormattedTime(PlaybackTime)
-    SongTimeLeft.Caption = _
-        "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
+    UpdateSongProgress
 
     ' Update again in 100 ms
     Set SongTimer = SDB.CreateTimer(100)
+End Sub
+
+Sub UpdateSongProgress
+    PlaybackTime = SDB.Player.PlaybackTime / 1000
+
+    SongTrackBar.MinValue = 0
+    SongTrackBar.MaxValue = GetCurrentSongLength
+    SongTrackBar.Value = PlaybackTime
+
+    SongTime.Caption = GetFormattedTime(PlaybackTime)
+    SongTimeLeft.Caption = "- " + GetFormattedTime(GetCurrentSongLength - PlaybackTime)
 End Sub
 
 ' Restores the last session
