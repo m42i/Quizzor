@@ -172,9 +172,9 @@ End Function
 Function GetCurrentSongLength
     If Not (SDB.Player.CurrentSong Is Nothing) And SDB.Player.IsPlaying Then
         GetCurrentSongLength = SDB.Player.CurrentSong.SongLength / 1000
-    Elseif CurrentSongIndex >= 0 Then
+    ElseIf CurrentPlaylistPosition >= 0 Then
         GetCurrentSongLength = _
-                    SDB.Player.CurrentSongList.Item(CurrentSongIndex).SongLength / 1000
+                    SDB.Player.CurrentSongList.Item(CurrentPlaylistPosition).SongLength / 1000
     Else
         GetCurrentSongLength = 0
     End If
@@ -863,13 +863,7 @@ Sub StartPlaying
     SDB.Player.PlaybackTime = 0
     SDB.Player.Play
 
-    SongTrackBar.MinValue = 0
-    SongTrackBar.MaxValue = GetCurrentSongLength
-    SongTrackBar.Value = 0
-
-    SongTime.Caption = GetFormattedTime(0)
-    SongTimeLeft.Caption = "- " + GetFormattedTime(GetCurrentSongLength)
-
+    UpdateSongProgress
     UpdateTrackProgress
 
     Set SongTimer = SDB.CreateTimer(100)
