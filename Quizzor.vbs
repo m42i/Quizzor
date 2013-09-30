@@ -1428,6 +1428,19 @@ Sub DisplayImage(ImageFileName)
     ImageForm.ShowModal
 End Sub
 
+Sub DisplayVideo(URL)
+    Set ImageForm = SDB.Objects("ImageForm")
+    ImageForm.Common.Align = alClient
+
+    Set VideoHTML = ImageForm.Common.ChildControl("ImageHTML")
+    VideoHTML.Common.Align = alClient
+
+    VideoHTML.Interf.Navigate URL
+
+    ImageForm.ShowModal
+End Sub
+
+
 Sub OnStartup
     Set UI = SDB.UI
 
@@ -1475,9 +1488,6 @@ Sub OnStartup
 
         CreateOptionsSheet OptionsForm
         OptionsForm.ShowModal
-
-        InitializeRandomImageDisplay
-        DisplayRandomImage
     Else
         OptionsSheet = UI.AddOptionSheet("Quizzor", Script.ScriptPath, _
                 "CreateOptionsSheet", "SaveOptionsSheet", 0)
