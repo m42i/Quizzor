@@ -21,7 +21,7 @@
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
 
-Const DEBUG_ON = False
+Const DEBUG_ON = True
 
 ' Defines the standard margin between buttons
 ' 9 is equal to the margin of a group box in an options sheet
@@ -663,7 +663,6 @@ Function IsPlaylistNode
     If SelectedNode.NodeType = NODE_PLAYLIST_MANUAL Then
         IsPlaylistNode = True
     Else
-        DebugOutput SDB.Localize("Please select a normal, non-auto playlist.")
         IsPlaylistNode = False
     End If
 End Function
@@ -756,7 +755,6 @@ Sub StartQuiz(Item)
     Set Quiz_Playlist = SDB.PlaylistByID(SelectedNode.RelatedObjectID)
     Set SongList = Quiz_Playlist.Tracks
     If SongList.Count <= 0 Then
-        DebugOutput SDB.Localize("Playlist is empty. Won't start quiz.")
         Exit Sub
     End If
 
@@ -888,25 +886,23 @@ End Sub
 
 Sub PlayPrevious
     HideSongInfo
-    SDB.Player.Stop
 
-    If PreviousItemRandomImage Then 
+    If Not RewindMode And PreviousItemRandomImage Then 
         CurrentRandomImageIndex = CurrentRandomImageIndex - 1
         DisplayImageIndex CurrentRandomImageIndex 
         PreviousItemRandomImage = False
         ' Make sure if next is pressed display a image
         ImageWaitTitles = 0
+        SDB.Player.Stop
         StartPlaying
         Exit Sub
-    ' If a song is not playing, play the previous
-    ElseIf Not SDB.Player.IsPlaying And Not SDB.Player.IsStartingPlayback Then
-        DebugOutput "Is not playing -- " + CStr(CurrentPlaylistPosition)
+    ' If a song is not playing, jump to the previous
+    ElseIf Not RewindMode And Not SDB.Player.IsPlaying And Not SDB.Player.IsStartingPlayback Then
         CurrentPlaylistPosition = CurrentPlaylistPosition - 1
         If CurrentPlaylistPosition < 0 Then
             CurrentPlaylistPosition = 0
         End If
     ElseIf RewindMode Then
-        DebugOutput "Rewind mode: On -- " + CStr(CurrentPlaylistPosition)
         Set RewindModeTimer = SDB.Objects("RewindModeTimer")
         If Not (RewindModeTimer Is Nothing) Then
             RewindModeTimer.Enabled = False
@@ -918,8 +914,10 @@ Sub PlayPrevious
         If CurrentPlaylistPosition < 0 Then
             CurrentPlaylistPosition = 0
         End If
-    Else
-        DebugOutput "Set Rewind Timer -- " + CStr(CurrentPlaylistPosition)
+
+        SDB.Player.Stop
+        SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
+    Else ' If not in rewind mode, play the current song from the beginning
         Set RewindModeTimer = SDB.CreateTimer(1500)
         SDB.Objects("RewindModeTimer") = RewindModeTimer
         Script.RegisterEvent RewindModeTimer, "OnTimer", "QuitRewindMode"
@@ -944,7 +942,6 @@ Sub PlayNext
         SDB.MessageBox _
             SDB.Localize("Last song reached. Please create a new quiz."), _
                          mtInformation, Array(mbOk)
-        Exit Sub
     End If
 
     UpdateSongProgress
@@ -997,7 +994,6 @@ Sub PlaybackStopped
 
     Script.UnRegisterHandler "UpdateSongTime"
     Script.UnRegisterHandler "PlaybackStopped"
-    Script.ShowHangingEvents
 End Sub
 
 Sub UpdateSongTime(Timer)
@@ -1005,6 +1001,13 @@ Sub UpdateSongTime(Timer)
 
     ' Update again in 100 ms
     Set SongTimer = SDB.CreateTimer(100)
+End Sub
+
+Sub SetSongTime(PlaybackTime)
+    SongTrackBar.Value = PlaybackTime
+    SongTime.Caption = GetFormattedTime(PlaybackTime)
+    SongTimeLeft.Caption = _
+        "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
 End Sub
 
 Sub UpdateSongProgress
