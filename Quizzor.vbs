@@ -77,7 +77,7 @@ Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentPlaylistPosition, CurrentSongLength
 Dim ImageWaitTitles, CurrentRandomImageIndex
-Dim LastItemRandomImage, NextItemRandomImage
+Dim PreviousItemRandomImage, NextItemRandomImage
 Dim RandomImagesStringList, ShowRandomImagesEnabled
 
 ' If this is true, the previous song should be played
@@ -714,7 +714,7 @@ Sub DisplayRandomImage
         DisplayImageIndex CurrentRandomImageIndex
         CurrentRandomImageIndex = CurrentRandomImageIndex + 1
         NewImageWaitTitles ' set the number of titles to wait to a new value
-        LastItemRandomImage = True
+        PreviousItemRandomImage = True
     Else
         ImageWaitTitles = ImageWaitTitles - 1
     End If
@@ -886,10 +886,10 @@ Sub PlayPrevious
     HideSongInfo
     SDB.Player.Stop
 
-    If LastItemRandomImage Then 
+    If PreviousItemRandomImage Then 
         CurrentRandomImageIndex = CurrentRandomImageIndex - 1
         DisplayImageIndex CurrentRandomImageIndex 
-        LastItemRandomImage = False
+        PreviousItemRandomImage = False
         ' Make sure if next is pressed display a image
         ImageWaitTitles = 0
         StartPlaying
