@@ -806,6 +806,7 @@ Sub StartQuiz(Item)
 
     InitializeRandomImageDisplay
 
+    UpdateSongProgress
     UpdateTrackProgress
 
     SDB.Player.CurrentSongIndex = CurrentPlaylistPosition
@@ -931,7 +932,6 @@ End Sub
 Sub PlayNext
     If Not QuizExists() Then Exit Sub
 
-    SDB.Player.Stop
     HideSongInfo
 
     DisplayRandomImage
@@ -944,8 +944,12 @@ Sub PlayNext
                          mtInformation, Array(mbOk)
     End If
 
-    UpdateSongProgress
-    UpdateTrackProgress
+    If SDB.Player.IsPlaying Then
+        StartPlaying
+    Else
+        UpdateSongProgress
+        UpdateTrackProgress
+    End If
 End Sub
 
 Sub QuitRewindMode(Timer)
