@@ -993,7 +993,6 @@ Sub PlaybackStopped
     PauseBtn.Common.Visible = False
 
     Script.UnRegisterHandler "UpdateSongTime"
-    Script.UnRegisterHandler "PlaybackStopped"
 End Sub
 
 Sub UpdateSongTime(Timer)
@@ -1013,12 +1012,13 @@ End Sub
 Sub UpdateSongProgress
     PlaybackTime = SDB.Player.PlaybackTime / 1000
 
+    CurrentSongLength = GetCurrentSongLength
     SongTrackBar.MinValue = 0
-    SongTrackBar.MaxValue = GetCurrentSongLength
+    SongTrackBar.MaxValue = CurrentSongLength
     SongTrackBar.Value = PlaybackTime
 
     SongTime.Caption = GetFormattedTime(PlaybackTime)
-    SongTimeLeft.Caption = "- " + GetFormattedTime(GetCurrentSongLength - PlaybackTime)
+    SongTimeLeft.Caption = "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
 End Sub
 
 ' Restores the last session
