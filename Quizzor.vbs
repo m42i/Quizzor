@@ -21,7 +21,7 @@
 ' O Play track again if length < 60s
 ' O Keep track of correctly guessed tracks
 
-Const DEBUG_ON = True
+Const DEBUG_ON = False
 
 ' Defines the standard margin between buttons
 ' 9 is equal to the margin of a group box in an options sheet
@@ -898,7 +898,8 @@ Sub PlayPrevious
         StartPlaying
         Exit Sub
     ' If a song is not playing, jump to the previous
-    ElseIf Not RewindMode And Not SDB.Player.IsPlaying And Not SDB.Player.IsStartingPlayback Then
+    ElseIf (Not RewindMode) And (Not SDB.Player.IsPlaying) _
+            And (Not SDB.Player.IsStartingPlayback) Then
         CurrentPlaylistPosition = CurrentPlaylistPosition - 1
         If CurrentPlaylistPosition < 0 Then
             CurrentPlaylistPosition = 0
@@ -922,7 +923,14 @@ Sub PlayPrevious
         Set RewindModeTimer = SDB.CreateTimer(1500)
         SDB.Objects("RewindModeTimer") = RewindModeTimer
         Script.RegisterEvent RewindModeTimer, "OnTimer", "QuitRewindMode"
+
         RewindMode = True
+        If (Not SDB.Player.IsPaused) And _
+            SDB.Player.IsPlaying Or SDB.Player.IsStartingPlayback Then
+            StartPlaying
+        Else
+            SDB.Player.Stop
+        End If
     End If
 
     UpdateSongProgress
