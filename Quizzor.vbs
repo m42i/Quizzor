@@ -43,11 +43,6 @@ Const NODE_PLAYLIST_MANUAL = 61
 
 ' %font-size% should be replaced with the font size, e.g. 200%
 Const HTML_Style = "<style type='text/css'> body { overflow: auto; } table { font-size: %font-size%; font-family: Verdana, sans-serif; } </style>"
-' Using variable to allow for multi line string
-Dim HTML_Style_Imageframe : HTML_Style_Imageframe = _
-    "<style type='text/css'> " & vbCrLf & _
-    "img { height: 100%; } " & vbCrLf & _
-    vbCrLf & "</style>"
 
 ' Anchor constants, add them for multiple anchors
 Const akLeft = 1
@@ -76,9 +71,6 @@ Dim Quiz_Playlist
 Dim QuizzorMainPanel, SongTrackBar, SongTimer
 Dim SongTime, SongTimeLeft ' Labels for current song time
 Dim CurrentPlaylistPosition
-Dim ImageWaitTitles, CurrentRandomImageIndex
-Dim PreviousItemRandomImage, NextItemRandomImage
-Dim RandomImagesStringList, ShowRandomImagesEnabled
 
 ' If this is true, the previous song should be played
 ' instead of the beginning of the current song
@@ -668,70 +660,6 @@ Function RandomizeStringList(StringList)
     Set RandomizeStringList = Result
 End Function
 
-' Initializes the display of random images
-Sub InitializeRandomImageDisplay
-    If Not OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
-        ShowRandomImagesEnabled = False
-        Exit Sub
-    End If
-
-    ShowRandomImagesEnabled = _
-        OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
-    If Not ShowRandomImagesEnabled Then Exit Sub
-
-    ' Load and randomize list of images
-    Set RandomImagesStringList = _
-        RandomizeStringList(NewStringListFromString( _
-            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";"))
-
-    NewImageWaitTitles
-    CurrentRandomImageIndex = 0
-End Sub
-
-' Sets the ImageWaitTitles to a new value depending on saved options
-Sub NewImageWaitTitles
-    MinImageWaitTitles = _
-        OptionsFile.IntValue("Quizzor", "MinImageWaitTitles") - 1
-    MaxImageWaitTitles = _
-        OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles") - 1
-    Randomize
-    ImageWaitTitles = MinImageWaitTitles + CInt(Rnd() _
-                            * (MaxImageWaitTitles - MinImageWaitTitles))
-End Sub
-
-' Displays a random image if wait titles is zero,
-' Otherwise reduce wait titles by one
-Sub DisplayRandomImage
-    If (Not ShowRandomImagesEnabled) Or RandomImagesStringList.Count = 0 Then Exit Sub
-
-    If ImageWaitTitles <= 0 Then
-        DisplayImageIndex CurrentRandomImageIndex
-        CurrentRandomImageIndex = CurrentRandomImageIndex + 1
-        NewImageWaitTitles ' set the number of titles to wait to a new value
-        PreviousItemRandomImage = True
-    Else
-        ImageWaitTitles = ImageWaitTitles - 1
-    End If
-
-    If DEBUG_ON Then
-        Result = SDB.MessageBox( _
-            CStr(ImageWaitTitles) & " -- Next?", mtConfirmation, Array(mbYes, mbNo))
-        If Result = mrYes Then
-            DisplayRandomImage
-        End If
-    End If
-End Sub
-
-' Displays the random image at the given index
-Sub DisplayImageIndex(ImageIndex)
-    ' If the end of the image list is reached, stop displaying images
-    If ImageIndex < 0 Or ImageIndex >= RandomImagesStringList.Count Then
-        Exit Sub
-    End If
-
-    DisplayImage RandomImagesStringList.Item(ImageIndex)
-End Sub
-
 Sub StartQuiz(Item)
     If Not IsPlaylistNode() Then Exit Sub
 
@@ -787,8 +715,6 @@ Sub StartQuiz(Item)
             End If
         End If
     End If
-
-    InitializeRandomImageDisplay
 
     UpdateSongProgress
     UpdateTrackProgress
@@ -872,17 +798,8 @@ End Sub
 Sub PlayPrevious
     HideSongInfo
 
-    If Not RewindMode And PreviousItemRandomImage Then 
-        CurrentRandomImageIndex = CurrentRandomImageIndex - 1
-        DisplayImageIndex CurrentRandomImageIndex 
-        PreviousItemRandomImage = False
-        ' Make sure if next is pressed display a image
-        ImageWaitTitles = 0
-        SDB.Player.Stop
-        StartPlaying
-        Exit Sub
     ' If a song is not playing, jump to the previous
-    ElseIf (Not RewindMode) And (Not SDB.Player.IsPlaying) _
+    If (Not RewindMode) And (Not SDB.Player.IsPlaying) _
             And (Not SDB.Player.IsStartingPlayback) Then
         CurrentPlaylistPosition = CurrentPlaylistPosition - 1
         If CurrentPlaylistPosition < 0 Then
@@ -925,8 +842,6 @@ Sub PlayNext
     If Not QuizExists() Then Exit Sub
 
     HideSongInfo
-
-    DisplayRandomImage
 
     CurrentPlaylistPosition = CurrentPlaylistPosition + 1
     If CurrentPlaylistPosition >= SDB.Player.PlaylistCount Then
@@ -1069,128 +984,6 @@ End Sub
 Sub CreateOptionsSheet(Sheet)
     StartRowCount
     AddTopMargin
-
-    Set EnableRandomImages = SDB.UI.NewCheckBox(Sheet)
-    EnableRandomImages.Common.ControlName = "EnableRandomImages"
-    EnableRandomImages.Common.SetRect BTN_MARGIN, _
-        CurrentTopMargin + CurrentRow, _
-        500, BTN_HEIGHT
-    EnableRandomImages.Caption = SDB.Localize("Enable random images")
-    EnableRandomImages.Checked = True
-    NextRowWithoutTopMargin
-
-    Set RandomImagesBox = SDB.UI.NewGroupBox(Sheet)
-    RandomImagesBox.Common.ControlName = "EnableRandonImageBox"
-    RandomImagesBox.Common.SetRect BTN_MARGIN, _
-        CurrentTopMargin + CurrentRow, _
-        500 - 2*BTN_MARGIN, _
-        10*BTN_HEIGHT + 4*BTN_MARGIN
-    RandomImagesBox.Common.Anchors = akLeft + akTop + akRight
-    RandomImagesBox.Caption = SDB.Localize("Random images")
-
-    ' Group box requires a new row count and two margins
-    StartRowCount
-    AddTopMargin
-    AddTopMargin
-
-    ' Image loading
-    Set ImagesListBox = SDB.UI.NewListBox(RandomImagesBox)
-    ImagesListBox.Common.ControlName = "ImagesListBox"
-    ImagesListBox.Common.SetClientRect BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, _
-        RandomImagesBox.Common.ClientWidth - 2*BTN_MARGIN, _
-        7*BTN_HEIGHT
-    ImagesListBox.Common.Anchors = akLeft + akTop + akRight
-    SkipRows 7
-
-    Set AddRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    AddRandomImageBtn.Common.ControlName = "AddRandomImageBtn"
-    AddRandomImageBtn.Caption = SDB.Localize("Add")
-    AddRandomImageBtn.UseScript = Script.ScriptPath
-    AddRandomImageBtn.OnClickFunc = "AddRandomImage"
-    AddRandomImageBtn.Common.SetClientRect _
-        BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, BTN_WIDTH, BTN_HEIGHT
-
-    Set AddAllRandomImagesBtn = SDB.UI.NewButton(RandomImagesBox)
-    AddAllRandomImagesBtn.Common.ControlName = "AddAllRandomImagesBtn"
-    AddAllRandomImagesBtn.Caption = SDB.Localize("Add all")
-    AddAllRandomImagesBtn.Common.Hint = _
-     SDB.Localize("Adds all images in the same directory as the selected.")
-    AddAllRandomImagesBtn.UseScript = Script.ScriptPath
-    AddAllRandomImagesBtn.OnClickFunc = "AddAllRandomImages"
-    AddAllRandomImagesBtn.Common.SetClientRect _
-        BTN_WIDTH + 2*BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, BTN_LONG_WIDTH, BTN_HEIGHT
-
-    Set RemoveRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    RemoveRandomImageBtn.Common.ControlName = "RemoveRandomImageBtn"
-    RemoveRandomImageBtn.Caption = SDB.Localize("Remove")
-    RemoveRandomImageBtn.UseScript = Script.ScriptPath
-    RemoveRandomImageBtn.OnClickFunc = "RemoveRandomImage"
-    RemoveRandomImageBtn.Common.SetClientRect _
-        BTN_LONG_WIDTH + BTN_WIDTH + 3*BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH, BTN_HEIGHT
-
-    Set RemoveAllRandomImageBtn = SDB.UI.NewButton(RandomImagesBox)
-    RemoveAllRandomImageBtn.Common.ControlName = "RemoveAllRandomImageBtn"
-    RemoveAllRandomImageBtn.Caption = SDB.Localize("Remove all")
-    RemoveAllRandomImageBtn.UseScript = Script.ScriptPath
-    RemoveAllRandomImageBtn.OnClickFunc = "RemoveAllRandomImagesString"
-    RemoveAllRandomImageBtn.Common.SetClientRect _
-        BTN_LONG_WIDTH + 2*BTN_WIDTH + 4*BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin, _
-        BTN_LONG_WIDTH, BTN_HEIGHT
-    NextRow
-
-    ' Show image after every x to y titles
-    Set ImageWaitTitlesInfo = SDB.UI.NewLabel(RandomImagesBox)
-    ImageWaitTitlesInfo.Common.ControlName = "ImageWaitTitlesInfo"
-    ImageWaitTitlesInfo.Common.SetClientRect _
-        BTN_MARGIN, _
-        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
-        BTN_LONG_WIDTH, BTN_HEIGHT
-    ImageWaitTitlesInfo.Caption = SDB.Localize("Show image after every ")
-
-    Set MinImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
-    MinImageWaitTitles.Common.ControlName = "MinImageWaitTitles"
-    MinImageWaitTitles.Common.SetRect 3*BTN_MARGIN + BTN_LONG_WIDTH, _
-        CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH, BTN_HEIGHT
-    Script.RegisterEvent MinImageWaitTitles, "OnChange", "MinImgWaittitlesChanged"
-
-    Set ImageWaitTitlesSep = SDB.UI.NewLabel(RandomImagesBox)
-    ImageWaitTitlesSep.Common.ControlName = "ImageWaitTitlesSep"
-    ImageWaitTitlesSep.Common.SetClientRect _
-        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH, _
-        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
-        BTN_WIDTH/2, BTN_HEIGHT
-    ImageWaitTitlesSep.Alignment = 2 ' Center
-    ImageWaitTitlesSep.Caption = " " + SDB.Localize("to")
-
-    Set MaxImageWaitTitles = SDB.UI.NewSpinEdit(RandomImagesBox)
-    MaxImageWaitTitles.Common.ControlName = "MaxImageWaitTitles"
-    MaxImageWaitTitles.Common.SetRect _
-        3*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH + BTN_WIDTH/2, _
-        CurrentRow + CurrentTopMargin, _
-        BTN_WIDTH, BTN_HEIGHT
-    Script.RegisterEvent MaxImageWaitTitles, "OnChange", "MaxImgWaittitlesChanged"
-
-    Set ImageWaitTitles = SDB.UI.NewLabel(RandomImagesBox)
-    ImageWaitTitles.Common.ControlName = "ImageWaitTitles"
-    ImageWaitTitles.Common.SetClientRect _
-        4*BTN_MARGIN + BTN_LONG_WIDTH + BTN_WIDTH + BTN_WIDTH/2, _
-        CurrentRow + CurrentTopMargin + BTN_MARGIN/2, _
-        BTN_WIDTH/2, BTN_HEIGHT
-    ImageWaitTitles.Alignment = 2 ' Center
-    ImageWaitTitles.Caption = " " + SDB.Localize("titles")
-    NextRow
-
-    SkipRows 2
-    ' Set the height of the surroundingbox
-    RandomImagesBox.Common.Height = CurrentRow
-
     Set WarnRandomizePlaylist = SDB.UI.NewCheckBox(Sheet)
     WarnRandomizePlaylist.Common.ControlName = "WarnRandomizePlaylist"
     WarnRandomizePlaylist.Common.SetRect BTN_MARGIN, _
@@ -1210,22 +1003,6 @@ Sub CreateOptionsSheet(Sheet)
     NextRow
 
     ' Load values
-    If OptionsFile.ValueExists("Quizzor", "EnableRandomImages") Then
-        EnableRandomImages.Checked = _
-                OptionsFile.BoolValue("Quizzor", "EnableRandomImages")
-    End If
-    If OptionsFile.ValueExists("Quizzor", "MinImageWaitTitles") Then
-        Sheet.Common.ChildControl("MinImageWaitTitles").Value = _
-                OptionsFile.IntValue("Quizzor", "MinImageWaitTitles")
-    End If
-    If OptionsFile.ValueExists("Quizzor", "MaxImageWaitTitles") Then
-        Sheet.Common.ChildControl("MaxImageWaitTitles").Value = _
-                OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles")
-    End If
-    If OptionsFile.ValueExists("Quizzor", "RandomImagesString") Then
-        Set ImagesListBox.Items = NewStringListFromString( _
-            OptionsFile.StringValue("Quizzor", "RandomImagesString"), ";")
-    End If
     If OptionsFile.ValueExists("Quizzor", "WarnRandomizePlaylist") Then
         WarnRandomizePlaylist.Checked = _
                 OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist")
@@ -1246,167 +1023,12 @@ Function NewStringListFromString(Source, Delimiter)
 End Function
 
 Sub SaveOptionsSheet(Sheet)
-    OptionsFile.BoolValue("Quizzor", "EnableRandomImages") = _
-            Sheet.Common.ChildControl("EnableRandomImages").Checked
     OptionsFile.BoolValue("Quizzor", "WarnRandomizePlaylist") = _
             Sheet.Common.ChildControl("WarnRandomizePlaylist").Checked
     OptionsFile.BoolValue("Quizzor", "WarnReplaceQueue") = _
             Sheet.Common.ChildControl("WarnReplaceQueue").Checked
 
-    ' Save all images
-    Set ImagesListBox = Sheet.Common.ChildControl("ImagesListBox")
-    Dim RandomImagesString
-    For i = 0 To ImagesListBox.Items.Count - 1
-        If i > 0 Then
-            RandomImagesString = _
-                RandomImagesString & ";" & ImagesListBox.Items.Item(i)
-        Else
-            RandomImagesString = ImagesListBox.Items.Item(i)
-        End If
-    Next
-    OptionsFile.StringValue("Quizzor", "RandomImagesString") = _
-            RandomImagesString
-
-    OptionsFile.IntValue("Quizzor", "MinImageWaitTitles") = _
-            Sheet.Common.ChildControl("MinImageWaitTitles").Value
-    OptionsFile.IntValue("Quizzor", "MaxImageWaitTitles") = _
-            Sheet.Common.ChildControl("MaxImageWaitTitles").Value
-
     OptionsFile.Flush
-End Sub
-
-Sub PrepareImageForm
-    Set ImageForm = SDB.Objects("ImageForm")
-    If ImageForm Is Nothing Then
-        Set ImageForm = SDB.UI.Newform
-        Set SDB.Objects("ImageForm") = ImageForm
-    End If
-    ImageForm.Common.Align = alClient
-    ImageForm.BorderStyle = 2
-
-    Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
-    If ImageHTML Is Nothing Then
-        Set ImageHTML = SDB.UI.NewActiveX(ImageForm, "Shell.Explorer")
-        ImageHTML.Common.ControlName = "ImageHTML"
-    End If
-    ImageHTML.Common.Align = alClient
-    ImageHTML.Common.Anchors = akLeft + akTop + akRight + akBottom
-    ImageHTML.Interf.Navigate "about:" ' A trick to make sure document exists, from Wiki
-End Sub
-
-' Add an item to random images listbox
-Sub AddRandomImage(Button)
-    Set OpenFileDialog = SDB.CommonDialog
-    OpenFileDialog.Title = SDB.Localize("Select one or more images")
-    OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
-    ' TODO: Multiselect dialog ist currently not supported
-    OpenFileDialog.Flags = cdlOFNFileMustExist
-    OpenFileDialog.ShowOpen
-
-    If Not OpenFileDialog.Ok Then
-        Exit Sub
-    End If
-
-    ' We will iterate through all files in the same directory
-    Filename = OpenFileDialog.Filename
-
-    Set ImagesListBox = _
-        Button.Common.Parent.Common.ChildControl("ImagesListBox")
-    If ImagesListBox.Items Is Nothing Then
-        Set ImagesListBox.Items = SDB.NewStringList
-    End If
-
-    If Not IsInStringList(ImagesListBox.Items, Filename) Then
-        ImagesListBox.Items.Add Filename
-    End If
-End Sub
-
-' Adds all files in the same directory as the selected
-Sub AddAllRandomImages(Button)
-    Set OpenFileDialog = SDB.CommonDialog
-    OpenFileDialog.Title = SDB.Localize("Select one or more images")
-    OpenFileDialog.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png"
-    ' TODO: Multiselect dialog ist currently not supported
-    OpenFileDialog.Flags = cdlOFNFileMustExist
-    OpenFileDialog.ShowOpen
-
-    If Not OpenFileDialog.Ok Then
-        Exit Sub
-    End If
-
-    ' We will iterate through all files in the same directory
-    Filename = OpenFileDialog.Filename
-    Set FileSystem = CreateObject("Scripting.FileSystemObject")
-    Set FolderObject = FileSystem.GetFolder( _
-                                Left(Filename, InStrRev(Filename, "\")))
-
-    Set ImagesListBox = _
-        Button.Common.Parent.Common.ChildControl("ImagesListBox")
-    If ImagesListBox.Items Is Nothing Then
-        Set ImagesListBox.Items = SDB.NewStringList
-    End If
-
-    For Each File in FolderObject.Files
-        Extension = LCase(Mid(File.Name, InStrRev(File.Name, ".") + 1))
-        If (Extension = "jpg" Or Extension = "png") _
-                And Not IsInStringList(ImagesListBox.Items, File.Path) Then
-            ImagesListBox.Items.Add File.Path
-        End If
-    Next
-End Sub
-
-' Remove selected item from random images listbox
-Sub RemoveRandomImage(Button)
-    Set ImagesListBox = _
-        Button.Common.Parent.Common.ChildControl("ImagesListBox")
-
-    DeleteIndex = ImagesListBox.ItemIndex
-    If DeleteIndex >= 0 Then
-        Filename = ImagesListBox.Items.Item(DeleteIndex)
-        ImagesListBox.Items.Delete DeleteIndex
-    End If
-End Sub
-
-' Remove all items from the random images listbox
-Sub RemoveAllRandomImagesString(Button)
-    Set ImagesListBox = _
-        Button.Common.Parent.Common.ChildControl("ImagesListBox")
-
-    If ImagesListBox.Items.Count <= 0 Then
-        Exit Sub
-    End If
-
-    MessageResult = FreeFormMessageBox( _
-        SDB.Localize("Do you want to remove all images?"), _
-        Array(SDB.Localize("Cancel"), SDB.Localize("Remove all")))
-
-    If MessageResult <> 1 Then
-        Exit Sub
-    End If
-
-    Set ImagesListBox.Items = SDB.NewStringList
-End Sub
-
-' Manually check the spin edit values, to allow all numbers
-' Make sure the minimum won't go below 1 and change max value if necessary
-Sub MinImgWaittitlesChanged(Item)
-    Set MinImageWaitTitles = Item
-    Set MaxImageWaitTitles = _
-        Item.Common.Parent.Common.ChildControl("MaxImageWaitTitles")
-    If MinImageWaitTitles.Value > MaxImageWaitTitles.Value Then
-        MaxImageWaitTitles.Value = MinImageWaitTitles.Value
-    End If
-    If MinImageWaitTitles.Value < 1 Then
-        MinImageWaitTitles.Value = 1
-    End If
-End Sub
-Sub MaxImgWaittitlesChanged(Item)
-    Set MaxImageWaitTitles = Item
-    Set MinImageWaitTitles = _
-        Item.Common.Parent.Common.ChildControl("MinImageWaitTitles")
-    If MaxImageWaitTitles.Value < MinImageWaitTitles.Value Then
-        MinImageWaitTitles.Value = MaxImageWaitTitles.Value
-    End If
 End Sub
 
 ' Checks if Search as String is in SourceList as SDBStringList
@@ -1420,25 +1042,6 @@ Function IsInStringList(SourceList, Search)
 
     IsInStringList = False
 End Function
-
-Sub DisplayImage(ImageFileName)
-    Set ImageForm = SDB.Objects("ImageForm")
-    ImageForm.Common.Align = alClient
-
-    Set ImageHTML = ImageForm.Common.ChildControl("ImageHTML")
-    ImageHTML.Common.Align = alClient
-
-    Set HTMLDocument = ImageHTML.Interf.Document
-    HTMLDocument.Write "<html><head>" & vbCrLf & _
-        HTML_Style_Imageframe & vbCrLf & _
-        "</head><body>" & vbCrLf  & _
-        "<center><img src='" & ImageFileName & "'/></center>" & _
-            vbCrLf  & _
-        "</body></html>"
-    HTMLDocument.Close
-
-    ImageForm.ShowModal
-End Sub
 
 Sub DisplayVideo(URL)
     Set ImageForm = SDB.Objects("ImageForm")
@@ -1486,8 +1089,6 @@ Sub OnStartup
     Script.RegisterEvent SDB, "OnShutdown", "OnShutdownHandler"
 
     Set OptionsFile = SDB.IniFile
-
-    PrepareImageForm
 
     ' Create options sheet
     If DEBUG_ON Then
