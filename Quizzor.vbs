@@ -297,10 +297,10 @@ Function SongsVisible()
 End Function
 
 Sub DestroyAllObjects
-    Set PlayBtn = SDB.Objects("PlayBtn")
-    If Not (PlayBtn Is Nothing) Then
-        PlayBtn.Common.Visible = False
-        PlayBtn = Nothing
+    Set PlayPauseBtn = SDB.Objects("PlayPauseBtn")
+    If Not (PlayPauseBtn Is Nothing) Then
+        PlayPauseBtn.Common.Visible = False
+        PlayPauseBtn = Nothing
     End If
 
     Set NextBtn = SDB.Objects("NextBtn")
@@ -315,16 +315,10 @@ Sub DestroyAllObjects
         SongInfoLabel = Nothing
     End If
 
-    Set ShowInfoBtn = SDB.Objects("ShowInfoBtn")
-    If Not (ShowInfoBtn Is Nothing) Then
-        ShowInfoBtn.Common.Visible = False
-        ShowInfoBtn = Nothing
-    End If
-
-    Set HideInfoBtn = SDB.Objects("HideInfoBtn")
-    If Not (HideInfoBtn Is Nothing) Then
-        HideInfoBtn.Common.Visible = False
-        HideInfoBtn = Nothing
+    Set ShowHideInfoBtn = SDB.Objects("ShowHideInfoBtn")
+    If Not (ShowHideInfoBtn Is Nothing) Then
+        ShowHideInfoBtn.Common.Visible = False
+        ShowHideInfoBtn = Nothing
     End If
 
     Set QuizzorMainPanel = SDB.Objects("QuizzorMainPanel")
@@ -405,17 +399,11 @@ Sub CreateMainPanel()
     PreviousBtn.Caption = SDB.Localize("Previous")
     Script.RegisterEvent PreviousBtn, "OnClick", "PlayPrevious"
 
-    Set PlayBtn = UI.NewButton(QuizzorMainPanel)
-    PlayBtn.Common.ControlName = "PlayBtn"
-    PlayBtn.Common.TabIndex = 2
-    PlayBtn.Caption = SDB.Localize("Play")
-    Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
-
-    Set PauseBtn = UI.NewButton(QuizzorMainPanel)
-    PauseBtn.Common.ControlName = "PauseBtn"
-    PauseBtn.Common.Visible = False
-    PauseBtn.Caption = SDB.Localize("Pause")
-    Script.RegisterEvent PauseBtn, "OnClick", "PausePlayback"
+    Set PlayPauseBtn = UI.NewButton(QuizzorMainPanel)
+    PlayPauseBtn.Common.ControlName = "PlayPauseBtn"
+    PlayPauseBtn.Common.TabIndex = 2
+    PlayPauseBtn.Caption = SDB.Localize("Play")
+    Script.RegisterEvent PlayPauseBtn, "OnClick", "StartPlaying"
 
     Set NextBtn = UI.NewButton(QuizzorMainPanel)
     NextBtn.Common.ControlName = "NextBtn"
@@ -423,17 +411,11 @@ Sub CreateMainPanel()
     NextBtn.Caption = SDB.Localize("Next")
     Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
-    Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
-    ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
-    ShowInfoBtn.Common.TabIndex = 0
-    ShowInfoBtn.Caption = SDB.Localize("Show Information")
-    Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
-
-    Set HideInfoBtn = UI.NewButton(QuizzorMainPanel)
-    HideInfoBtn.Common.ControlName = "HideInfoBtn"
-    HideInfoBtn.Common.Visible = False
-    HideInfoBtn.Caption = SDB.Localize("Hide Information")
-    Script.RegisterEvent HideInfoBtn, "OnClick", "HideSongInfo"
+    Set ShowHideInfoBtn = UI.NewButton(QuizzorMainPanel)
+    ShowHideInfoBtn.Common.ControlName = "ShowHideInfoBtn"
+    ShowHideInfoBtn.Common.TabIndex = 0
+    ShowHideInfoBtn.Caption = SDB.Localize("Show Information")
+    Script.RegisterEvent ShowHideInfoBtn, "OnClick", "ShowSongInfo"
 
     Set TrackProgressLabel = UI.NewLabel(QuizzorMainPanel)
     TrackProgressLabel.Common.ControlName = "TrackProgressLabel"
@@ -494,24 +476,16 @@ Sub ResizeMainPanel
     Set PreviousBtn = QuizzorMainPanel.Common.ChildControl("PreviousBtn")
     PreviousBtn.Common.SetRect BTN_MARGIN, BTN_MARGIN, BTN_WIDTH, BTN_HEIGHT
 
-    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    PlayBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
-        BTN_WIDTH, BTN_HEIGHT
-
-    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
-    PauseBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
+    Set PlayPauseBtn = QuizzorMainPanel.Common.ChildControl("PlayPauseBtn")
+    PlayPauseBtn.Common.SetRect 2*BTN_MARGIN + BTN_WIDTH,BTN_MARGIN, _
         BTN_WIDTH, BTN_HEIGHT
 
     Set NextBtn = QuizzorMainPanel.Common.ChildControl("NextBtn")
     NextBtn.Common.SetRect 3*BTN_MARGIN + 2*BTN_WIDTH, BTN_MARGIN, _
         BTN_WIDTH, BTN_HEIGHT
 
-    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-    ShowInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
-        2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
-
-    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
-    HideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
+    Set ShowHideInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowHideInfoBtn")
+    ShowHideInfoBtn.Common.SetRect 4*BTN_MARGIN+3*BTN_WIDTH, BTN_MARGIN, _
         2*BTN_WIDTH + BTN_MARGIN, BTN_HEIGHT
 
     Set TrackProgressLabel = _
@@ -847,12 +821,10 @@ End Sub
 Sub StartPlaying
     If Not QuizExists() Then Exit Sub
 
-    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    PlayBtn.Common.Visible = False
-    PlayBtn.Common.TabIndex = -1
-    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
-    PauseBtn.Common.Visible = True
-    PauseBtn.Common.TabIndex = 2
+    Set PlayPauseBtn = QuizzorMainPanel.Common.ChildControl("PlayPauseBtn")
+    PlayPauseBtn.Caption = SDB.Localize("Pause")
+    Script.UnRegisterEvents PlayPauseBtn
+    Script.RegisterEvent PlayPauseBtn, "OnClick", "PausePlayback"
 
     ' Make sure the current song stays,
     ' this prevents playing the next title if the previous ended
@@ -883,12 +855,10 @@ End Sub
 
 ' Pause and unpause playback
 Sub PausePlayback
-    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    PlayBtn.Common.Visible = True
-    PlayBtn.Common.TabIndex = 2
-    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
-    PauseBtn.Common.Visible = False
-    PauseBtn.Common.TabIndex = -1
+    Set PlayPauseBtn = QuizzorMainPanel.Common.ChildControl("PlayPauseBtn")
+    PlayPauseBtn.Caption = SDB.Localize("Play")
+    Script.UnRegisterEvents PlayPauseBtn
+    Script.RegisterEvent PlayPauseBtn, "OnClick", "StartPlaying"
 
     SDB.Player.Pause
 End Sub
@@ -974,12 +944,10 @@ Sub QuitRewindMode(Timer)
 End Sub
 
 Sub HideSongInfo
-    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-    ShowInfoBtn.Common.Visible = True
-    ShowInfoBtn.Common.TabIndex = 0
-    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
-    HideInfoBtn.Common.Visible = False
-    HideInfoBtn.Common.TabIndex = -1
+    Set ShowHideInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowHideInfoBtn")
+    ShowHideInfoBtn.Caption = SDB.Localize("Show Information")
+    Script.UnRegisterEvents ShowHideInfoBtn
+    Script.RegisterEvent ShowHideInfoBtn, "OnClick", "ShowSongInfo"
 
     ClearSongInfoHTML
 End Sub
@@ -994,12 +962,10 @@ Sub ShowSongInfo
     Set CurrentSong = SDB.Player.CurrentSong
     If Not IsObject(CurrentSong) Then Exit Sub
 
-    Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
-    ShowInfoBtn.Common.Visible = False
-    ShowInfoBtn.Common.TabIndex = -1
-    Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
-    HideInfoBtn.Common.Visible = True
-    HideInfoBtn.Common.TabIndex = 0
+    Set ShowHideInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowHideInfoBtn")
+    ShowHideInfoBtn.Caption = SDB.Localize("Hide Information")
+    Script.UnRegisterEvents ShowHideInfoBtn
+    Script.RegisterEvent ShowHideInfoBtn, "OnClick", "HideSongInfo"
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
@@ -1011,10 +977,10 @@ Sub PlaybackStopped
     SongTimer.Enabled = False
     Script.UnRegisterEvents SongTimer
 
-    Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
-    PlayBtn.Common.Visible = True
-    Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
-    PauseBtn.Common.Visible = False
+    Set PlayPauseBtn = QuizzorMainPanel.Common.ChildControl("PlayPauseBtn")
+    PlayPauseBtn.Caption = SDB.Localize("Play")
+    Script.UnRegisterEvents PlayPauseBtn
+    Script.RegisterEvent PlayPauseBtn, "OnClick", "StartPlaying"
 
     Script.UnRegisterHandler "UpdateSongTime"
 End Sub
