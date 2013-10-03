@@ -401,11 +401,13 @@ Sub CreateMainPanel()
 
     Set PreviousBtn = UI.NewButton(QuizzorMainPanel)
     PreviousBtn.Common.ControlName = "PreviousBtn"
+    PreviousBtn.Common.TabIndex = 1
     PreviousBtn.Caption = SDB.Localize("Previous")
     Script.RegisterEvent PreviousBtn, "OnClick", "PlayPrevious"
 
     Set PlayBtn = UI.NewButton(QuizzorMainPanel)
     PlayBtn.Common.ControlName = "PlayBtn"
+    PlayBtn.Common.TabIndex = 2
     PlayBtn.Caption = SDB.Localize("Play")
     Script.RegisterEvent PlayBtn, "OnClick", "StartPlaying"
 
@@ -417,11 +419,13 @@ Sub CreateMainPanel()
 
     Set NextBtn = UI.NewButton(QuizzorMainPanel)
     NextBtn.Common.ControlName = "NextBtn"
+    NextBtn.Common.TabIndex = 3
     NextBtn.Caption = SDB.Localize("Next")
     Script.RegisterEvent NextBtn, "OnClick", "PlayNext"
 
     Set ShowInfoBtn = UI.NewButton(QuizzorMainPanel)
     ShowInfoBtn.Common.ControlName = "ShowInfoBtn"
+    ShowInfoBtn.Common.TabIndex = 0
     ShowInfoBtn.Caption = SDB.Localize("Show Information")
     Script.RegisterEvent ShowInfoBtn, "OnClick", "ShowSongInfo"
 
@@ -845,8 +849,10 @@ Sub StartPlaying
 
     Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
     PlayBtn.Common.Visible = False
+    PlayBtn.Common.TabIndex = -1
     Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
     PauseBtn.Common.Visible = True
+    PauseBtn.Common.TabIndex = 2
 
     ' Make sure the current song stays,
     ' this prevents playing the next title if the previous ended
@@ -879,8 +885,10 @@ End Sub
 Sub PausePlayback
     Set PlayBtn = QuizzorMainPanel.Common.ChildControl("PlayBtn")
     PlayBtn.Common.Visible = True
+    PlayBtn.Common.TabIndex = 2
     Set PauseBtn = QuizzorMainPanel.Common.ChildControl("PauseBtn")
     PauseBtn.Common.Visible = False
+    PauseBtn.Common.TabIndex = -1
 
     SDB.Player.Pause
 End Sub
@@ -968,8 +976,10 @@ End Sub
 Sub HideSongInfo
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
     ShowInfoBtn.Common.Visible = True
+    ShowInfoBtn.Common.TabIndex = 0
     Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
     HideInfoBtn.Common.Visible = False
+    HideInfoBtn.Common.TabIndex = -1
 
     ClearSongInfoHTML
 End Sub
@@ -986,8 +996,10 @@ Sub ShowSongInfo
 
     Set ShowInfoBtn = QuizzorMainPanel.Common.ChildControl("ShowInfoBtn")
     ShowInfoBtn.Common.Visible = False
+    ShowInfoBtn.Common.TabIndex = -1
     Set HideInfoBtn = QuizzorMainPanel.Common.ChildControl("HideInfoBtn")
     HideInfoBtn.Common.Visible = True
+    HideInfoBtn.Common.TabIndex = 0
 
     Set SongInfoHTML = QuizzorMainPanel.Common.ChildControl("SongInfoHTML")
     Set HTMLDocument = SongInfoHTML.Interf.Document
