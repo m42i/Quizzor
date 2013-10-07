@@ -1,8 +1,10 @@
 <SoftwareVersion>
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>2</VersionMinor>
-    <VersionRelease>1</VersionRelease>
+    <VersionMinor>3</VersionMinor>
+    <VersionRelease>0</VersionRelease>
     <VersionBuild>0</VersionBuild>
-    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.2.mmip</UpdateURL>
-    <NewVersionDescription>It's now possible to add multiple files at once.</NewVersionDescription>
+    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzorv1.3.mmip</UpdateURL>
+    <NewVersionDescription>: Improved playback,
+ Removed ability to show images (was buggy)
+    </NewVersionDescription>
 </SoftwareVersion>

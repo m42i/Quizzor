@@ -1,8 +1,10 @@
 <SoftwareVersion>
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>2</VersionMinor>
-    <VersionRelease>1</VersionRelease>
+    <VersionMinor>3</VersionMinor>
+    <VersionRelease>0</VersionRelease>
     <VersionBuild>0</VersionBuild>
-    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzor/de/Quizzorv1.2_de.mmip</UpdateURL>
-    <NewVersionDescription>Es ist nun möglich, mehrere Dateien auf einmal zu laden.</NewVersionDescription>
+    <UpdateURL>https://dl.dropboxusercontent.com/u/344000/Quizzor/de/Quizzorv1.3_de.mmip</UpdateURL>
+    <NewVersionDescription>: Verbesserte Wiedergabesteurung,
+ Entfernen der MÃ¶glichkeit zur Anzeige von Bildern (war fehlerhaft)
+    </NewVersionDescription>
 </SoftwareVersion>
