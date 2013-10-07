@@ -219,20 +219,26 @@ Sub RandomizePlaylist(Item)
     End If
 
     If WarnRandomize Then
-        DoShuffle = FreeFormMessageBox(SDB.Localize("Randomizing a playlist cannot be undone."), _
+        DoShuffle = FreeFormMessageBox( _
+            SDB.Localize("Randomizing a playlist cannot be undone."), _
             Array(SDB.Localize("Randomize"), SDB.Localize("Cancel")))
 
         If DoShuffle <> 0 Then Exit Sub
     End If
 
-    ' Because of OLE error 80020006 with wine, the queue is used for shuffling
-    ' and restored afterwards
     Set NodePlaylist = SDB.PlaylistByID( SDB.MainTree.CurrentNode.RelatedObjectID )
 
     song_count = NodePlaylist.Tracks.Count
     If song_count > 1 Then
         Shuffle NodePlaylist
         SDB.MainTracksWindow.Refresh
+    End If
+
+    ' Reset the playlist's last position if saved
+    If OptionsFile.ValueExists("Quizzor", _
+            "LastSongIndexForPlaylist_" + CStr(NodePlaylist.ID)) Then
+        OptionsFile.DeleteKey "Quizzor", "LastSongIndexForPlaylist_" + CStr(NodePlaylist.ID)
+        UpdateOptionsFile
     End If
 End Sub
 
@@ -539,7 +545,7 @@ Sub SelectPlaylist(Playlist)
 End Sub
 
 ' Check whether the saved playlists already exist and delete if not
-' This should be called whenever a playlist value is read
+' This should be called whenever a playlist is created or deleted
 Sub UpdateOptionsFile
     ' Check if the last QuizPlaylist still exists and delete the key if not
     If OptionsFile.ValueExists("Quizzor", "LastPlaylistID") Then
