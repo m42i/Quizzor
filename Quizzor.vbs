@@ -847,7 +847,6 @@ Sub StartPlaying
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     Script.RegisterEvent SDB, "OnTrackEnd", "PlaybackStopped"
-    Script.RegisterEvent SDB, "OnStop", "PlaybackStopped"
 
     ' Disable playing next title
     SDB.Player.StopAfterCurrent = True
@@ -982,6 +981,8 @@ Sub PlaybackStopped
     Script.UnRegisterEvents PlayPauseBtn
     Script.RegisterEvent PlayPauseBtn, "OnClick", "StartPlaying"
 
+    SetSongTime(0)
+
     Script.UnRegisterHandler "UpdateSongTime"
 End Sub
 
@@ -996,7 +997,7 @@ Sub SetSongTime(PlaybackTime)
     SongTrackBar.Value = PlaybackTime
     SongTime.Caption = GetFormattedTime(PlaybackTime)
     SongTimeLeft.Caption = _
-        "- " + GetFormattedTime(CurrentSongLength - PlaybackTime)
+        "- " + GetFormattedTime(GetCurrentSongLength - PlaybackTime)
 End Sub
 
 Sub UpdateSongProgress
