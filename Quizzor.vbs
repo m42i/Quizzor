@@ -696,7 +696,7 @@ End Sub
 ' Displays a random image if wait titles is zero,
 ' Otherwise reduce wait titles by one
 Sub DisplayRandomImage
-    If Not ShowRandomImagesEnabled Then Exit Sub
+    If (Not ShowRandomImagesEnabled) Or RandomImagesStringList.Count = 0 Then Exit Sub
 
     If ImageWaitTitles <= 0 Then
         DisplayImageIndex CurrentRandomImageIndex
@@ -847,6 +847,7 @@ Sub StartPlaying
     Script.RegisterEvent SongTimer, "OnTimer", "UpdateSongTime"
 
     Script.RegisterEvent SDB, "OnTrackEnd", "PlaybackStopped"
+    Script.RegisterEvent SDB, "OnStop", "PlaybackStopped"
 
     ' Disable playing next title
     SDB.Player.StopAfterCurrent = True
